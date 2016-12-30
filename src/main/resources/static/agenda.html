@@ -1,79 +1,72 @@
 <!DOCTYPE html>
 <html ng-app="syspsi">
 <head>
-<meta charset='utf-8' />
-<link href='css/fullcalendar.min.css' rel='stylesheet' />
-<link href='css/fullcalendar.print.min.css' rel='stylesheet'
-	media='print' />
-<link href='css/bootstrap.min.css' rel='stylesheet' />
-<link href='css/modalStyle.css' rel='stylesheet' />
-
-<script type="text/javascript" src='js/jquery.min.js'></script>
-<script type="text/javascript" src='js/angular.min.js'></script>
-<script type="text/javascript" src='js/moment.min.js'></script>
-<script type="text/javascript" src='js/fullcalendar.min.js'></script>
-<script type="text/javascript" src='js/locale-all.js'></script>
-<script type="text/javascript" src='js/controller/agenda.js'></script>
-<script type="text/javascript" src='js/ui-bootstrap-tpls-2.3.2.min.js'></script>
-<script>
-	$(document).ready(function() {
-		$('#calendar').fullCalendar({
-			header : {
-				left : 'prev,next today',
-				center : 'title',
-				right : 'month,agendaWeek,agendaDay'
-			},
-			locale : 'pt-br',
-			navLinks : true, // can click day/week names to navigate views
-			selectable : true,
-			slotDuration : "00:30:00",
-			slotLabelFormat : [ 'ddd D/M', 'H:mm' ],
-			selectHelper : true,
-			select : function(start, end) {
-				var title = prompt('Título do Evento:');
-				var eventData;
-				if (title) {
-					eventData = {
-						title : title,
-						start : start,
-						end : end
-					};
-					$('#calendar').fullCalendar('renderEvent',	eventData, true); // stick? = true
-				}
-				$('#calendar').fullCalendar('unselect');
-			},
-			eventClick : function(calEvent, jsEvent, view) {$('#calendar').fullCalendar('removeEvents',
-				function(event) {
-					//return event == calEvent;
-					
-					if (event == calEvent) {
-						alert(event.title);
-						$('#descricaoEvento').text(event.start.format('H:mm') + ' - ' + event.title);
-						//$('#confirmModal').modal('show', {backdrop: 'static'});														
-						angular.element('#AgendaCtrl').scope().$ctrl.open();
-						angular.element('#AgendaCtrl').scope().$apply();
+	<meta charset='utf-8' />
+	<link href='css/fullcalendar.min.css' rel='stylesheet' />
+	<link href='css/fullcalendar.print.min.css' rel='stylesheet'
+		media='print' />
+	<link href='css/bootstrap.min.css' rel='stylesheet' />
+	<link href='css/modalStyle.css' rel='stylesheet' />
+	
+	<script type="text/javascript" src='js/jquery.min.js'></script>
+	<script type="text/javascript" src='js/angular.min.js'></script>
+	<script type="text/javascript" src='js/moment.min.js'></script>
+	<script type="text/javascript" src='js/fullcalendar.min.js'></script>
+	<script type="text/javascript" src='js/locale-all.js'></script>
+	<script type="text/javascript" src='js/controller/agenda.js'></script>
+	<script type="text/javascript" src='js/ui-bootstrap-tpls-2.3.2.min.js'></script>
+	<script>
+		$(document).ready(function() {
+			$('#calendar').fullCalendar({
+				header : {
+					left : 'prev,next today',
+					center : 'title',
+					right : 'month,agendaWeek,agendaDay'
+				},
+				locale : 'pt-br',
+				navLinks : true, // can click day/week names to navigate views
+				selectable : true,
+				slotDuration : "00:30:00",
+				slotLabelFormat : [ 'ddd D/M', 'H:mm' ],
+				selectHelper : true,
+				select : function(start, end) {
+					var title = prompt('Título do Evento:');
+					var eventData;
+					if (title) {
+						eventData = {
+							title : title,
+							start : start,
+							end : end
+						};
+						$('#calendar').fullCalendar('renderEvent',	eventData, true); // stick? = true
 					}
-				});
-			},
-			editable : true,
-			eventLimit : true
-			// allow "more" link when too many events			
+					$('#calendar').fullCalendar('unselect');
+				},
+				eventClick : function(event, jsEvent, view) {					
+					//$('#descricaoEvento').text(event.start.format('H:mm') + ' - ' + event.title);					
+				    angular.element("#AgendaCtrl").scope().name = event.start.format('H:mm') + ' - ' + event.title;				    				    				   
+					angular.element('#AgendaCtrl').scope().$ctrl.open();					
+					angular.element('#AgendaCtrl').scope().$apply();				
+				},
+				editable : true,
+				eventLimit : true
+				// allow "more" link when too many events			
+			});
 		});
-	});
-</script>
-<style>
-body {
-	margin: 40px 10px;
-	padding: 0;
-	font-family: "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
-	font-size: 14px;
-}
-
-#calendar {
-	max-width: 900px;
-	margin: 0 auto;
-}
-</style>
+	</script>
+	<style>
+		body {
+			margin: 40px 10px;
+			padding: 0;
+			font-family: "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
+			font-size: 14px;
+		}
+		
+		#calendar {
+			max-width: 900px;
+			margin: 0 auto;
+		}
+	</style>
 </head>
 <body>
 	<div id="AgendaCtrl" ng-controller="AgendaCtrl as $ctrl">
@@ -82,7 +75,7 @@ body {
             	<h3 class="modal-title" id="modal-title">SysPsi</h3>
         	</div>
         	<div class="modal-body" id="modal-body">
-            	<p id="descricaoEvento"></p>
+            	<p id="descricaoEvento" ng-model="name">{{name}}</p>
         	</div>
         	<div class="modal-footer">            
             	<div class="form-group">
@@ -93,7 +86,6 @@ body {
     	</script>
 
 		<div id='calendar'></div>		
-	</div>
-
+	</div>	
 </body>
 </html>
