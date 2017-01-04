@@ -26,9 +26,12 @@
         	<div class="modal-body" id="modal-body">
 				<form>
 					<div class="form-group">
-            			<!-- <p id="descricaoEvento">{{agendamento.inicio.format('H:mm') + " - " + agendamento.titulo}}</p> -->
-						<label for="titulo">Título: </label>		
-						<input id="titulo" type="text" class="form-control" ng-model="agendamento.titulo" required></input>
+					    <label for="selPacientes">Nome do Paciente:</label>
+  						<select class="form-control" ng-model="agendamento.titulo" id="selPacientes">
+							<option value="">Selecione um Paciente</option>								            					
+							<option value="Marcelo Lima">Marcelo Lima</option>
+							<option value="Jacira Cunha">Jacira Cunha</option>
+						</select>	            								
 						<label for="observacao">Observação: </label>
 						<input id="observacao" type="text" class="form-control" ng-model="agendamento.observacoes"></input>
 					</div>
@@ -36,12 +39,13 @@
         	</div>
         	<div class="modal-footer">            
             	<div class="form-group">
-					<button id="btnEdit" type="button" class="btn btn-primary" ng-click="$ctrl.ok()">Editar Evento</button>
-					<button id="btnRemove" type="button" class="btn btn-danger" ng-click="$ctrl.cancel()">Apagar Evento</button>
+					<button id="btnEdit" type="button" class="btn btn-primary" ng-click="$ctrl.salvar()">Salvar</button>
+					<button id="btnRemove" type="button" class="btn btn-default" ng-click="$ctrl.cancelar()">Cancelar</button>					
             	</div>
         	</div>
     	</script>
-    	
+    	    	
+		<!--    	    	
     	<script type="text/ng-template" id="novoEventoModal.html">
         	<div class="modal-header">				
             	<h3 class="modal-title" id="modal-title">Novo Agendamento</h3>
@@ -67,14 +71,24 @@
 					<button id="btnEdit" type="button" class="btn btn-primary" ng-click="$ctrl.salvar()">Salvar</button>
 					<button id="btnRemove" type="button" class="btn btn-default" ng-click="$ctrl.cancelar()">Cancelar</button>
             	</div>
-        	</div>
+        	</div>        	
     	</script>
+    	-->
     	<div class="container">
     		<div class="row">
     			<h1>SysPsi Menu</h1>
     		</div>
     		<div class="row">    	
-				<div id='calendar' class="col-md-12"></div>		
+				<div id='calendar' class="col-md-12"></div>
+				<!-- 
+				<table border="1">				
+    				<tr ng-repeat="x in lstAgendamentos">
+        				<td>{{x.id}}</td>
+        				<td>{{x.titulo}}</td>
+   				 	</tr>
+				</table>
+				-->
+				<p>{{lstAgendamentos}}</p>					
 			</div>
 		</div>			
 	</div>	

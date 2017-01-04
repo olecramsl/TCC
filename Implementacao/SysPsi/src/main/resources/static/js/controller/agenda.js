@@ -2,18 +2,30 @@ var app = angular.module('syspsi', ['ui.bootstrap']);
 
 app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
   var $ctrl = this;          
-  
-  $http.get('/agendamentos/').success(function(data) {
-	  $scope.agendamento = data;
-  });
-  
+    
   $scope.agendamento = {
 		  id         : null,
 		  titulo     : null,
 		  inicio     : null,
 		  fim        : null,
 		  observacoes: null
-  };
+  };  
+  
+  $http.get('http://localhost:8080/agendamentos/').then(function(response) {	  
+	  $scope.lstAgendamentos = response.data;
+	  
+	  var eventData;	  
+	  angular.forEach($scope.lstAgendamentos, function(value, key) {		  		  	  		  		
+		  eventData = {
+				  id    : value.id,				  		  
+			      title : value.titulo,
+			      start : value.inicio,
+			      end   : value.fim
+	      };	
+	
+          $('#calendar').fullCalendar('renderEvent',eventData, true); // stick? = true
+	  });
+  });    
   
   $ctrl.openEventModal = function (size) {	  
     var modalInstance = $uibModal.open({
@@ -33,7 +45,7 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
 	      animation: true,
 	      ariaLabelledBy: 'modal-title',
 	      ariaDescribedBy: 'modal-body',
-	      templateUrl: 'novoEventoModal.html',
+	      templateUrl: 'eventoModal.html',
 	      controller: 'ModalInstanceCtrl',
 	      controllerAs: '$ctrl',
 	      scope: $scope, // bind $scope to modal scope
@@ -61,8 +73,9 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
 		if (angular.element('#AgendaCtrl').scope().agendamento.titulo) {
 			var eventData;
 	
+			angular.element('#AgendaCtrl').scope().agendamento.id = 3; // REMOVER APOS TRATAMENTO ADEQUADO
 			eventData = {
-					/* id    : // next id */			
+					id    : angular.element('#AgendaCtrl').scope().agendamento.id,			
 					title : angular.element('#AgendaCtrl').scope().agendamento.observacoes ? 
 							angular.element('#AgendaCtrl').scope().agendamento.titulo 
 							+ " (" + angular.element('#AgendaCtrl').scope().agendamento.observacoes + ")" : 
@@ -74,6 +87,15 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
 			$('#calendar').fullCalendar('renderEvent',eventData, true); // stick? = true
 		}
 		$('#calendar').fullCalendar('unselect');			
+						
+		// adiciona agendamento na lista
+		angular.element('#AgendaCtrl').scope().lstAgendamentos.push({
+			id: angular.element('#AgendaCtrl').scope().agendamento.id,
+			titulo: angular.element('#AgendaCtrl').scope().agendamento.titulo,
+			inicio: angular.element('#AgendaCtrl').scope().agendamento.inicio,
+			fim: angular.element('#AgendaCtrl').scope().agendamento.fim,
+			observacoes: angular.element('#AgendaCtrl').scope().agendamento.observacoes
+		});
 		
 		$ctrl.clearData();
 		$uibModalInstance.close();

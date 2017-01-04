@@ -18,11 +18,15 @@ $(document).ready(function() {
 			angular.element('#AgendaCtrl').scope().agendamento.fim = end;			
 			angular.element('#AgendaCtrl').scope().$apply();			
 		},
-		eventClick : function(event, jsEvent, view) {					
+		eventClick : function(event, jsEvent, view) {			
 			angular.element('#AgendaCtrl').scope().agendamento.id = event.id;
 			angular.element('#AgendaCtrl').scope().agendamento.titulo = event.title;
 			angular.element('#AgendaCtrl').scope().agendamento.inicio = event.start;				    				    				   
-			angular.element('#AgendaCtrl').scope().agendamento.fim = event.end;			
+			angular.element('#AgendaCtrl').scope().agendamento.fim = event.end;
+			
+			alert(angular.element('#AgendaCtrl').scope().agendamento.id);
+			alert(angular.element('#AgendaCtrl').scope().agendamento.titulo);
+			
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},
