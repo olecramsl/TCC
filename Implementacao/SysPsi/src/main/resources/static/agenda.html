@@ -5,7 +5,7 @@
 	<link href='css/fullcalendar-3.1.0.min.css' rel='stylesheet' />
 	<link href='css/fullcalendar.print-3.1.0.min.css' rel='stylesheet' media='print' />
 	<link href='css/bootstrap-3.3.7.min.css' rel='stylesheet' />
-	<link href='css/calendario.css' rel='stylesheet' />
+	<!-- <link href='css/calendario.css' rel='stylesheet' /> -->
 		
 	<script type="text/javascript" src='js/jquery-3.1.1.min.js'></script>
 	<script type="text/javascript" src='js/angular-1.6.0.min.js'></script>
@@ -24,7 +24,15 @@
             	<h3 class="modal-title" id="modal-title">Ver Agendamento</h3>
         	</div>
         	<div class="modal-body" id="modal-body">
-            	<p id="descricaoEvento">{{agendamento.titulo}}</p>
+				<form>
+					<div class="form-group">
+            			<!-- <p id="descricaoEvento">{{agendamento.inicio.format('H:mm') + " - " + agendamento.titulo}}</p> -->
+						<label for="titulo">Título: </label>		
+						<input id="titulo" type="text" class="form-control" ng-model="agendamento.titulo" required></input>
+						<label for="observacao">Observação: </label>
+						<input id="observacao" type="text" class="form-control" ng-model="agendamento.observacoes"></input>
+					</div>
+				</form>
         	</div>
         	<div class="modal-footer">            
             	<div class="form-group">
@@ -49,20 +57,26 @@
 						</select>					
 					</div>
 					<div class="form-group">
-						<label for="observacoes">Observações</label>
-						<textarea class="form-control" rows="5" id="observacoes" ng-model="agendamento.observacoes"></textarea>
+						<label for="observacoes">Observações</label>						
+						<input id="observacoes" class="form-control" type="text" maxlength="60" ng-model="agendamento.observacoes"></input>
 					</div>
 				</form>
         	</div>
         	<div class="modal-footer">            
             	<div class="form-group">
-					<button id="btnEdit" type="button" class="btn btn-primary" ng-click="$ctrl.ok()">Editar Evento</button>
-					<button id="btnRemove" type="button" class="btn btn-danger" ng-click="$ctrl.cancel()">Apagar Evento</button>
+					<button id="btnEdit" type="button" class="btn btn-primary" ng-click="$ctrl.salvar()">Salvar</button>
+					<button id="btnRemove" type="button" class="btn btn-default" ng-click="$ctrl.cancelar()">Cancelar</button>
             	</div>
         	</div>
     	</script>
-    			
-		<div id='calendar'></div>			
+    	<div class="container">
+    		<div class="row">
+    			<h1>SysPsi Menu</h1>
+    		</div>
+    		<div class="row">    	
+				<div id='calendar' class="col-md-12"></div>		
+			</div>
+		</div>			
 	</div>	
 </body>
 </html>

@@ -1,7 +1,11 @@
 var app = angular.module('syspsi', ['ui.bootstrap']);
 
-app.controller('AgendaCtrl', function ($scope, $uibModal) {
+app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
   var $ctrl = this;          
+  
+  $http.get('/agendamentos/').success(function(data) {
+	  $scope.agendamento = data;
+  });
   
   $scope.agendamento = {
 		  id         : null,
@@ -33,7 +37,7 @@ app.controller('AgendaCtrl', function ($scope, $uibModal) {
 	      controller: 'ModalInstanceCtrl',
 	      controllerAs: '$ctrl',
 	      scope: $scope, // bind $scope to modal scope
-	      size: size
+	      size: size	      
 	    });   
 	  }; 
 });
@@ -42,26 +46,47 @@ app.controller('AgendaCtrl', function ($scope, $uibModal) {
 // It is not the same as the $uibModal service used above.
 
 app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
-	var $ctrl = this;	
-		
-	$ctrl.ok = function () {		
+	var $ctrl = this;		
+			
+	$ctrl.ok = function () {						
+		$uibModalInstance.close();
+	};
+
+	$ctrl.cancelar = function () {
+		$ctrl.clearData();
+		$uibModalInstance.dismiss('cancel');
+	};
+	
+	$ctrl.salvar = function () {
 		if (angular.element('#AgendaCtrl').scope().agendamento.titulo) {
 			var eventData;
 	
 			eventData = {
-					title : angular.element('#AgendaCtrl').scope().agendamento.titulo,
+					/* id    : // next id */			
+					title : angular.element('#AgendaCtrl').scope().agendamento.observacoes ? 
+							angular.element('#AgendaCtrl').scope().agendamento.titulo 
+							+ " (" + angular.element('#AgendaCtrl').scope().agendamento.observacoes + ")" : 
+							angular.element('#AgendaCtrl').scope().agendamento.titulo,	
 					start : angular.element('#AgendaCtrl').scope().agendamento.inicio,
 					end   : angular.element('#AgendaCtrl').scope().agendamento.fim
 			};	
 	
 			$('#calendar').fullCalendar('renderEvent',eventData, true); // stick? = true
 		}
-		$('#calendar').fullCalendar('unselect');
-	
+		$('#calendar').fullCalendar('unselect');			
+		
+		$ctrl.clearData();
 		$uibModalInstance.close();
-	};
-
-	$ctrl.cancel = function () {
-		$uibModalInstance.dismiss('cancel');
+	}
+	
+	/**
+	 * Limpa os dados do agendamento
+	 */
+	$ctrl.clearData = function () {
+		angular.element('#AgendaCtrl').scope().agendamento.id          = null;
+		angular.element('#AgendaCtrl').scope().agendamento.titulo      = null;
+		angular.element('#AgendaCtrl').scope().agendamento.inicio      = null;
+		angular.element('#AgendaCtrl').scope().agendamento.fim         = null;
+		angular.element('#AgendaCtrl').scope().agendamento.observacoes = null;
 	};
 });

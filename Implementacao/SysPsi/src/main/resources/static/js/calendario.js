@@ -13,28 +13,16 @@ $(document).ready(function() {
 		selectHelper : true,
 		select : function(start, end) {
 			angular.element('#AgendaCtrl').scope().$ctrl.openNewEventModal();			
-				
+							
 			angular.element('#AgendaCtrl').scope().agendamento.inicio = start;
 			angular.element('#AgendaCtrl').scope().agendamento.fim = end;			
-			angular.element('#AgendaCtrl').scope().$apply();
-			//$('#calendar').fullCalendar('renderEvent',	eventData, true); // stick? = true
-			
-			/*
-			var title = prompt('Título do Evento:');
-			var eventData;
-			if (title) {
-				eventData = {
-					title : title,
-					start : start,
-					end : end
-				};
-				$('#calendar').fullCalendar('renderEvent',	eventData, true); // stick? = true
-			}
-			$('#calendar').fullCalendar('unselect')
-			*/			
+			angular.element('#AgendaCtrl').scope().$apply();			
 		},
-		eventClick : function(event, jsEvent, view) {												
-			angular.element('#AgendaCtrl').scope().agendamento.titulo = event.start.format('H:mm') + ' - ' + event.title;				    				    				   
+		eventClick : function(event, jsEvent, view) {					
+			angular.element('#AgendaCtrl').scope().agendamento.id = event.id;
+			angular.element('#AgendaCtrl').scope().agendamento.titulo = event.title;
+			angular.element('#AgendaCtrl').scope().agendamento.inicio = event.start;				    				    				   
+			angular.element('#AgendaCtrl').scope().agendamento.fim = event.end;			
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},
