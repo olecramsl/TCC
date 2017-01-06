@@ -12,8 +12,8 @@ public class AgendaController {
 	@RequestMapping("/agendamentos")
 	public List<Agendamento> listarAgendamentos() {
 		List<Agendamento> lstAgendamentos = new ArrayList<Agendamento>();
-		Agendamento agendamento1 = new Agendamento(1, "Marcelo Lima", Calendar.getInstance(), Calendar.getInstance(), null);
-		Agendamento agendamento2 = new Agendamento(2, "Jacira Cunha", Calendar.getInstance(), Calendar.getInstance(), "Não compareceu");
+		Agendamento agendamento1 = new Agendamento(1, null, "Marcelo Lima", Calendar.getInstance(), Calendar.getInstance(), null);
+		Agendamento agendamento2 = new Agendamento(2, null, "Jacira Cunha", Calendar.getInstance(), Calendar.getInstance(), "Não compareceu");
 		lstAgendamentos.add(agendamento1);		
 		lstAgendamentos.add(agendamento2);
 		return lstAgendamentos;

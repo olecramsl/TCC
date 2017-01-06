@@ -4,18 +4,21 @@ import java.util.Calendar;
 
 public class Agendamento {
 	private long id;
-	private String titulo;
-	private Calendar inicio;
-	private Calendar fim;
-	private String observacoes;				
+	private Long gCalendarId;
+	private String user;
+	private String title;
+	private Calendar start;
+	private Calendar end;
+	private String description;				
 	
-	public Agendamento(long id, String titulo, Calendar inicio, Calendar fim, String observacoes) {
+	public Agendamento(long id, Long gCalendarId, String user, Calendar start, Calendar end, String description) {
 		super();
 		this.id = id;
-		this.titulo = titulo;
-		this.inicio = inicio;
-		this.fim = fim;
-		this.observacoes = observacoes;
+		this.user = user;
+		this.start = start;
+		this.end = end;
+		this.description = description;
+		this.title = (this.description != null && !this.description.isEmpty()) ? this.user + " (" + this.description + ")" : this.user;
 	}
 
 	/**
@@ -33,58 +36,86 @@ public class Agendamento {
 	}
 	
 	/**
-	 * @return the titulo
+	 * @return the gCalendarId
 	 */
-	public String getTitulo() {
-		return titulo;
+	public Long getgCalendarId() {
+		return gCalendarId;
+	}
+
+	/**
+	 * @param gCalendarId the gCalendarId to set
+	 */
+	public void setgCalendarId(Long gCalendarId) {
+		this.gCalendarId = gCalendarId;
+	}
+
+	/**
+	 * @return the user
+	 */
+	public String getUser() {
+		return user;
+	}
+
+	/**
+	 * @param user the user to set
+	 */
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	/**
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
 	}
 	
 	/**
-	 * @param titulo the titulo to set
+	 * @param titulo the title to set
 	 */
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	
 	/**
-	 * @return the inicio
+	 * @return the start
 	 */
-	public Calendar getInicio() {
-		return inicio;
+	public Calendar getStart() {
+		return start;
 	}
 	
 	/**
-	 * @param inicio the inicio to set
+	 * @param inicio the start to set
 	 */
-	public void setInicio(Calendar inicio) {
-		this.inicio = inicio;
+	public void setStart(Calendar start) {
+		this.start = start;
 	}
 	
 	/**
-	 * @return the fim
+	 * @return the end
 	 */
-	public Calendar getFim() {
-		return fim;
+	public Calendar getEnd() {
+		return end;
 	}
 	
 	/**
-	 * @param fim the fim to set
+	 * @param fim the end to set
 	 */
-	public void setFim(Calendar fim) {
-		this.fim = fim;
+	public void setEnd(Calendar end) {
+		this.end = end;
 	}
 	
 	/**
-	 * @return the observacoes
+	 * @return the description
 	 */
-	public String getObservacoes() {
-		return observacoes;
+	public String getDescription() {
+		return description;
 	}
 	
 	/**
-	 * @param observacoes the observacoes to set
+	 * @param the description to set
 	 */
-	public void setObservacoes(String observacoes) {
-		this.observacoes = observacoes;
+	public void setDescription(String description) {
+		this.description = description;
 	}		
 }
