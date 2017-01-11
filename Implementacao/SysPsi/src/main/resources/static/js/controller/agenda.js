@@ -1,29 +1,42 @@
 var app = angular.module('syspsi', ['ui.bootstrap']);
 
 app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
-  var $ctrl = this;          
+  var $ctrl = this;      
   
   /**
    * Popula o calendario com os agendamentos do BD
    */ 
-  $http.get('http://localhost:8080/agendamentos/').then(function(response) {	  
-	  $scope.lstAgendamentos = response.data;
+  $http.get('http://localhost:8080/agendamentos').then(
+      successCallback = function (response) {	  
+  	      $scope.lstAgendamentos = response.data;
 	  	  
-	  // Adiciona os agendamentos no calendario
-	  angular.forEach($scope.lstAgendamentos, function(value, key) {		  
-          $('#calendar').fullCalendar('renderEvent',value, true); // stick? = true
-	  });
-  });   
+  		  // Adiciona os agendamentos no calendario
+  		  angular.forEach($scope.lstAgendamentos, function(value, key) {				  
+  			  $('#calendar').fullCalendar('renderEvent',value, true); // stick? = true
+  		  })
+  	  },
+	  errorCallback = function (error, status) {
+		  // tratar erro
+	  }
+  );   
   
   /**
    * Popula a lista de pacientes ativos
    */
-  $http.get('http://localhost:8080/pacientesAtivos/').then(function(response) {	  
-	  $scope.lstPacientesAtivos = response.data;		
-  });
+  $http.get('http://localhost:8080/listarPacientesAtivos').then(
+      successCallback = function(response) {	  
+    	  $scope.lstPacientesAtivos = response.data;
+  	  },
+  	  errorCallback = function (error, status){
+  		// tratar erro
+  	  }
+  );
   
   // Lista de pacientes ativos cadastrados no sistema
   $scope.lstPacientesAtivos = null;
+  
+  // O index do paciente selecionado na agenda
+  $scope.indexPacienteSelecionado;
     
   $scope.agendamento = {
 		  id         : null,
@@ -33,7 +46,18 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
 		  start      : null,
 		  end        : null,
 		  description: null
-  };      
+  };
+
+  $scope.apagarDadosAgendamento = function() {
+	  angular.element('#AgendaCtrl').scope().agendamento.id           = null;
+	  angular.element('#AgendaCtrl').scope().agendamento.gCalendarId  = null;
+	  angular.element('#AgendaCtrl').scope().agendamento.paciente	    = null;
+	  angular.element('#AgendaCtrl').scope().agendamento.title        = null;
+	  angular.element('#AgendaCtrl').scope().agendamento.start        = null;
+	  angular.element('#AgendaCtrl').scope().agendamento.end          = null;
+	  angular.element('#AgendaCtrl').scope().agendamento.description  = null;			
+	  angular.element('#AgendaCtrl').scope().indexPacienteSelecionado = null;
+  };
   
   /**
    * Abre janela modal
@@ -48,7 +72,13 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
       controllerAs: '$ctrl',
       scope: $scope, // bind $scope to modal scope      
       size: size
-    });   
+    });
+    
+    modalInstance.result.then(function (selectedItem) {            
+    }, function () {    	    	
+    	$scope.apagarDadosAgendamento();
+    	
+    });
   };  
 });
 
@@ -60,8 +90,9 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
 	/**
 	 * Cancela a operação na janela modal
 	 */
-	$ctrl.cancelar = function () {		
-		$uibModalInstance.dismiss('cancel');		
+	$ctrl.cancelar = function () {				
+		$uibModalInstance.dismiss('cancel');
+		angular.element('#AgendaCtrl').scope().indexPacienteSelecionado = null;
 	};
 	
 	/**
@@ -75,10 +106,13 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
 				$ctrl.setTitle();				
 				event[0].title       = angular.element('#AgendaCtrl').scope().agendamento.title;
 				event[0].paciente    = angular.element('#AgendaCtrl').scope().agendamento.paciente;
-				event[0].description = angular.element('#AgendaCtrl').scope().agendamento.description;							
+				event[0].description = angular.element('#AgendaCtrl').scope().agendamento.description;
+				
+				
+				
 				$('#calendar').fullCalendar('updateEvent',event[0]);				
 				$ctrl.updateLstAgendamentos(event[0]);	
-				$ctrl.apagarDadosAgendamento();
+				angular.element('#AgendaCtrl').scope().apagarDadosAgendamento();
 			}
 		// Novo agendamento
 		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {			
@@ -134,15 +168,5 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
 				break;
 			}
 	    };	    
-	};
-	
-	$ctrl.apagarDadosAgendamento = function() {
-		angular.element('#AgendaCtrl').scope().agendamento.id          = null;
-		angular.element('#AgendaCtrl').scope().agendamento.gCalendarId = null;
-		angular.element('#AgendaCtrl').scope().agendamento.paciente	   = null;
-		angular.element('#AgendaCtrl').scope().agendamento.title       = null;
-		angular.element('#AgendaCtrl').scope().agendamento.start       = null;
-		angular.element('#AgendaCtrl').scope().agendamento.end         = null;
-		angular.element('#AgendaCtrl').scope().agendamento.description = null;
-	};
+	};		
 });

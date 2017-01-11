@@ -27,7 +27,7 @@
 				<form>
 					<div class="form-group">
 					    <label for="selPacientes">Nome do Paciente:</label>						    
-						<select id="selPacientes" class="form-control" ng-model="agendamento.paciente" ng-options="paciente.nomeExibicao for paciente in lstPacientesAtivos">
+						<select id="selPacientes" class="form-control" ng-init="agendamento.paciente=lstPacientesAtivos[indexPacienteSelecionado]" ng-model="agendamento.paciente" ng-options="paciente.nomeExibicao for paciente in lstPacientesAtivos">
 							<option value="">Selecione o paciente</option>
 						</select>   								
 						<label for="observacao">Observação: </label>

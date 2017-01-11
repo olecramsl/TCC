@@ -24,11 +24,12 @@ $(document).ready(function() {
 			var tmpLst = angular.element('#AgendaCtrl').scope().lstAgendamentos;
 			for (var i = 0; i < tmpLst.length; i++) {				
 				if (tmpLst[i].id == event.id) {												
-					angular.element('#AgendaCtrl').scope().agendamento = tmpLst[i];							
+					angular.element('#AgendaCtrl').scope().agendamento = tmpLst[i];
+					angular.element('#AgendaCtrl').scope().indexPacienteSelecionado = i;
 					break;
 				}
 		    }
-						
+									
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},

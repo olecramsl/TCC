@@ -1,27 +1,35 @@
-package br.com.syspsi.modelo;
+package br.com.syspsi.model.entity;
 
 import java.util.Calendar;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 @Entity
 public class Agendamento {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private long id;
-	private Long gCalendarId;
+	private long id;	
+	@ManyToOne
+    @JoinColumn(name="idpaciente")
 	private Paciente paciente;
-	private String title;
+	@Column(name="gcalendarid") 
+	private Long gCalendarId;	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar start;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar end;
-	private String description;				
+	private String description;	
+	@Transient
+	private String title;
 	
 	// Apenas para JPA
 	protected Agendamento() {
@@ -33,10 +41,7 @@ public class Agendamento {
 		this.paciente = paciente;
 		this.start = start;
 		this.end = end;
-		this.description = description;
-		this.title = (this.description != null && !this.description.isEmpty()) ? 
-				this.paciente.getNomeExibicao() + " (" + this.description + ")" : 
-				this.paciente.getNomeExibicao();
+		this.description = description;		
 	}
 
 	/**
@@ -51,21 +56,7 @@ public class Agendamento {
 	 */
 	public void setId(long id) {
 		this.id = id;
-	}
-	
-	/**
-	 * @return the gCalendarId
-	 */
-	public Long getgCalendarId() {
-		return gCalendarId;
-	}
-
-	/**
-	 * @param gCalendarId the gCalendarId to set
-	 */
-	public void setgCalendarId(Long gCalendarId) {
-		this.gCalendarId = gCalendarId;
-	}
+	}		
 
 	/**
 	 * @return the paciente
@@ -79,20 +70,20 @@ public class Agendamento {
 	 */
 	public void setPaciente(Paciente paciente) {
 		this.paciente = paciente;
+	}	
+	
+	/**
+	 * @return the gCalendarId
+	 */
+	public Long getgCalendarId() {
+		return gCalendarId;
 	}
 
 	/**
-	 * @return the title
+	 * @param gCalendarId the gCalendarId to set
 	 */
-	public String getTitle() {
-		return title;
-	}
-	
-	/**
-	 * @param titulo the title to set
-	 */
-	public void setTitle(String title) {
-		this.title = title;
+	public void setgCalendarId(Long gCalendarId) {
+		this.gCalendarId = gCalendarId;
 	}
 	
 	/**
@@ -136,4 +127,20 @@ public class Agendamento {
 	public void setDescription(String description) {
 		this.description = description;
 	}		
+	
+	/**
+	 * @return the title
+	 */
+	public String getTitle() {
+		return (this.description != null && !this.description.isEmpty()) ?
+				this.paciente.getNomeExibicao() + " (" + this.description + ")" : 
+				this.paciente.getNomeExibicao();
+	}
+	
+	/**
+	 * @param titulo the title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
 }
