@@ -19,21 +19,19 @@
 </head>
 <body>
 	<div id="AgendaCtrl" ng-controller="AgendaCtrl as $ctrl">
-		<script type="text/ng-template" id="eventoModal.html">
-        	<div class="modal-header">				
-            	<h3 class="modal-title" id="modal-title">Ver Agendamento</h3>
+		<script type="text/ng-template" id="eventoModal.html">			  					
+        	<div class="modal-header">							
+            	<h3 class="modal-title" id="modal-title">Agendamento</h3>
         	</div>
         	<div class="modal-body" id="modal-body">
 				<form>
 					<div class="form-group">
-					    <label for="selPacientes">Nome do Paciente:</label>
-  						<select class="form-control" ng-model="agendamento.user" id="selPacientes">
-							<option value="">Selecione um Paciente</option>								            					
-							<option value="Marcelo Lima">Marcelo Lima</option>
-							<option value="Jacira Cunha">Jacira Cunha</option>
-						</select>	            								
+					    <label for="selPacientes">Nome do Paciente:</label>						    
+						<select id="selPacientes" class="form-control" ng-model="agendamento.paciente" ng-options="paciente.nomeExibicao for paciente in lstPacientesAtivos">
+							<option value="">Selecione o paciente</option>
+						</select>   								
 						<label for="observacao">Observação: </label>
-						<input id="observacao" type="text" class="form-control" ng-model="agendamento.description"></input>
+						<input id="observacao" type="text" max-length="50" class="form-control" ng-model="agendamento.description"></input>
 					</div>
 				</form>
         	</div>
@@ -42,8 +40,8 @@
 					<button id="btnEdit" type="button" class="btn btn-primary" ng-click="$ctrl.salvar()">Salvar</button>
 					<button id="btnRemove" type="button" class="btn btn-danger" ng-click="$ctrl.remover()">Remover</button>
 					<button id="btnCancel" type="button" class="btn btn-default" ng-click="$ctrl.cancelar()">Cancelar</button>					
-            	</div>
-        	</div>
+            	</div>        							
+			</div>
     	</script>
     	
     	<div class="container">
@@ -53,11 +51,14 @@
     		<div class="row">    	
 				<div id='calendar' class="col-md-12"></div>	
 				
+				<!-- 
 				<table border="1">
     				<tr ng-repeat="x in lstAgendamentos">
-        				<td>{{x.title}}</td>        				
+        				<td>{{x.id}}</td>        				
     				</tr>
-				</table>													
+				</table>
+				-->		
+				<h1>{{lstAgendamentos}}</h1>											
 			</div>
 		</div>			
 	</div>	

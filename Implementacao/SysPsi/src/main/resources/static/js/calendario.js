@@ -20,19 +20,19 @@ $(document).ready(function() {
 		},
 		eventClick : function(event, jsEvent, view) {						
 			// se garantirmos que lstAgendamentos estah ordenada, podemos fazer uma busca
-			// binaria ao inves de linear
+			// binaria ao inves de linear					
 			var tmpLst = angular.element('#AgendaCtrl').scope().lstAgendamentos;
 			for (var i = 0; i < tmpLst.length; i++) {				
-				if (tmpLst[i].id == event.id) {						
-					angular.element('#AgendaCtrl').scope().agendamento = tmpLst[i];
+				if (tmpLst[i].id == event.id) {												
+					angular.element('#AgendaCtrl').scope().agendamento = tmpLst[i];							
 					break;
 				}
 		    }
-			
+						
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},
-		eventDrop : function( event ) {			
+		eventDrop : function( event ) {				
 			for (var i = 0; i < angular.element('#AgendaCtrl').scope().lstAgendamentos.length; i++) {				
 				if (angular.element('#AgendaCtrl').scope().lstAgendamentos[i].id == event.id) {							
 					angular.element('#AgendaCtrl').scope().lstAgendamentos[i] = event;					
