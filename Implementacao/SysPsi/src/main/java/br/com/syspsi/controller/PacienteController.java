@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,11 @@ public class PacienteController {
 	@Autowired
 	private PacienteRepositorio pacienteRepositorio;
 	
-	@RequestMapping(value = "/listarPacientesAtivos", method={RequestMethod.GET})
+	@RequestMapping(
+			value = "/listarPacientesAtivos", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE
+			)
 	public List<Paciente> listarPacientesAtivos() {		
 		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByAtivo(true);		
 		return lstPacientes;

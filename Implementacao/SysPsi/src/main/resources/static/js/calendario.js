@@ -11,25 +11,24 @@ $(document).ready(function() {
 		slotDuration : "00:30:00",
 		slotLabelFormat : [ 'ddd D/M', 'H:mm' ],
 		selectHelper : true,
-		select : function(start, end) {
-			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();			
+		select : function(start, end) {						
+			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();				
 							
 			angular.element('#AgendaCtrl').scope().agendamento.start = start;
 			angular.element('#AgendaCtrl').scope().agendamento.end   = end;
 			angular.element('#AgendaCtrl').scope().$apply();			
 		},
-		eventClick : function(event, jsEvent, view) {						
-			// se garantirmos que lstAgendamentos estah ordenada, podemos fazer uma busca
-			// binaria ao inves de linear					
-			var tmpLst = angular.element('#AgendaCtrl').scope().lstAgendamentos;
-			for (var i = 0; i < tmpLst.length; i++) {				
-				if (tmpLst[i].id == event.id) {												
-					angular.element('#AgendaCtrl').scope().agendamento = tmpLst[i];
+		eventClick : function(event, jsEvent, view) {				
+			angular.element('#AgendaCtrl').scope().agendamento = event;		
+									
+			tmpLst = angular.element('#AgendaCtrl').scope().lstPacientesAtivos;
+			for (var i = 0; i < tmpLst.length; i++) {
+				if (tmpLst[i].id == event.paciente.id) {					
 					angular.element('#AgendaCtrl').scope().indexPacienteSelecionado = i;
 					break;
-				}
-		    }
-									
+				}				
+			}			
+			
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},
@@ -39,7 +38,8 @@ $(document).ready(function() {
 					angular.element('#AgendaCtrl').scope().lstAgendamentos[i] = event;					
 					break;
 				}
-		    };		    		    		    				
+		    };	
+		    angular.element('#AgendaCtrl').scope().$apply();
 		},		
 		editable : true,
 		eventLimit : true // allow "more" link when too many events			

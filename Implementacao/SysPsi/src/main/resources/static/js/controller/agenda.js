@@ -1,6 +1,6 @@
 var app = angular.module('syspsi', ['ui.bootstrap']);
 
-app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
+app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
   var $ctrl = this;      
   
   /**
@@ -11,9 +11,9 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
   	      $scope.lstAgendamentos = response.data;
 	  	  
   		  // Adiciona os agendamentos no calendario
-  		  angular.forEach($scope.lstAgendamentos, function(value, key) {				  
+  		  angular.forEach($scope.lstAgendamentos, function(value, key) {  			  
   			  $('#calendar').fullCalendar('renderEvent',value, true); // stick? = true
-  		  })
+  		  })  		  
   	  },
 	  errorCallback = function (error, status) {
 		  // tratar erro
@@ -32,12 +32,6 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
   	  }
   );
   
-  // Lista de pacientes ativos cadastrados no sistema
-  $scope.lstPacientesAtivos = null;
-  
-  // O index do paciente selecionado na agenda
-  $scope.indexPacienteSelecionado;
-    
   $scope.agendamento = {
 		  id         : null,
 		  gCalendarId: null,
@@ -47,22 +41,33 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
 		  end        : null,
 		  description: null
   };
-
-  $scope.apagarDadosAgendamento = function() {
-	  angular.element('#AgendaCtrl').scope().agendamento.id           = null;
-	  angular.element('#AgendaCtrl').scope().agendamento.gCalendarId  = null;
-	  angular.element('#AgendaCtrl').scope().agendamento.paciente	    = null;
-	  angular.element('#AgendaCtrl').scope().agendamento.title        = null;
-	  angular.element('#AgendaCtrl').scope().agendamento.start        = null;
-	  angular.element('#AgendaCtrl').scope().agendamento.end          = null;
-	  angular.element('#AgendaCtrl').scope().agendamento.description  = null;			
-	  angular.element('#AgendaCtrl').scope().indexPacienteSelecionado = null;
+  
+  // Lista de pacientes ativos cadastrados no sistema
+  $scope.lstPacientesAtivos = null;
+  
+  // O index do paciente selecionado na agenda
+  $scope.indexPacienteSelecionado = null;
+    
+  /**
+   * Apaga os dados do agendamento
+   */
+  $scope.apagarDadosAgendamento = function() {			  
+	  $scope.agendamento = {
+			  id         : null,
+			  gCalendarId: null,
+			  paciente	 : null,
+			  title      : null,
+			  start      : null,
+			  end        : null,
+			  description: null
+	  };	  
+	  $scope.indexPacienteSelecionado = null;
   };
   
   /**
    * Abre janela modal
    */
-  $ctrl.openEventModal = function (size) {	  
+  $ctrl.openEventModal = function (size) {	 	
     var modalInstance = $uibModal.open({
       animation: true,
       ariaLabelledBy: 'modal-title',
@@ -75,24 +80,22 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
     });
     
     modalInstance.result.then(function (selectedItem) {            
-    }, function () {    	    	
-    	$scope.apagarDadosAgendamento();
-    	
+    }, function () {        	
+    	$scope.apagarDadosAgendamento();      	
     });
   };  
 });
 
 // Please note that $uibModalInstance represents a modal window (instance) dependency.
 // It is not the same as the $uibModal service used above.
-app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
+app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http) {
 	var $ctrl = this;		
 			
 	/**
 	 * Cancela a operação na janela modal
 	 */
 	$ctrl.cancelar = function () {				
-		$uibModalInstance.dismiss('cancel');
-		angular.element('#AgendaCtrl').scope().indexPacienteSelecionado = null;
+		$uibModalInstance.dismiss('cancel');		
 	};
 	
 	/**
@@ -100,31 +103,50 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
 	 */
 	$ctrl.salvar = function () {		
 		// Edicao
-		if (angular.element('#AgendaCtrl').scope().agendamento.id) {									
-			var event = $('#calendar').fullCalendar('clientEvents',angular.element('#AgendaCtrl').scope().agendamento.id);
-			if (event) {				
-				$ctrl.setTitle();				
-				event[0].title       = angular.element('#AgendaCtrl').scope().agendamento.title;
-				event[0].paciente    = angular.element('#AgendaCtrl').scope().agendamento.paciente;
-				event[0].description = angular.element('#AgendaCtrl').scope().agendamento.description;
-				
-				
-				
-				$('#calendar').fullCalendar('updateEvent',event[0]);				
-				$ctrl.updateLstAgendamentos(event[0]);	
-				angular.element('#AgendaCtrl').scope().apagarDadosAgendamento();
-			}
-		// Novo agendamento
-		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {			
-			angular.element('#AgendaCtrl').scope().agendamento.id = 3; // REMOVER APOS TRATAMENTO ADEQUADO							
+		if (angular.element('#AgendaCtrl').scope().agendamento.id) {
+			var params = angular.element('#AgendaCtrl').scope().agendamento;				
+			$http.post('http://localhost:8080/salvarAgendamento', params).then(
+				successCallback = function(response) {	  				    //					
+					var event = $('#calendar').fullCalendar('clientEvents',angular.element('#AgendaCtrl').scope().agendamento.id);
+					if (event) {				
+						$ctrl.setTitle();				
+						event[0].title       = angular.element('#AgendaCtrl').scope().agendamento.title;
+						event[0].paciente    = angular.element('#AgendaCtrl').scope().agendamento.paciente;
+						event[0].description = angular.element('#AgendaCtrl').scope().agendamento.description;
 						
-			$ctrl.setTitle();
-			
-			$('#calendar').fullCalendar('renderEvent',angular.element('#AgendaCtrl').scope().agendamento, true); // stick? = true
-			
-			// adiciona agendamento na lista 			
-			angular.element('#AgendaCtrl').scope().lstAgendamentos.push(
-					angular.element('#AgendaCtrl').scope().agendamento);
+						
+						
+						$('#calendar').fullCalendar('updateEvent',event[0]);				
+						$ctrl.updateLstAgendamentos(event[0]);	
+						angular.element('#AgendaCtrl').scope().apagarDadosAgendamento();
+					}
+				},
+			    errorCallback = function (error, status){					
+				    // tratar erro
+					alert("Erro");
+				}
+			);			
+		// Novo agendamento
+		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {													
+			var params = JSON.stringify(angular.element('#AgendaCtrl').scope().agendamento);			
+			$http.post('http://localhost:8080/salvarAgendamento', params).then(
+				successCallback = function(response) {	  				    //					
+					angular.element('#AgendaCtrl').scope().agendamento.id = response.data;
+					
+					$ctrl.setTitle();									
+					
+					$('#calendar').fullCalendar('renderEvent',angular.element('#AgendaCtrl').scope().agendamento, true); // stick? = true
+					
+					// adiciona agendamento na lista 			
+					angular.element('#AgendaCtrl').scope().lstAgendamentos.push(
+							angular.element('#AgendaCtrl').scope().agendamento);
+					
+					angular.element('#AgendaCtrl').scope().apagarDadosAgendamento();
+				},
+			    errorCallback = function (error, status){					
+				    // tratar erro
+				}
+			);									
 		}
 		$('#calendar').fullCalendar('unselect');			
 										
@@ -159,14 +181,14 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
 	/**
 	 * Atualiza a lista de agendamentos
 	 */
-	$ctrl.updateLstAgendamentos = function (event) {			
+	$ctrl.updateLstAgendamentos = function (event) {		
 		// se garantirmos que lstAgendamentos estah ordenada, podemos fazer uma busca
-		// binaria ao inves de linear		
+		// binaria ao inves de linear				
 		for (var i = 0; i < angular.element('#AgendaCtrl').scope().lstAgendamentos.length; i++) {				
-			if (angular.element('#AgendaCtrl').scope().lstAgendamentos[i].id == event.id) {										
+			if (angular.element('#AgendaCtrl').scope().lstAgendamentos[i].id == event.id) {						
 				angular.element('#AgendaCtrl').scope().lstAgendamentos[i] = event;					
 				break;
 			}
-	    };	    
+	    };	    	    	    
 	};		
 });
