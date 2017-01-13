@@ -40,7 +40,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public long salvarAgendamento(@RequestBody Agendamento agendamento) {		
+	public long salvarAgendamento(@RequestBody Agendamento agendamento) {			
 		Agendamento tmpAgendamento = this.agendamentoRepositorio.save(agendamento);	
 		return tmpAgendamento.getId();			
 	}

@@ -18,16 +18,21 @@ $(document).ready(function() {
 			angular.element('#AgendaCtrl').scope().agendamento.end   = end;
 			angular.element('#AgendaCtrl').scope().$apply();			
 		},
-		eventClick : function(event, jsEvent, view) {				
-			angular.element('#AgendaCtrl').scope().agendamento = event;		
-									
+		eventClick : function(event, jsEvent, view) {			
 			tmpLst = angular.element('#AgendaCtrl').scope().lstPacientesAtivos;
 			for (var i = 0; i < tmpLst.length; i++) {
 				if (tmpLst[i].id == event.paciente.id) {					
 					angular.element('#AgendaCtrl').scope().indexPacienteSelecionado = i;
 					break;
 				}				
-			}			
+			}
+					
+			angular.element('#AgendaCtrl').scope().agendamento.id          = event.id;
+			angular.element('#AgendaCtrl').scope().agendamento.gCalendarId = event.gCalendarId;			
+			angular.element('#AgendaCtrl').scope().agendamento.title       = event.title;
+			angular.element('#AgendaCtrl').scope().agendamento.start       = event.start;
+			angular.element('#AgendaCtrl').scope().agendamento.end         = event.end;
+			angular.element('#AgendaCtrl').scope().agendamento.description = event.description;
 			
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				

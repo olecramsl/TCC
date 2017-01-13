@@ -103,7 +103,7 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http) {
 	 */
 	$ctrl.salvar = function () {		
 		// Edicao
-		if (angular.element('#AgendaCtrl').scope().agendamento.id) {
+		if (angular.element('#AgendaCtrl').scope().agendamento.id) {				
 			var params = angular.element('#AgendaCtrl').scope().agendamento;				
 			$http.post('http://localhost:8080/salvarAgendamento', params).then(
 				successCallback = function(response) {	  				    //					
@@ -123,12 +123,13 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http) {
 				},
 			    errorCallback = function (error, status){					
 				    // tratar erro
-					alert("Erro");
+					alert(error);
+					angular.element('#AgendaCtrl').scope().apagarDadosAgendamento();
 				}
 			);			
 		// Novo agendamento
-		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {													
-			var params = JSON.stringify(angular.element('#AgendaCtrl').scope().agendamento);			
+		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {																		
+			var params = angular.element('#AgendaCtrl').scope().agendamento;			
 			$http.post('http://localhost:8080/salvarAgendamento', params).then(
 				successCallback = function(response) {	  				    //					
 					angular.element('#AgendaCtrl').scope().agendamento.id = response.data;
@@ -145,6 +146,7 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http) {
 				},
 			    errorCallback = function (error, status){					
 				    // tratar erro
+					angular.element('#AgendaCtrl').scope().apagarDadosAgendamento();
 				}
 			);									
 		}
@@ -152,7 +154,7 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http) {
 										
 		$uibModalInstance.close();
 	};
-	
+		
 	/**
 	 * Remove um agendamento
 	 */
@@ -190,5 +192,5 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http) {
 				break;
 			}
 	    };	    	    	    
-	};		
+	};	
 });
