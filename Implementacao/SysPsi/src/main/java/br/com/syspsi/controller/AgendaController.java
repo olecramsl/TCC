@@ -19,12 +19,15 @@ public class AgendaController {
 	
 	@Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
-			
+				
+	/**	
+	 * @return Uma lista de agendamentos
+	 */
 	@RequestMapping(
-			value = "/agendamentos", 
+			value = "/listarAgendamentos", 
 			method={RequestMethod.GET},
-			produces = MediaType.APPLICATION_JSON_VALUE
-			)
+			produces = MediaType.APPLICATION_JSON_VALUE			
+			)	
 	public List<Agendamento> listarAgendamentos() {			
 		return (List<Agendamento>) this.agendamentoRepositorio.findAll();
 	}			
@@ -32,6 +35,7 @@ public class AgendaController {
 	/**
 	 * Salva um agendamento
 	 * @param agendamento O agendamento a ser salvo
+	 * @throws NullPointerException Caso o objeto retornado por save seja nulo
 	 * @return o id do agendamento persistido no BD
 	 */
 	@RequestMapping(
@@ -40,8 +44,26 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public long salvarAgendamento(@RequestBody Agendamento agendamento) {			
-		Agendamento tmpAgendamento = this.agendamentoRepositorio.save(agendamento);	
+	public long salvarAgendamento(@RequestBody Agendamento agendamento) throws NullPointerException {		
+		Agendamento tmpAgendamento = this.agendamentoRepositorio.save(agendamento);		
+		if (tmpAgendamento == null) {
+			throw new NullPointerException("Não foi possível salvar o agendamento!");
+		}
 		return tmpAgendamento.getId();			
+	}
+	
+	/**
+	 * Remove um agendamento do BD
+	 * @param agendamento o agendamento a ser removido
+	 * @throws IllegalArgumentException in case the given id is null
+	 */
+	@RequestMapping(
+			value = "/removerAgendamento", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void removerAgendamento(@RequestBody Agendamento agendamento) throws IllegalArgumentException {		
+		this.agendamentoRepositorio.delete(agendamento);								
 	}
 }

@@ -21,7 +21,7 @@ public class PacienteController {
 	@RequestMapping(
 			value = "/listarPacientesAtivos", 
 			method={RequestMethod.GET},
-			produces = MediaType.APPLICATION_JSON_VALUE
+			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
 	public List<Paciente> listarPacientesAtivos() {		
 		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByAtivo(true);		

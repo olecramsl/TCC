@@ -27,6 +27,7 @@ public class Agendamento {
 	private Calendar start;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar end;
+	private boolean repetirSemanalmente;
 	private String description;	
 	@Transient
 	private String title;
@@ -114,6 +115,14 @@ public class Agendamento {
 		this.end = end;
 	}
 	
+	public boolean isRepetirSemanalmente() {
+		return repetirSemanalmente;
+	}
+
+	public void setRepetirSemanalmente(boolean repetirSemanalmente) {
+		this.repetirSemanalmente = repetirSemanalmente;
+	}
+
 	/**
 	 * @return the description
 	 */
