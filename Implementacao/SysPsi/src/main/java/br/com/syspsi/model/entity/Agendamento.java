@@ -27,6 +27,7 @@ public class Agendamento {
 	private Calendar start;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar end;
+	@Column(name="repetirsemanalmente")
 	private boolean repetirSemanalmente;
 	private String description;	
 	@Transient

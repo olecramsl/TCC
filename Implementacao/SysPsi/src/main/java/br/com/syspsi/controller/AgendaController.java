@@ -1,5 +1,8 @@
 package br.com.syspsi.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.syspsi.model.entity.Agendamento;
@@ -20,16 +24,31 @@ public class AgendaController {
 	@Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
 				
-	/**	
-	 * @return Uma lista de agendamentos
+	/**
+	 * @param dataInicial A data inicial dos agendamentos
+	 * @param dataFinal A data final dos agendamentos
+	 * @return A lista de agendamentos para o período informado
+	 * @throws Exception no caso do formato de alguma das datas informadas for inválido
 	 */
 	@RequestMapping(
 			value = "/listarAgendamentos", 
 			method={RequestMethod.GET},
-			produces = MediaType.APPLICATION_JSON_VALUE			
-			)	
-	public List<Agendamento> listarAgendamentos() {			
-		return (List<Agendamento>) this.agendamentoRepositorio.findAll();
+			produces = MediaType.APPLICATION_JSON_VALUE					
+			)		
+	public List<Agendamento> listarAgendamentos(@RequestParam("dataInicial") String dataInicial, 
+			@RequestParam("dataFinal") String dataFinal) throws Exception {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar di = Calendar.getInstance();
+		Calendar df = Calendar.getInstance();
+		
+		try {
+			di.setTime(format.parse(dataInicial));
+			df.setTime(format.parse(dataFinal));
+		} catch (ParseException e) {
+			throw new Exception("Formato de data inválido em listarAgendamento.");
+		}		
+		
+		return (List<Agendamento>) this.agendamentoRepositorio.findByPeriod(di, df);
 	}			
 		
 	/**
