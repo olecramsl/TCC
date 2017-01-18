@@ -14,10 +14,17 @@ $(document).ready(function() {
 		selectHelper : true,		
 		select : function(start, end) {	
 			angular.element('#AgendaCtrl').scope().apagarDadosAgendamento();
-			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();				
-								
-			angular.element('#AgendaCtrl').scope().agendamento.start = start;
+			
+			if (start.hour() == 0) {
+				var now = moment();
+				start = moment(start).hours(now.hour()).minutes(now.minute()).seconds(0);
+				now.add(30, 'm'); // 30 min ao final
+				end   =  moment(end).hours(now.hour()).minutes(now.minute()).seconds(0);
+			} 			
+			angular.element('#AgendaCtrl').scope().agendamento.start = start;										
 			angular.element('#AgendaCtrl').scope().agendamento.end   = end;
+			
+			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();															
 			angular.element('#AgendaCtrl').scope().$apply();			
 		},
 		eventClick : function(event, jsEvent, view) {			
@@ -45,14 +52,7 @@ $(document).ready(function() {
 		eventLimit : true // allow "more" link when too many events			
 	});
 	
-	setAgendamento = function (event) {		
-		angular.element('#AgendaCtrl').scope().agendamento.id                  = event.id;
-		angular.element('#AgendaCtrl').scope().agendamento.gCalendarId         = event.gCalendarId;
-		angular.element('#AgendaCtrl').scope().agendamento.paciente            = event.paciente;
-		angular.element('#AgendaCtrl').scope().agendamento.title               = event.title;
-		angular.element('#AgendaCtrl').scope().agendamento.start               = event.start;
-		angular.element('#AgendaCtrl').scope().agendamento.end                 = event.end;
-		angular.element('#AgendaCtrl').scope().agendamento.repetirSemanalmente = event.repetirSemanalmente;
-		angular.element('#AgendaCtrl').scope().agendamento.description         = event.description;
+	setAgendamento = function (event) {	
+		angular.element('#AgendaCtrl').scope().agendamento = event;		 
 	}
 });

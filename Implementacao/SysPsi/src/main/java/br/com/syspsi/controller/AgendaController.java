@@ -43,7 +43,7 @@ public class AgendaController {
 		
 		try {
 			di.setTime(format.parse(dataInicial));
-			df.setTime(format.parse(dataFinal));
+			df.setTime(format.parse(dataFinal));			
 		} catch (ParseException e) {
 			throw new Exception("Formato de data inválido em listarAgendamento.");
 		}		

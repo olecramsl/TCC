@@ -109,7 +109,7 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
       animation: true,
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
-      templateUrl: 'eventoModal.html',
+      templateUrl: 'templates/eventoModal.html',
       controller: 'ModalInstanceCtrl',
       controllerAs: '$ctrl',
       scope: $scope, // bind $scope to modal scope      
@@ -130,7 +130,7 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
       animation: true,
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
-      templateUrl: 'erroModal.html',
+      templateUrl: 'templates/erroModal.html',
       controller: 'ModalInstanceCtrl',
       controllerAs: '$ctrl',
       scope: $scope, // bind $scope to modal scope      
