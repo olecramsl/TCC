@@ -18,33 +18,29 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
   /**
    * Popula o calendario com os agendamentos do BD
    */ 
-  $scope.listarAgendamento = function(dataInicial, dataFinal) {
-	  var params = {dataInicial: dataInicial, dataFinal: dataFinal};
+  $scope.listarAgendamento = function(dataInicial, dataFinal) {	  
+	  var params = {dataInicial: dataInicial.format(), dataFinal: dataFinal.format()};
 	  $http.get('http://localhost:8080/listarAgendamentos', {params}).then(
 	      successCallback = function (response) {	    	  
 	  		  // Adiciona os agendamentos no calendario
-	  		  angular.forEach(response.data, function(value, key) {
+	  		  angular.forEach(response.data, function(value, key) {	  				  			  	  		
+	  			  // Verifica agendamento semanal
 	  			  var diaAgendamento = moment(value.start).day();	  			  
-	  			  if (value.repetirSemanalmente == true) {	  				  
+	  			  if (value.repetirSemanalmente == true) {
+	  				  // percorre todos os dias constantes na view do calendário e repete o evento quando necessário
 	  				  for (loop = moment(dataInicial).valueOf(); loop < moment(dataFinal).valueOf(); loop = loop + (24 * 60 * 60 * 1000)) {	  					  
 	  					  var dia = new Date(loop);	  					  
-	  					  	  					  
-	  					  if (diaAgendamento == dia.getDay()) {	  	
-	  						  //moment(value.start).set({'year': dia.getYear(), 'month': dia.getMonth()});
-	  						  moment(value.start).date(dia.getDate());	
-	  						  moment(value.end).date(dia.getDate());
-	  						  moment(value.start).month(dia.getMonth());	
-	  						  moment(value.end).month(dia.getMonth());
-	  						  moment(value.start).year(dia.getYear());	
-	  						  moment(value.end).year(dia.getYear());
+	  					  	  		  			  					  
+	  					  if ((diaAgendamento == dia.getDay()) && (value.start < dia)) {	  		  						  
+	  						  value.start = moment(value.start).date(dia.getDate()).month(dia.getMonth()).year(dia.getFullYear());
+	  						  value.end   = moment(value.end).date(dia.getDate()).month(dia.getMonth()).year(dia.getFullYear());
 	  						  $('#calendar').fullCalendar('renderEvent',value);
-	  					  }	  					  
-	  				  }
+	  					  }	  			  					  
+	  				  }	  				 
 	  			  } else {
 	  				  $('#calendar').fullCalendar('renderEvent',value);
 	  			  }
-	  			
-	  		  })  		  
+	  		  });  		  
 	  	  },
 		  errorCallback = function (error) {
 	  		$scope.tratarExcecao(error);

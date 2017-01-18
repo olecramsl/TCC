@@ -39,7 +39,7 @@ $(document).ready(function() {
 		},
 		viewRender: function (view, element) {
 			$('#calendar').fullCalendar('removeEvents');
-			angular.element('#AgendaCtrl').scope().listarAgendamento(view.start.format(), view.end.format());						
+			angular.element('#AgendaCtrl').scope().listarAgendamento(view.start, view.end);						
         },
 		editable : true,
 		eventLimit : true // allow "more" link when too many events			
