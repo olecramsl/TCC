@@ -25,7 +25,7 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
 	  		  // Adiciona os agendamentos no calendario
 	  		  angular.forEach(response.data, function(value, key) {
 	  			  var diaAgendamento = moment(value.start).day();	  			  
-	  			  if (value.repetirSemanalmente == true) {
+	  			  if (value.repetirSemanalmente == true) {	  				  
 	  				  for (loop = moment(dataInicial).valueOf(); loop < moment(dataFinal).valueOf(); loop = loop + (24 * 60 * 60 * 1000)) {	  					  
 	  					  var dia = new Date(loop);	  					  
 	  					  	  					  

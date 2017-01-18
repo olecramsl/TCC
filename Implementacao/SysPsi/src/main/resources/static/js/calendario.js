@@ -38,6 +38,7 @@ $(document).ready(function() {
 			angular.element('#AgendaCtrl').scope().updateEventDroped();
 		},
 		viewRender: function (view, element) {
+			$('#calendar').fullCalendar('removeEvents');
 			angular.element('#AgendaCtrl').scope().listarAgendamento(view.start.format(), view.end.format());						
         },
 		editable : true,
