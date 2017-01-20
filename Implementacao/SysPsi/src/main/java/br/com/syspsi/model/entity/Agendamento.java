@@ -26,9 +26,8 @@ public class Agendamento {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar start;
 	@Temporal(TemporalType.TIMESTAMP)
-	private Calendar end;
-	@Column(name="repetirsemanalmente")
-	private boolean repetirSemanalmente;
+	private Calendar end;	
+	private long grupo;
 	private String description;	
 	@Transient
 	private String title;
@@ -116,12 +115,12 @@ public class Agendamento {
 		this.end = end;
 	}
 	
-	public boolean isRepetirSemanalmente() {
-		return repetirSemanalmente;
+	public long getGrupo() {
+		return grupo;
 	}
 
-	public void setRepetirSemanalmente(boolean repetirSemanalmente) {
-		this.repetirSemanalmente = repetirSemanalmente;
+	public void setGrupo(long grupo) {
+		this.grupo = grupo;
 	}
 
 	/**

@@ -6,6 +6,8 @@ $(document).ready(function() {
 			right : 'month,agendaWeek,agendaDay'
 		},
 		timezone: 'local',
+		allDaySlot: false,
+		ignoreTimezone: false,
 		locale : 'pt-br',
 		navLinks : true, // can click day/week names to navigate views
 		selectable : true,
@@ -14,13 +16,21 @@ $(document).ready(function() {
 		selectHelper : true,		
 		select : function(start, end) {	
 			angular.element('#AgendaCtrl').scope().apagarDadosAgendamento();
+
+			// Verifica se existe um horario pre definido
+			if (!start.hasTime()) {		
+				// armazena a data selecionada
+				var dia = start.date();
+				var mes = start.month();
+				var ano = start.year();
+								
+				start = moment(); // reseta start com as informações atuais 
+				start = moment(start).date(dia).month(mes).year(ano); // seta a data que foi clicada
+				
+				end = moment(start); // a consulta deve terminar no mesmo dia
+				end.add(1, 'h'); // tempo da consulta
+			}
 			
-			if (start.hour() == 0) {
-				var now = moment();
-				start = moment(start).hours(now.hour()).minutes(now.minute()).seconds(0);
-				now.add(30, 'm'); // 30 min ao final
-				end   =  moment(end).hours(now.hour()).minutes(now.minute()).seconds(0);
-			} 			
 			angular.element('#AgendaCtrl').scope().agendamento.start = start;										
 			angular.element('#AgendaCtrl').scope().agendamento.end   = end;
 			
@@ -41,18 +51,30 @@ $(document).ready(function() {
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		
 		eventDrop : function( event ) {	
+			var horas   = event.end.hours();
+			var minutos = event.end.minutes();
+			
+			event.end = moment(event.start);
+			event.end = moment(event.end).hours(horas).minutes(minutos)
+			
 			setAgendamento(event);
 			angular.element('#AgendaCtrl').scope().updateEventDroped();
 		},
 		viewRender: function (view, element) {
-			$('#calendar').fullCalendar('removeEvents');
 			angular.element('#AgendaCtrl').scope().listarAgendamento(view.start, view.end);						
-        },
+        },        
 		editable : true,
 		eventLimit : true // allow "more" link when too many events			
 	});
 	
 	setAgendamento = function (event) {	
-		angular.element('#AgendaCtrl').scope().agendamento = event;		 
+		angular.element('#AgendaCtrl').scope().agendamento.id          = event.id;
+		angular.element('#AgendaCtrl').scope().agendamento.gCalendarId = event.gCalendarId;
+		angular.element('#AgendaCtrl').scope().agendamento.paciente    = event.paciente;
+		angular.element('#AgendaCtrl').scope().agendamento.title       = event.title;
+		angular.element('#AgendaCtrl').scope().agendamento.start       = event.start;
+		angular.element('#AgendaCtrl').scope().agendamento.end         = event.end;
+		angular.element('#AgendaCtrl').scope().agendamento.grupo       = event.grupo;
+		angular.element('#AgendaCtrl').scope().agendamento.description = event.description;	 
 	}
 });

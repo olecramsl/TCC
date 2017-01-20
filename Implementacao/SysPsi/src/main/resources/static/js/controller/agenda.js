@@ -1,6 +1,6 @@
 var app = angular.module('syspsi', ['ui.bootstrap']);
 
-app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
+app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
   var $ctrl = this;         
   
   /**
@@ -23,23 +23,13 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
 	  $http.get('http://localhost:8080/listarAgendamentos', {params}).then(
 	      successCallback = function (response) {	    	  
 	  		  // Adiciona os agendamentos no calendario
-	  		  angular.forEach(response.data, function(value, key) {	  				  			  	  		
-	  			  // Verifica agendamento semanal
-	  			  var diaAgendamento = moment(value.start).day();	  			  
-	  			  if (value.repetirSemanalmente == true) {
-	  				  // percorre todos os dias constantes na view do calendário e repete o evento quando necessário
-	  				  for (loop = moment(dataInicial).valueOf(); loop < moment(dataFinal).valueOf(); loop = loop + (24 * 60 * 60 * 1000)) {	  					  
-	  					  var dia = new Date(loop);	  					  
-	  					  	  		  			  					  
-	  					  if ((diaAgendamento == dia.getDay()) && (value.start < dia)) {	  		  						  
-	  						  value.start = moment(value.start).date(dia.getDate()).month(dia.getMonth()).year(dia.getFullYear());
-	  						  value.end   = moment(value.end).date(dia.getDate()).month(dia.getMonth()).year(dia.getFullYear());
-	  						  $('#calendar').fullCalendar('renderEvent',value);
-	  					  }	  			  					  
-	  				  }	  				 
+	  		  angular.forEach(response.data, function(value, key) {	  			  
+	  			  // Verifica agendamento semanal	  			  	  			 
+	  			  if (value.grupo > 0) {
+	  				  $scope.repetirAgendamento(dataInicial, dataFinal, value);
 	  			  } else {
 	  				  $('#calendar').fullCalendar('renderEvent',value);
-	  			  }
+	  			  }		  			  	  			  
 	  		  });  		  
 	  	  },
 		  errorCallback = function (error) {
@@ -48,17 +38,86 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
 	  );   
   };
   
+  $scope.repetirAgendamento = function (dataInicial, dataFinal, event) {
+	  /*
+	  var diaAgendamento = moment(event.start).day(); // dia da semana (dom, seg, ter, etc.)
+
+	  // percorre todos os dias constantes na view do calendário e repete o evento quando necessário
+	  for (loop = moment(dataInicial).valueOf(); loop < moment(dataFinal).valueOf(); loop = loop + (24 * 60 * 60 * 1000)) {	  					  
+		  var dia = new Date(loop);	  					  
+			  	  		  			  					  
+		  if ((diaAgendamento == dia.getDay()) && (event.start < dia)) {	  		  						  
+			  event.start = moment(event.start).date(dia.getDate()).month(dia.getMonth()).year(dia.getFullYear());
+			  event.end   = moment(event.end).date(dia.getDate()).month(dia.getMonth()).year(dia.getFullYear());
+			  $('#calendar').fullCalendar('renderEvent',event);
+		  }	  			  					  
+	  }
+	  */	  	 
+	  
+	  var deferred = $q.defer();
+	  
+	  //var evento  = $('#calendar').fullCalendar('clientEvents', event.id); // o evento pode já ter sido salvo no banco de dados	  
+	  //if (!evento) {		  	  	 
+	  // Verifica se jah existe um grupo pre definido para o agendamento repetitivo
+	  // Caso não exista, cria um novo
+	  if (event.grupo == 0) {			  
+		  event.grupo = 1; // ALTERAR APOS TRATAMENTO ADEQUADO
+	  }		  
+		  	  
+	  var diaAgendamento = moment(event.start).day(); // dia da semana (dom, seg, ter, etc.)		  
+	  // percorre todos os dias constantes na view do calendário e repete o evento quando necessário
+	  for (loop = moment(dataInicial).valueOf(); loop < moment(dataFinal).valueOf(); loop = loop + (24 * 60 * 60 * 1000)) {
+		  var dia = new Date(loop);			  		  
+		  if ((diaAgendamento == dia.getDay()) && (event.start < dia)) {
+			  event.start = moment(event.start).date(dia.getDate()).month(dia.getMonth()).year(dia.getFullYear());
+			  event.end   = moment(event.end).date(dia.getDate()).month(dia.getMonth()).year(dia.getFullYear());
+			  
+			  var params = event;							  
+			  $http.post('http://localhost:8080/salvarAgendamento', angular.copy(params)).then(						  			  
+					  successCallback = function(response) {						  
+						  event.id    = response.data;						  
+						  event.title = $scope.updateTitle(event);						  
+						  $('#calendar').fullCalendar('renderEvent', event);						  
+						  event.id = null; // Caso necessário novos agendamentos na view
+						  event.description = null; // Limpa observações dos futuros agendamentos
+					  },
+					  errorCallback = function (error, status){						  
+						  angular.element('#AgendaCtrl').scope().tratarExcecao(error); 					
+					  }
+			  );			  
+		  }
+	  }
+	  //}
+  };
+  
+  /**
+   * Atualiza o título do agendamento
+   */
+  $scope.updateTitle = function (agendamento) {
+		/*
+		angular.element('#AgendaCtrl').scope().agendamento.title =
+			angular.element('#AgendaCtrl').scope().agendamento.description ?
+			angular.element('#AgendaCtrl').scope().agendamento.paciente.nomeExibicao + " (" +
+			angular.element('#AgendaCtrl').scope().agendamento.description + ")" :
+			angular.element('#AgendaCtrl').scope().agendamento.paciente.nomeExibicao;
+		*/	  
+	  return agendamento.description ? agendamento.paciente.nomeExibicao + " (" +
+			  agendamento.description + ")" : agendamento.paciente.nomeExibicao;			  
+  };
+  
   // Objeto agendamento
   $scope.agendamento = {
-		  id                 : null,
-		  gCalendarId        : null,
-		  paciente	         : null,
-		  title              : null,
-		  start              : null,
-		  end                : null,
-		  repetirSemanalmente: null,
-		  description        : null
+		  id         : null,
+		  gCalendarId: null,
+		  paciente	 : null,
+		  title      : null,
+		  start      : null,
+		  end        : null,
+		  grupo		 : 0,
+		  description: null
   };
+  // Se o agendamento será repetido semanalmente
+  $scope.repetirSemanalmente = null;
   
   // Lista de pacientes ativos cadastrados no sistema
   $scope.lstPacientesAtivos = null;
@@ -74,16 +133,17 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
    */
   $scope.apagarDadosAgendamento = function() {			  
 	  $scope.agendamento = {
-			  id                 : null,
-			  gCalendarId        : null,
-			  paciente	         : null,
-			  title              : null,
-			  start              : null,
-			  end                : null,
-			  repetirSemanalmente: null,
-			  description        : null
+			  id         : null,
+			  gCalendarId: null,
+			  paciente	 : null,
+			  title      : null,
+			  start      : null,
+			  end        : null,
+			  grupo      : 0,
+			  description: null
 	  };	  
 	  $scope.indexPacienteSelecionado = null;
+	  $scope.repetirSemanalmente      = null;
   };
   
   /**
@@ -175,38 +235,59 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http) {
 			$http.post('http://localhost:8080/salvarAgendamento', params).then(
 				successCallback = function(response) {	  				    //					
 					var event = $('#calendar').fullCalendar('clientEvents',angular.element('#AgendaCtrl').scope().agendamento.id);
-					if (event) {				
-						$ctrl.updateTitle();				
-						event[0].title               = angular.element('#AgendaCtrl').scope().agendamento.title;
-						event[0].paciente            = angular.element('#AgendaCtrl').scope().agendamento.paciente;
-						event[0].description         = angular.element('#AgendaCtrl').scope().agendamento.description;
-						event[0].repetirSemanalmente = angular.element('#AgendaCtrl').scope().agendamento.repetirSemanalmente;		
+					if (event) {	
+						angular.element('#AgendaCtrl').scope().agendamento.title = 
+							angular.element('#AgendaCtrl').scope().updateTitle(angular.element('#AgendaCtrl').scope().agendamento);
 						
-						$('#calendar').fullCalendar('updateEvent',event[0]);																
+						/*
+						if (angular.element('#AgendaCtrl').scope().agendamento.repetirSemanalmente) {
+							$('#calendar').fullCalendar('removeEvents', angular.element('#AgendaCtrl').scope().agendamento.id);
+							view = $('#calendar').fullCalendar('getView');
+							angular.element('#AgendaCtrl').scope().repetirAgendamento(view.start, view.end, angular.element('#AgendaCtrl').scope().agendamento);
+						} else {		
+							$('#calendar').fullCalendar('removeEvents', angular.element('#AgendaCtrl').scope().agendamento.id);											
+							$('#calendar').fullCalendar('renderEvent', angular.element('#AgendaCtrl').scope().agendamento);
+						}
+						*/
 					} else {
 						angular.element('#AgendaCtrl').scope().msgErro = "Não foi possível encontrar o agendamento com o id informado!";
 						angular.element('#AgendaCtrl').scope().$ctrl.openErroModal(); 
-					}					
+					}										
 				},
 			    errorCallback = function (error, status){					
 					angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  							
 				}
 			);			
 		// Novo agendamento
-		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {			
+		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {
 			var params = angular.element('#AgendaCtrl').scope().agendamento;				
 			$http.post('http://localhost:8080/salvarAgendamento', params).then(
-				successCallback = function(response) {	  				    					
-					angular.element('#AgendaCtrl').scope().agendamento.id = response.data;					
-					$ctrl.updateTitle();														
-					$('#calendar').fullCalendar('renderEvent',angular.element('#AgendaCtrl').scope().agendamento, true); // stick? = true																			
+				successCallback = function(response) {	
+					angular.element('#AgendaCtrl').scope().agendamento.id = response.data;																
+					angular.element('#AgendaCtrl').scope().agendamento.title = 
+						angular.element('#AgendaCtrl').scope().updateTitle(angular.element('#AgendaCtrl').scope().agendamento);
+					/*
+					if (angular.element('#AgendaCtrl').scope().agendamento.repetirSemanalmente) {			
+						view = $('#calendar').fullCalendar('getView');
+						angular.element('#AgendaCtrl').scope().repetirAgendamento(view.start, view.end, angular.element('#AgendaCtrl').scope().agendamento);
+					} else {
+						$('#calendar').fullCalendar('renderEvent',angular.element('#AgendaCtrl').scope().agendamento);
+					}
+					*/
+					angular.element('#AgendaCtrl').scope().repetirSemanalmente = true; // RETIRAR APÓS TRATAMENTO ADEQUADO
+					if (angular.element('#AgendaCtrl').scope().repetirSemanalmente) {						
+						view = $('#calendar').fullCalendar('getView');
+						angular.element('#AgendaCtrl').scope().repetirAgendamento(view.start, view.end, angular.element('#AgendaCtrl').scope().agendamento);
+					} else {
+						$('#calendar').fullCalendar('renderEvent',angular.element('#AgendaCtrl').scope().agendamento);
+					}
 				},
 			    errorCallback = function (error, status){					
 					angular.element('#AgendaCtrl').scope().tratarExcecao(error); 					
 				}
 			);									
 		}
-		
+												
 		$('#calendar').fullCalendar('unselect');												
 		$uibModalInstance.close();
 	};
@@ -225,16 +306,5 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http) {
 			}
 		);	
 		$uibModalInstance.close();
-	};	
-	
-	/**
-	 * Atualiza o título do agendamento
-	 */
-	$ctrl.updateTitle = function (agendamento) {			
-		angular.element('#AgendaCtrl').scope().agendamento.title = 
-			angular.element('#AgendaCtrl').scope().agendamento.description ?
-			angular.element('#AgendaCtrl').scope().agendamento.paciente.nomeExibicao + " (" +
-			angular.element('#AgendaCtrl').scope().agendamento.description + ")" :
-			angular.element('#AgendaCtrl').scope().agendamento.paciente.nomeExibicao;			
-	};			
+	};						
 });
