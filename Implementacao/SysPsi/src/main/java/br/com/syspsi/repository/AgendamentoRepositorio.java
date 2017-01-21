@@ -13,4 +13,8 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "(a.start BETWEEN ?1 AND ?2) "
 			+ "OR (a.start <= ?1 AND a.grupo > 0)")
 	public List<Agendamento> findByPeriod(Calendar dataInicial, Calendar dataFinal);
+	@Query("SELECT a FROM Agendamento a WHERE "
+			+ "(a.start BETWEEN ?1 AND ?2) "
+			+ "AND a.grupo = ?3")
+	public List<Agendamento> isAgendamentoPeriodoSet(Calendar dataInicial, Calendar dataFinal, long grupo);
 }

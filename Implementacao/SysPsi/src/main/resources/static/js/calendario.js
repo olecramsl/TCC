@@ -46,7 +46,8 @@ $(document).ready(function() {
 				}				
 			}
 							
-			setAgendamento(event);											
+			//setAgendamento(event);
+			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		
@@ -57,7 +58,8 @@ $(document).ready(function() {
 			event.end = moment(event.start);
 			event.end = moment(event.end).hours(horas).minutes(minutos)
 			
-			setAgendamento(event);
+			//setAgendamento(event);
+			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);
 			angular.element('#AgendaCtrl').scope().updateEventDroped();
 		},
 		viewRender: function (view, element) {
@@ -67,6 +69,7 @@ $(document).ready(function() {
 		eventLimit : true // allow "more" link when too many events			
 	});
 	
+	/*
 	setAgendamento = function (event) {	
 		angular.element('#AgendaCtrl').scope().agendamento.id          = event.id;
 		angular.element('#AgendaCtrl').scope().agendamento.gCalendarId = event.gCalendarId;
@@ -77,4 +80,5 @@ $(document).ready(function() {
 		angular.element('#AgendaCtrl').scope().agendamento.grupo       = event.grupo;
 		angular.element('#AgendaCtrl').scope().agendamento.description = event.description;	 
 	}
+	*/
 });
