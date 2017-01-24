@@ -41,13 +41,13 @@ $(document).ready(function() {
 			var tmpLst = angular.element('#AgendaCtrl').scope().lstPacientesAtivos;
 			for (var i = 0; i < tmpLst.length; i++) {
 				if (tmpLst[i].id == event.paciente.id) {					
-					angular.element('#AgendaCtrl').scope().indexPacienteSelecionado = i;
+					angular.element('#AgendaCtrl').scope().indexPacienteSelecionado = i;					
 					break;
 				}				
 			}
 							
 			//setAgendamento(event);
-			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);
+			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);			
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		

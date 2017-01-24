@@ -87,20 +87,19 @@ public class AgendaController {
 	}
 	
 	/**
-	 * Verifica se a repetição do agendamento já foi realizada em um determinado período
 	 * @param dataInicial a data inicial do período
 	 * @param dataFinal a data final do período
 	 * @param grupo o id do agrupamento do agendamento
 	 * @throws Exception no caso do formato de alguma das datas informadas for inválido
-	 * @return true, se a repetição já foi persistida no BD e false, caso contrário
+	 * @return uma lista contendo as datas dos agendamentos encontrados no período para um determinado grupo
 	 */
 	@RequestMapping(
-			value = "/isAgendamentoPeriodoSet", 
+			value = "/listarAgendamentoPeriodoPorGrupo", 
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE					
 			)	
-	public boolean isAgendamentoPeriodoSet(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal, long grupo) throws Exception {		
+	public List<String> listarAgendamentoPeriodoPorGrupo(@RequestParam("dataInicial") String dataInicial, 
+			@RequestParam("dataFinal") String dataFinal, @RequestParam("grupo") long grupo) throws Exception {		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar di = Calendar.getInstance();
 		Calendar df = Calendar.getInstance();
@@ -112,15 +111,9 @@ public class AgendaController {
 			throw new Exception("Formato de data inválido em listarAgendamento.");
 		}		
 		
-		List<Agendamento> lstAgendamento = this.agendamentoRepositorio
-				.isAgendamentoPeriodoSet(di, df, grupo);
-				
-		// 1 agendamento pode existir, no caso da criação do novo evento. Caso apenas troca da
-		// view, não existirá nenhum, e retornará false
-		if (lstAgendamento.size() <= 1) {		
-			return false;
-		} else {			
-			return true;
-		}
+		List<String> lstDatasAgendamentos = this.agendamentoRepositorio
+				.listarDatasAgendamentoPeriodoPorGrupo(di, df, grupo);
+		
+		return lstDatasAgendamentos;						
 	}
 }

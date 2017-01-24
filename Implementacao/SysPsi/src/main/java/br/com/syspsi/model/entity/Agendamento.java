@@ -28,9 +28,13 @@ public class Agendamento {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar end;	
 	private long grupo;
-	private String description;	
+	private String description;
+	@Column(name="eventoprincipal")
+	private boolean eventoPrincipal;
 	@Transient
 	private String title;
+	@Transient
+	private boolean repetirSemanalmente;
 	
 	// Apenas para JPA
 	protected Agendamento() {
@@ -138,6 +142,20 @@ public class Agendamento {
 	}		
 	
 	/**
+	 * @return the eventoPrincipal
+	 */
+	public boolean isEventoPrincipal() {
+		return eventoPrincipal;
+	}
+
+	/**
+	 * @param eventoPrincipal the eventoPrincipal to set
+	 */
+	public void setEventoPrincipal(boolean eventoPrincipal) {
+		this.eventoPrincipal = eventoPrincipal;
+	}
+
+	/**
 	 * @return the title
 	 */
 	public String getTitle() {
@@ -152,4 +170,11 @@ public class Agendamento {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
+	/**
+	 * @return the repetirSemanalmente
+	 */
+	public boolean isRepetirSemanalmente() {
+		return this.grupo > 0 ? true : false;
+	}	
 }
