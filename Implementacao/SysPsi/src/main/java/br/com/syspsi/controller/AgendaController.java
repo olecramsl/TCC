@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.repository.AgendamentoRepositorio;
+import br.com.syspsi.repository.PsicologoRepositorio;
 
 @RestController
 @EnableAutoConfiguration
@@ -23,6 +24,9 @@ public class AgendaController {
 	
 	@Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
+	
+	@Autowired
+	private PsicologoRepositorio psicologoRepositorio;
 				
 	/**
 	 * @param dataInicial A data inicial dos agendamentos
@@ -49,7 +53,19 @@ public class AgendaController {
 		}		
 		
 		return (List<Agendamento>) this.agendamentoRepositorio.findByPeriod(di, df);
-	}			
+	}	
+	
+	/**	
+	 * @return o próximo id a ser utilizado para um grupo de repetição de agendamento 
+	 */
+	@RequestMapping(
+			value = "/getNextValueForGroup", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE					
+			)		
+	public long getNextValueForGroup() {
+		return this.agendamentoRepositorio.getNextValueForGroup();
+	}	
 		
 	/**
 	 * Salva um agendamento
@@ -63,12 +79,14 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public Agendamento salvarAgendamento(@RequestBody Agendamento agendamento) throws NullPointerException {		
+	public Agendamento salvarAgendamento(@RequestBody Agendamento agendamento) throws NullPointerException {
+		agendamento.setPsicologo(this.psicologoRepositorio.findOne(1L)); // RETIRAR APÓS TRATAMENTO ADEQUADO (LOGIN)					
+				
 		Agendamento tmpAgendamento = this.agendamentoRepositorio.save(agendamento);		
 		if (tmpAgendamento == null) {
 			throw new NullPointerException("Não foi possível salvar o agendamento!");
 		}
-		return tmpAgendamento;			
+		return tmpAgendamento;		
 	}
 	
 	/**

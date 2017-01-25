@@ -21,6 +21,9 @@ public class Agendamento {
 	@ManyToOne
     @JoinColumn(name="idpaciente")
 	private Paciente paciente;
+	@ManyToOne
+    @JoinColumn(name="idpsicologo")
+	private Psicologo psicologo;
 	@Column(name="gcalendarid") 
 	private Long gCalendarId;	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -77,6 +80,20 @@ public class Agendamento {
 		this.paciente = paciente;
 	}	
 	
+	/**
+	 * @return the psicologo
+	 */
+	public Psicologo getPsicologo() {
+		return psicologo;
+	}
+
+	/**
+	 * @param psicologo the psicologo to set
+	 */
+	public void setPsicologo(Psicologo psicologo) {
+		this.psicologo = psicologo;
+	}
+
 	/**
 	 * @return the gCalendarId
 	 */

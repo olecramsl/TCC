@@ -17,4 +17,6 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "(a.start BETWEEN ?1 AND ?2) "
 			+ "AND a.grupo = ?3")	
 	public List<String> listarDatasAgendamentoPeriodoPorGrupo(Calendar dataInicial, Calendar dataFinal, long grupo);
+	@Query("SELECT COALESCE(MAX(grupo),0)+1 FROM Agendamento")
+	public long getNextValueForGroup();
 }

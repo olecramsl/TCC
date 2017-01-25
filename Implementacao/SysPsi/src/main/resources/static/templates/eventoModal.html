@@ -6,6 +6,16 @@
 			$('.clockpicker').clockpicker({
 				autoclose: true
 			});
+			
+			function mascara(t, mask) {
+				var i = t.value.length;
+				var saida = mask.substring(1,0);
+				var texto = mask.substring(i)
+				if (texto.substring(0,1) != saida) {
+					t.value += texto.substring(0,1);
+				}	
+			}
+			
 		</script>		
 	</head>
 	<body>
@@ -26,10 +36,11 @@
 					</select>				
 					<div class="clockpicker">
 						<label for="inicio">Horário da consulta:</label>
-						<input id="inicio" type="text" class="form-control" value={{agendamento.start.format('H:mm')}}>						
+						<input id="inicio" type="text" class="form-control" onKeyPress="mascara(this, '##:##')" maxlength="5"
+							 ng-model="agendamento.formatedStart">						
 					</div>											
 					<label for="observacao">Observação: </label> 
-					<input id="observacao"	type="text" max-length="50" class="form-control" ng-model="agendamento.description"></input>					
+					<input id="observacao"	type="text" maxlength="50" class="form-control" ng-model="agendamento.description"></input>					
 					<div class="checkbox">
 						<label><input type="checkbox" value="true" ng-model="agendamento.repetirSemanalmente">Repetir semanalmente</label>
 					</div>
@@ -38,9 +49,9 @@
 		</div>
 		<div class="modal-footer">
 			<div class="form-group">
-				<button id="btnEdit" type="button" class="btn btn-primary" ng-click="$ctrl.salvar()">Salvar</button>
-				<button id="btnRemove" type="button" class="btn btn-danger"	ng-click="$ctrl.remover()">Remover</button>
-				<button id="btnCancel" type="button" class="btn btn-default" ng-click="$ctrl.cancelar()">Cancelar</button>
+				<button id="btnEdit" type="button" class="btn btn-primary" ng-click="salvar(agendamento)">Salvar</button>
+				<button id="btnRemove" type="button" class="btn btn-danger"	ng-click="remover(agendamento)">Remover</button>
+				<button id="btnCancel" type="button" class="btn btn-default" ng-click="cancelar()">Cancelar</button>
 			</div>
 		</div>
 	</body>
