@@ -5,18 +5,8 @@
 		<script type="text/javascript">
 			$('.clockpicker').clockpicker({
 				autoclose: true
-			});
-			
-			function mascara(t, mask) {
-				var i = t.value.length;
-				var saida = mask.substring(1,0);
-				var texto = mask.substring(i)
-				if (texto.substring(0,1) != saida) {
-					t.value += texto.substring(0,1);
-				}	
-			}
-			
-		</script>		
+			});								
+		</script>
 	</head>
 	<body>
 		<div class="modal-header">
@@ -24,20 +14,28 @@
 		</div>
 		
 		<div class="modal-body" id="modal-body">
-			<form>
+			<form name="agendamentoForm">
 				<div class="form-group">
-					<label for="selPacientes">Nome do Paciente:</label> 
-					<select
-						id="selPacientes" class="form-control"
-						ng-init="agendamento.paciente=lstPacientesAtivos[indexPacienteSelecionado]"
-						ng-model="agendamento.paciente"
-						ng-options="paciente.nomeExibicao for paciente in lstPacientesAtivos">
-						<option value="">Selecione o paciente</option>
-					</select>				
-					<div class="clockpicker">
+					<div ng-class="agendamentoForm.selPacientes.$error.required ?
+						'form-group has-error has-feedback' : ''">					
+						<label for="selPacientes">Nome do Paciente:</label> 
+						<select
+							id="selPacientes" name="selPacientes" class="form-control"
+							ng-init="agendamento.paciente=lstPacientesAtivos[indexPacienteSelecionado]"
+							ng-model="agendamento.paciente"
+							ng-options="paciente.nomeExibicao for paciente in lstPacientesAtivos"
+							ng-required = "true">
+							<option value="">Selecione o paciente</option>
+						</select>
+					</div>								
+					<div ng-class="agendamentoForm.inicio.$error.pattern || 
+						agendamentoForm.inicio.$error.required ? 
+						'clockpicker form-group has-error has-feedback' : 'clockpicker'"}}>
 						<label for="inicio">Horário da consulta:</label>
-						<input id="inicio" type="text" class="form-control" onKeyPress="mascara(this, '##:##')" maxlength="5"
-							 ng-model="agendamento.formatedStart">						
+						<input id="inicio" name="inicio" type="text" class="form-control" 
+							ng-model="agendamento.formatedStart"
+							maxlength="5" ng-required="true" onKeyPress="mascara(this, '##:##')" 
+							ng-pattern="/^([01]\d|2[0-3]):?([0-5]\d)$/" ng-required="true">													 					
 					</div>											
 					<label for="observacao">Observação: </label> 
 					<input id="observacao"	type="text" maxlength="50" class="form-control" ng-model="agendamento.description"></input>					
@@ -49,8 +47,10 @@
 		</div>
 		<div class="modal-footer">
 			<div class="form-group">
-				<button id="btnEdit" type="button" class="btn btn-primary" ng-click="salvar(agendamento)">Salvar</button>
-				<button id="btnRemove" type="button" class="btn btn-danger"	ng-click="remover(agendamento)">Remover</button>
+				<button id="btnEdit" type="button" class="btn btn-primary" 
+					ng-click="salvar(agendamento)" ng-disabled="agendamentoForm.$invalid">Salvar</button>
+				<button id="btnRemove" type="button" class="btn btn-danger"	
+					ng-click="remover(agendamento)" ng-if="!novoAgendamento">Remover</button>
 				<button id="btnCancel" type="button" class="btn btn-default" ng-click="cancelar()">Cancelar</button>
 			</div>
 		</div>

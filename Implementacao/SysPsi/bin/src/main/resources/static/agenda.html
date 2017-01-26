@@ -1,63 +1,30 @@
 <!DOCTYPE html>
 <html ng-app="syspsi">
 <head>
-	<meta charset='utf-8' />
-	<link href='css/fullcalendar-3.1.0.min.css' rel='stylesheet' />
-	<link href='css/fullcalendar.print-3.1.0.min.css' rel='stylesheet' media='print' />
-	<link href='css/bootstrap-3.3.7.min.css' rel='stylesheet' />
-	<!-- <link href='css/calendario.css' rel='stylesheet' /> -->
+	<meta charset="UTF-8" />
+	<link href='css/bootstrap-3.3.7.min.css' rel='stylesheet' type="text/css" />
+	<link href='css/fullcalendar-3.1.0.min.css' rel='stylesheet' type="text/css" />
+	<link href='css/fullcalendar.print-3.1.0.min.css' rel='stylesheet' type="text/css" media='print' />				
+	<link href="css/bootstrap-clockpicker.min.css" rel="stylesheet" type="text/css" >
 		
-	<script type="text/javascript" src='js/jquery-3.1.1.min.js'></script>
+	<script type="text/javascript" src='js/jquery-3.1.1.min.js'></script>	
 	<script type="text/javascript" src='js/angular-1.6.0.min.js'></script>
 	<script type="text/javascript" src='js/moment-2.17.1.min.js'></script>
 	<script type="text/javascript" src='js/fullcalendar-3.1.0.min.js'></script>
-	<script type="text/javascript" src='js/locale-all.js'></script>
+	<script type="text/javascript" src='js/locale-all.js'></script>	
 	<script type="text/javascript" src='js/ui-bootstrap-tpls-2.3.2.min.js'></script>
-	<script type="text/javascript" src='js/calendario.js'></script>
-	
-	<script type="text/javascript" src='js/controller/agenda.js'></script>		
+	<script type="text/javascript" src='js/calendario.js'></script>	
+	<script type="text/javascript" src='js/controller/agenda.js'></script>
+	<script type="text/javascript" src="js/bootstrap-clockpicker.min.js"></script>				
 </head>
-<body>
-	<div id="AgendaCtrl" ng-controller="AgendaCtrl as $ctrl">
-		<script type="text/ng-template" id="eventoModal.html">
-        	<div class="modal-header">				
-            	<h3 class="modal-title" id="modal-title">Ver Agendamento</h3>
-        	</div>
-        	<div class="modal-body" id="modal-body">
-				<form>
-					<div class="form-group">
-					    <label for="selPacientes">Nome do Paciente:</label>
-  						<select class="form-control" ng-model="agendamento.user" id="selPacientes">
-							<option value="">Selecione um Paciente</option>								            					
-							<option value="Marcelo Lima">Marcelo Lima</option>
-							<option value="Jacira Cunha">Jacira Cunha</option>
-						</select>	            								
-						<label for="observacao">Observação: </label>
-						<input id="observacao" type="text" class="form-control" ng-model="agendamento.description"></input>
-					</div>
-				</form>
-        	</div>
-        	<div class="modal-footer">            
-            	<div class="form-group">
-					<button id="btnEdit" type="button" class="btn btn-primary" ng-click="$ctrl.salvar()">Salvar</button>
-					<button id="btnRemove" type="button" class="btn btn-danger" ng-click="$ctrl.remover()">Remover</button>
-					<button id="btnCancel" type="button" class="btn btn-default" ng-click="$ctrl.cancelar()">Cancelar</button>					
-            	</div>
-        	</div>
-    	</script>
-    	
+<body>	
+	<div id="AgendaCtrl" ng-controller="AgendaCtrl as $ctrl">				    	    	
     	<div class="container">
     		<div class="row">
     			<h1>SysPsi Menu</h1>
     		</div>
     		<div class="row">    	
-				<div id='calendar' class="col-md-12"></div>	
-				
-				<table border="1">
-    				<tr ng-repeat="x in lstAgendamentos">
-        				<td>{{x.title}}</td>        				
-    				</tr>
-				</table>													
+				<div id='calendar' class="col-md-12"></div>														
 			</div>
 		</div>			
 	</div>	

@@ -76,7 +76,10 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
     
   
   // Mensagem de erro
-  $scope.msgErro = null;    
+  $scope.msgErro = null;
+  
+  // Para incluir ou não o botão remover da janela modal
+  $scope.novoAgendamento = false;
   
   /**
    * Limpa os dados pertinentes a um agendamento

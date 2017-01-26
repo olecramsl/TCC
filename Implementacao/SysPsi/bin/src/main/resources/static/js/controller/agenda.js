@@ -1,151 +1,330 @@
 var app = angular.module('syspsi', ['ui.bootstrap']);
 
-app.controller('AgendaCtrl', function ($scope, $uibModal, $http) {
-  var $ctrl = this;          
+app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
+  var $ctrl = this;    
   
   /**
-   * Popula o calendario com os agendamentos do BD
-   */ 
-  $http.get('http://localhost:8080/agendamentos/').then(function(response) {	  
-	  $scope.lstAgendamentos = response.data;
-	  	  
-	  // Adiciona os agendamentos no calendario
-	  angular.forEach($scope.lstAgendamentos, function(value, key) {
-          $('#calendar').fullCalendar('renderEvent',value, true); // stick? = true
-	  });
-  });   
-  
-  $scope.agendamento = {
-		  id         : null,
-		  gCalendarId: null,
-		  user		 : null,
-		  title      : null,
-		  start      : null,
-		  end        : null,
-		  description: null
-  };      
-  
-  /**
-   * Abre janela modal
+   * Abre janela modal do agendamento
    */
-  $ctrl.openEventModal = function (size) {	  
+  $ctrl.openEventModal = function (size) {	 	
     var modalInstance = $uibModal.open({
       animation: true,
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
-      templateUrl: 'eventoModal.html',
+      templateUrl: 'templates/eventoModal.html',
       controller: 'ModalInstanceCtrl',
       controllerAs: '$ctrl',
       scope: $scope, // bind $scope to modal scope      
       size: size
-    });   
-  };  
+    });
+    
+    modalInstance.result.then(function (selectedItem) {            
+    }, function () {        	
+    	$scope.LimparDadosAgendamento();
+    });
+  };
+  
+  /**
+   * Abre janela modal de erro
+   */
+  $ctrl.openErroModal = function (size) {	 	
+    var modalInstance = $uibModal.open({
+      animation: true,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: 'templates/erroModal.html',
+      controller: 'ModalInstanceCtrl',
+      controllerAs: '$ctrl',
+      scope: $scope, // bind $scope to modal scope      
+      size: size
+    });    
+  };
+  
+  /**
+   * Popula a lista de pacientes ativos
+   */  
+  $http.get('http://localhost:8080/listarPacientesAtivos').then(
+      successCallback = function(response) {	  
+    	  $scope.lstPacientesAtivos = response.data;
+  	  },
+  	  errorCallback = function (error, status){
+  		$scope.tratarExcecao(error); 
+  	  }
+  );  
+  
+  //Objeto agendamento  
+  $scope.agendamento = {
+		  id                 : null,
+		  gCalendarId        : null,
+		  paciente	         : null,
+		  psicologo			 : null,
+		  title              : null,
+		  start              : null,
+		  end                : null,
+		  formatedStart		 : null,
+		  grupo		         : 0,
+		  eventoPrincipal    : false,
+		  description        : null,
+		  repetirSemanalmente: false
+  };    	  
+  
+  // Lista de pacientes ativos cadastrados no sistema
+  $scope.lstPacientesAtivos = null;
+  
+  // O index do paciente atribuido ao agendamento selecionado na agenda
+  $scope.indexPacienteSelecionado = null;
+    
+  
+  // Mensagem de erro
+  $scope.msgErro = null;    
+  
+  /**
+   * Limpa os dados pertinentes a um agendamento
+   */
+  $scope.LimparDadosAgendamento = function() {
+	  $scope.agendamento = {};
+  	  $scope.indexPacienteSelecionado = null;
+  };
+  
+  /**
+   * Retorna a lista de datas da view iguais ao dia da semana de eventStart (dom, seg, ter, etc.)
+   */
+  $scope.getDaysToSaveEventInView = function(dataInicial, dataFinal, eventStart) {
+	  var days = [];
+	  var diaAgendamento = moment(eventStart).day(); // dia da semana do evento (dom, seg, ter, etc.)
+	  var addLoop = 24 * 60 * 60 * 1000;
+	  // percorre todos os dias constantes na view do calendário e repete o evento quando necessário
+	  for (loop = moment(dataInicial).valueOf(); loop < moment(dataFinal).valueOf(); loop = loop + addLoop) {
+		  var dia = new Date(loop);			  		  
+		  if ((diaAgendamento == dia.getDay()) && (eventStart < dia)) {		    			  
+			  eventStart = moment(eventStart).date(dia.getDate()).month(dia.getMonth()).year(dia.getFullYear());    				
+			  days.push(eventStart)
+		  }
+	  };
+	  return days;
+  }
+  
+  /**
+   * Popula o calendario com os agendamentos do BD e persiste novos agendamentos
+   * na view atual, caso necessário
+   */ 
+  $scope.listarAgendamento = function(dataInicial, dataFinal) {	 
+	  var evento;
+	  var params = {dataInicial: dataInicial.format(), dataFinal: dataFinal.format()};
+	  $http.get('http://localhost:8080/listarAgendamentos', {params}).then(
+	      successCallback = function (response) {
+	  		  // Adiciona os agendamentos no calendario
+	  		  angular.forEach(response.data, function(value, key) {	
+	  			  $('#calendar').fullCalendar('renderEvent',value);
+	  			  if (value.eventoPrincipal) {
+	  				  evento = angular.copy(value);
+	  				  var daysToRepeat = $scope.getDaysToSaveEventInView(dataInicial, dataFinal, value.start);
+	  				  params = {dataInicial: dataInicial.format(), dataFinal: dataFinal.format(), grupo: value.grupo};	  				  
+	  				  // Verifica se já existem registros para o período no BD
+	  				  var promiseArray = []; // retorno das requisições http
+	  				  var data;
+	  				  $http.get('http://localhost:8080/listarAgendamentoPeriodoPorGrupo', {params}).then(
+	  						successCallback = function (response) {	
+	  							angular.forEach(daysToRepeat, function(value1, key1) {	  								
+	  								var dia = value1.date() < 10 ? "0" + value1.date() : value1.date();
+	  								var mes = (value1.month()+1) < 10 ? "0" + (value1.month()+1) : (value1.month()+1); 
+	  								data = value1.year() + "-" + mes + "-" + dia;
+	  								// Verifica se a data não existe na lista de agendamentos persistidos. Caso positivo,
+	  								// salva o agendamento no BD
+	  								if (response.data.indexOf(data) === -1) {
+	  									evento.id		       = null; // novo registro no BD	  									
+	  									evento.description     = null;
+	  									evento.title           = $scope.updateTitle(evento);
+	  									evento.eventoPrincipal = false;
+	  									evento.start           = angular.copy(value1);	  									
+	  									evento.end             = moment(value.end).add(1, "h");	
+	  										  												 
+	  									promiseArray.push($http.post('http://localhost:8080/salvarAgendamento', angular.copy(evento)));	  										  								  								
+	  								}	  								
+	  							});
+	  							
+	  							$q.all(promiseArray).then(function(dataArray) {
+	  				    	  		angular.forEach(dataArray, function(value, key) {	  			  
+	  				    	  			$('#calendar').fullCalendar('renderEvent', value.data);
+	  				    	  		});		  
+	  				    	  	}, function (error){		  		    		  
+	  				    	  		angular.element('#AgendaCtrl').scope().tratarExcecao(error);
+	  				    	  	});	  						
+	  						},
+	  						errorCallback = function (error) {	  			  		  
+	  					  		$scope.tratarExcecao(error);
+	  						}
+	  				  );	  				  
+	  			  }			  
+	  		  });  		  
+	  	  },
+		  errorCallback = function (error) {	  			  		  
+	  		$scope.tratarExcecao(error);
+		  }
+	  );   
+  };      
+  
+  /**
+   * Atualiza o título do agendamento
+   */
+  $scope.updateTitle = function (agendamento) {		
+	  return agendamento.description ? agendamento.paciente.nomeExibicao + " (" +
+			  agendamento.description + ")" : agendamento.paciente.nomeExibicao;			  
+  };       
+  
+  /**
+   * Atualiza na base de dados um evento que foi movido na agenda
+   */
+  $scope.updateEventDroped = function(event) {	  	  
+	  var params = angular.element('#AgendaCtrl').scope().agendamento;	
+	  $http.post('http://localhost:8080/salvarAgendamento', params).then(
+		  successCallback = function(response) {			  
+		  },
+		  errorCallback = function (error){			  
+			  angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  						
+		  }
+	  );	
+  };
+  
+  /**
+   * Trata eventuais excessoes que possam ocorrer
+   */
+  $scope.tratarExcecao = function(error) {
+	  try {
+		  // captura de excecao enviada pela Controller (codigo java)
+		  angular.element('#AgendaCtrl').scope().msgErro = error.data.message;
+	  } catch(erro) {
+		  // Erro nivel Javascript
+		  angular.element('#AgendaCtrl').scope().msgErro = error;
+	  }
+		
+	  $ctrl.openErroModal();
+  }       
 });
 
 // Please note that $uibModalInstance represents a modal window (instance) dependency.
 // It is not the same as the $uibModal service used above.
-app.controller('ModalInstanceCtrl', function ($uibModalInstance) {
-	var $ctrl = this;		
-			
+app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $scope) {
 	/**
 	 * Cancela a operação na janela modal
 	 */
-	$ctrl.cancelar = function () {
-		$ctrl.clearData();
-		$uibModalInstance.dismiss('cancel');
+	$scope.cancelar = function () {				
+		$uibModalInstance.dismiss('cancel');		
 	};
 	
 	/**
 	 * Salva/atualiza as informações de um agendamento
 	 */
-	$ctrl.salvar = function () {
-		if (angular.element('#AgendaCtrl').scope().agendamento.id) {									
-			var event = $('#calendar').fullCalendar('clientEvents',angular.element('#AgendaCtrl').scope().agendamento.id);
-			if (event) {
-				$ctrl.setTitle();				
-				event[0].title       = angular.element('#AgendaCtrl').scope().agendamento.title;
-				event[0].user        = angular.element('#AgendaCtrl').scope().agendamento.user;
-				event[0].description = angular.element('#AgendaCtrl').scope().agendamento.description;							
-				$('#calendar').fullCalendar('updateEvent',event[0]);				
-				$ctrl.updateLstAgendamentos(event[0]);
-			}
-		} else if (angular.element('#AgendaCtrl').scope().agendamento.user) {			
-			angular.element('#AgendaCtrl').scope().agendamento.id = 3; // REMOVER APOS TRATAMENTO ADEQUADO							
+	$scope.salvar = function (agendamento) {
+		// Edicao
+		if (agendamento.id) {										
+			$http.post('http://localhost:8080/salvarAgendamento', angular.copy(agendamento)).then(
+				successCallback = function(response) {	  				    //					
+					var event = $('#calendar').fullCalendar('clientEvents',agendamento.id);
+					if (event) {	
+						agendamento.title = angular.element('#AgendaCtrl').scope().updateTitle(agendamento);
 						
-			$ctrl.setTitle();
+						/*
+						if (angular.element('#AgendaCtrl').scope().agendamento.repetirSemanalmente) {
+							$('#calendar').fullCalendar('removeEvents', angular.element('#AgendaCtrl').scope().agendamento.id);
+							view = $('#calendar').fullCalendar('getView');
+							angular.element('#AgendaCtrl').scope().repetirAgendamento(view.start, view.end, angular.element('#AgendaCtrl').scope().agendamento);
+						} else {		
+							$('#calendar').fullCalendar('removeEvents', angular.element('#AgendaCtrl').scope().agendamento.id);											
+							$('#calendar').fullCalendar('renderEvent', angular.element('#AgendaCtrl').scope().agendamento);
+						}
+						*/
+					} else {
+						angular.element('#AgendaCtrl').scope().msgErro = "Não foi possível encontrar o agendamento com o id informado!";
+						angular.element('#AgendaCtrl').scope().$ctrl.openErroModal(); 
+					}										
+				},
+			    errorCallback = function (error, status){					
+					angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  							
+				}
+			);			
+		// Novo agendamento
+		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {					
+			agendamento.title   = angular.element('#AgendaCtrl').scope().updateTitle(agendamento);
+			console.log(agendamento.formatedStart);
+			var horarioConsulta = agendamento.formatedStart.split(":");
+			console.log(horarioConsulta[0]);
+			console.log(horarioConsulta[1]);
+			try {
+				agendamento.start = moment(agendamento.start).hour(horarioConsulta[0]).minute(horarioConsulta[1]).second(0);
+				agendamento.end   = moment(agendamento.end).add(1, 'h');
+			} catch(error) {
+				angular.element('#AgendaCtrl').scope().tratarExcecao("O horário informado é inválido!");
+				return;
+			}
 			
-			$('#calendar').fullCalendar('renderEvent',angular.element('#AgendaCtrl').scope().agendamento, true); // stick? = true
 			
-			// adiciona agendamento na lista 
-			angular.element('#AgendaCtrl').scope().lstAgendamentos.push({
-				id         : angular.element('#AgendaCtrl').scope().agendamento.id,
-				gCalendarId: angular.element('#AgendaCtrl').scope().agendamento.gCalendarId,
-				user       : angular.element('#AgendaCtrl').scope().agendamento.user,
-				title      : angular.element('#AgendaCtrl').scope().agendamento.description ?
-						     angular.element('#AgendaCtrl').scope().agendamento.user  + " (" + 
-						     angular.element('#AgendaCtrl').scope().agendamento.description + ")" :
-						     angular.element('#AgendaCtrl').scope().agendamento.user,
-				start      : angular.element('#AgendaCtrl').scope().agendamento.start,
-				end        : angular.element('#AgendaCtrl').scope().agendamento.end,
-				description: angular.element('#AgendaCtrl').scope().agendamento.description
-			});
-		}
-		$('#calendar').fullCalendar('unselect');			
+			var promiseArray = []; // retorno das requisições http							
+			if (agendamento.repetirSemanalmente) {
+				// o próximo id do grupo de repetição
+				$http.get('http://localhost:8080/getNextValueForGroup').then(
+						successCalback = function(response) {
+							agendamento.grupo = response.data;
+							agendamento.eventoPrincipal = true;
+							
+							view = $('#calendar').fullCalendar('getView');				
+							var daysToSave = angular.element('#AgendaCtrl').scope()
+								.getDaysToSaveEventInView(view.start, view.end, agendamento.start);
+													
+							angular.forEach(daysToSave, function(value, key) {
+								agendamento.start = value;							
+								agendamento.end	= moment(value).add(1, 'h');
 								
-		$ctrl.clearData();
+								// Salva no BD																					
+								promiseArray.push($http.post('http://localhost:8080/salvarAgendamento', angular.copy(agendamento)));
+																
+								agendamento.id              = null; // para novo registro
+								agendamento.title           = null;								
+								agendamento.description     = null;
+								agendamento.eventoPrincipal = false;
+							});			
+							$q.all(promiseArray).then(function(dataArray) {
+				    	  		angular.forEach(dataArray, function(value, key) {	    	  			
+				    	  			// Adiciona evento ao calendário    	  			
+				    	  			$('#calendar').fullCalendar('renderEvent', value.data);    	  			
+				    	  		});		  
+				    	  	}, function (error){		  		    		  
+				    	  		angular.element('#AgendaCtrl').scope().tratarExcecao(error);
+				    	  	});
+						},
+						errorCallback = function (error, status){					
+							angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  							
+						}
+				);							
+			} else {
+				// Evento único. Salva no BD										
+				$http.post('http://localhost:8080/salvarAgendamento', angular.copy(agendamento)).then(
+						successCallback = function(response) {
+							$('#calendar').fullCalendar('renderEvent', response.data);
+						},
+						errorCallback = function(error) {
+							angular.element('#AgendaCtrl').scope().tratarExcecao(error);
+						}
+				);
+			}													
+		};
+												
+		$('#calendar').fullCalendar('unselect');												
 		$uibModalInstance.close();
 	};
-	
+		
 	/**
 	 * Remove um agendamento
 	 */
-	$ctrl.remover = function () {
-		var event = $('#calendar').fullCalendar('clientEvents',angular.element('#AgendaCtrl').scope().agendamento.id);
-		if (event) {
-			$('#calendar').fullCalendar('removeEvent',event[0]);
-			/*
-			var index = angular.element('#AgendaCtrl').scope().lstAgendamentos.indexOf(event[0]);			
-			angular.element('#AgendaCtrl').scope().lstAgendamentos.splice(index, 1);
-			*/
-			$ctrl.clearData();
-		}
-	}
-	
-	/**
-	 * Atualiza o título do agendamento
-	 */
-	$ctrl.setTitle = function () {
-		angular.element('#AgendaCtrl').scope().agendamento.title = 
-			angular.element('#AgendaCtrl').scope().agendamento.description ?
-			angular.element('#AgendaCtrl').scope().agendamento.user + " (" +
-			angular.element('#AgendaCtrl').scope().agendamento.description + ")" :
-			angular.element('#AgendaCtrl').scope().agendamento.user;
-	};
-	
-	/**
-	 * Atualiza a lista de agendamentos
-	 */
-	$ctrl.updateLstAgendamentos = function (event) {		
-		// se garantirmos que lstAgendamentos estah ordenada, podemos fazer uma busca
-		// binaria ao inves de linear		
-		for (var i = 0; i < angular.element('#AgendaCtrl').scope().lstAgendamentos.length; i++) {				
-			if (angular.element('#AgendaCtrl').scope().lstAgendamentos[i].id == event.id) {						
-				angular.element('#AgendaCtrl').scope().lstAgendamentos[i] = event;					
-				break;
+	$scope.remover = function (agendamento) {											
+		$http.post('http://localhost:8080/removerAgendamento', angular.copy(agendamento)).then(
+			successCallback = function(response) {	  				    //									
+				$('#calendar').fullCalendar('removeEvents',agendamento.id);				
+			},
+			errorCallback = function (error, status){					
+				angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  						
 			}
-	    };
-	};
-	
-	/**
-	 * Limpa os dados do agendamento
-	 */
-	$ctrl.clearData = function () {				
-		angular.element('#AgendaCtrl').scope().agendamento.id          = null;
-		angular.element('#AgendaCtrl').scope().agendamento.gCalendarId = null;
-		angular.element('#AgendaCtrl').scope().agendamento.user        = null;
-		angular.element('#AgendaCtrl').scope().agendamento.title       = null;
-		angular.element('#AgendaCtrl').scope().agendamento.start       = null;
-		angular.element('#AgendaCtrl').scope().agendamento.end         = null;
-		angular.element('#AgendaCtrl').scope().agendamento.description = null;
-	};
+		);	
+		$uibModalInstance.close();
+	};						
 });
