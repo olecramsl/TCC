@@ -78,9 +78,6 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
   // Mensagem de erro
   $scope.msgErro = null;
   
-  // Para incluir ou não o botão remover da janela modal
-  $scope.novoAgendamento = false;
-  
   /**
    * Limpa os dados pertinentes a um agendamento
    */
@@ -249,19 +246,35 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $sco
 		// Novo agendamento
 		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {					
 			agendamento.title   = angular.element('#AgendaCtrl').scope().updateTitle(agendamento);
-			console.log(agendamento.formatedStart);
 			var horarioConsulta = agendamento.formatedStart.split(":");
-			console.log(horarioConsulta[0]);
-			console.log(horarioConsulta[1]);
-			try {
-				agendamento.start = moment(agendamento.start).hour(horarioConsulta[0]).minute(horarioConsulta[1]).second(0);
-				agendamento.end   = moment(agendamento.end).add(1, 'h');
-			} catch(error) {
-				angular.element('#AgendaCtrl').scope().tratarExcecao("O horário informado é inválido!");
-				return;
-			}
+			agendamento.start   = moment(agendamento.start).hour(horarioConsulta[0]).minute(horarioConsulta[1]).second(0);
+			agendamento.end     = moment(agendamento.start).add(1, 'h');
 			
+			view = $('#calendar').fullCalendar('getView');			
+			var agendamentoDTO = {
+					agendamento        : agendamento,
+					repetirSemanalmente: agendamento.repetirSemanalmente, 
+					dataInicialViewFC  : view.start, 
+					dataFinalViewFC    : view.end
+			};
+			console.log(agendamentoDTO);
 			
+			//var params = {dataInicial: view.start.format(), dataFinal: view.end.format(), agendamento};
+			$http.post('http://localhost:8080/salvarAgendamento', agendamentoDTO).then(
+					successCallback = function(response) {
+						/*					
+						angular.forEach(response.data, function(value, key) {	
+							
+						}
+						*/						
+						$('#calendar').fullCalendar('renderEvents',response.data);
+					},
+					errorCallBack = function(error) {
+						angular.element('#AgendaCtrl').scope().tratarExcecao(error);
+					}
+			);
+				
+			/*
 			var promiseArray = []; // retorno das requisições http							
 			if (agendamento.repetirSemanalmente) {
 				// o próximo id do grupo de repetição
@@ -309,9 +322,10 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $sco
 							angular.element('#AgendaCtrl').scope().tratarExcecao(error);
 						}
 				);
-			}													
+			}	
+			*/												
 		};
-												
+		
 		$('#calendar').fullCalendar('unselect');												
 		$uibModalInstance.close();
 	};

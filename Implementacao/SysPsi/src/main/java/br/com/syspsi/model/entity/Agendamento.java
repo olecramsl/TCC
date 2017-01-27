@@ -36,20 +36,32 @@ public class Agendamento {
 	private boolean eventoPrincipal;
 	@Transient
 	private String title;
-	@Transient
-	private boolean repetirSemanalmente;
 	
 	// Apenas para JPA
 	protected Agendamento() {
 		super();
 	}
 	
-	public Agendamento(Paciente paciente, Calendar start, Calendar end, String description) {
+	public Agendamento(Paciente paciente, Psicologo psicologo, Calendar start, Calendar end, String description) {
 		super();		
 		this.paciente = paciente;
+		this.psicologo = psicologo;
 		this.start = start;
 		this.end = end;
 		this.description = description;		
+	}			
+
+	public Agendamento(Paciente paciente, Psicologo psicologo, Long gCalendarId, Calendar start, Calendar end,
+			long grupo, String description, boolean eventoPrincipal) {
+		super();		
+		this.paciente = paciente;
+		this.psicologo = psicologo;
+		this.gCalendarId = gCalendarId;
+		this.start = start;
+		this.end = end;
+		this.grupo = grupo;
+		this.description = description;
+		this.eventoPrincipal = eventoPrincipal;
 	}
 
 	/**
@@ -192,6 +204,6 @@ public class Agendamento {
 	 * @return the repetirSemanalmente
 	 */
 	public boolean isRepetirSemanalmente() {
-		return this.grupo > 0 ? true : false;
-	}	
+		return this.grupo > 0 ? true : false;		
+	}
 }

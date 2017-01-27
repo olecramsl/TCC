@@ -15,8 +15,7 @@ $(document).ready(function() {
 		slotLabelFormat : [ 'ddd D/M', 'H:mm' ],
 		selectHelper : true,		
 		select : function(start, end) {	
-			angular.element('#AgendaCtrl').scope().LimparDadosAgendamento();
-			angular.element('#AgendaCtrl').scope().novoAgendamento = true;
+			angular.element('#AgendaCtrl').scope().LimparDadosAgendamento();			
 
 			// Verifica se existe um horario pre definido
 			if (!start.hasTime()) {		
@@ -40,9 +39,7 @@ $(document).ready(function() {
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();															
 			angular.element('#AgendaCtrl').scope().$apply();			
 		},
-		eventClick : function(event, jsEvent, view) {
-			angular.element('#AgendaCtrl').scope().novoAgendamento = false;
-			
+		eventClick : function(event, jsEvent, view) {						
 			var tmpLst = angular.element('#AgendaCtrl').scope().lstPacientesAtivos;
 			for (var i = 0; i < tmpLst.length; i++) {
 				if (tmpLst[i].id == event.paciente.id) {					
