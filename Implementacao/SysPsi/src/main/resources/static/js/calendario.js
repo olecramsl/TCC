@@ -5,7 +5,7 @@ $(document).ready(function() {
 			center : 'title',
 			right : 'month,agendaWeek,agendaDay'
 		},
-		timezone: 'local',
+		timezone: 'local',				
 		allDaySlot: false,
 		ignoreTimezone: false,
 		locale : 'pt-br',
