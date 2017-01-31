@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.syspsi.dto.AgendamentoDTO;
+import br.com.syspsi.model.dto.AgendamentoDTO;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
@@ -55,53 +55,58 @@ public class AgendaController {
 		}		
 		
 		// ARRUMAR APÓS LOGIN
-		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.findByPeriod(di, df, this.psicologoRepositorio.findOne(1L));
+		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.findByPeriod(di, df, this.psicologoRepositorio.findOne(1L));		
 				
 		List<Agendamento> lstAgendamentosParaSalvar = new ArrayList<>();
+		List<Agendamento> lstParaApresentarView     = new ArrayList<>();
 		for (Agendamento ag : lstAgendamentos) {
-			if (ag.isEventoPrincipal()) {				
-				List<Calendar> lstDiasSalvos = new ArrayList<>();
-				List<Calendar> lstDiasParaSalvar = new ArrayList<>();
+			if (ag.isEventoPrincipal() && ag.isAtivo()) {			
+				List<String> lstDiasSalvos = new ArrayList<>();
+				List<String> lstDiasParaSalvar = new ArrayList<>();
 				lstAgendamentosParaSalvar = new ArrayList<>();	
 				Agendamento agendamento;
 				// dias para salvar no período				
-				for (Calendar dia = di; dia.before(df); dia.add(Calendar.DATE, 1)) {					
+				for (Calendar dia = (Calendar)di.clone(); dia.before(df); dia.add(Calendar.DATE, 1)) {					
 					if ((dia.get(Calendar.DAY_OF_WEEK) == ag.getStart().get(Calendar.DAY_OF_WEEK)) && 
 						    ((ag.getStart().before(dia) || ((!ag.getStart().before(dia)) && (!ag.getStart().after(dia)))))) {
 						Calendar dayToSave = Calendar.getInstance();
 						dayToSave.set(dia.get(Calendar.YEAR), dia.get(Calendar.MONTH), dia.get(Calendar.DAY_OF_MONTH),
 								ag.getStart().get(Calendar.HOUR_OF_DAY), ag.getStart().get(Calendar.MINUTE), ag.getStart().get(Calendar.SECOND));
-						lstDiasParaSalvar.add(dayToSave);
+						lstDiasParaSalvar.add(format.format(dayToSave.getTime()));
 					}
 				}			
+
 				// Dias já salvos no BD
-				lstDiasSalvos = this.agendamentoRepositorio.listarDatasAgendamentoPeriodoPorGrupo(di, df, ag.getGrupo());
+				lstDiasSalvos = this.agendamentoRepositorio.listarDatasAgendamentoPeriodoPorGrupo(di, df, ag.getGrupo(), ag.getPsicologo());
 				
-				for (Calendar dayToSave : lstDiasParaSalvar) {					
-					if (!lstDiasSalvos.contains(dayToSave)) {						
+				for (String dayToSave : lstDiasParaSalvar) {					
+					if (!lstDiasSalvos.contains(dayToSave)) {					
 						Calendar agendamentoStart = Calendar.getInstance(); 					
-						Calendar agendamentoEnd = Calendar.getInstance();										
+						Calendar agendamentoEnd = Calendar.getInstance();
+						Calendar tmpData = Calendar.getInstance();		
+						
 						agendamentoStart.setTime(ag.getStart().getTime());
-						agendamentoEnd.setTime(ag.getEnd().getTime());					
-						agendamentoStart.set(dayToSave.get(Calendar.YEAR), dayToSave.get(Calendar.MONTH), dayToSave.get(Calendar.DAY_OF_MONTH));
-						agendamentoEnd.set(dayToSave.get(Calendar.YEAR), dayToSave.get(Calendar.MONTH), dayToSave.get(Calendar.DAY_OF_MONTH));						
+						agendamentoEnd.setTime(ag.getEnd().getTime());
+						tmpData.setTime(format.parse(dayToSave));
+						agendamentoStart.set(tmpData.get(Calendar.YEAR), tmpData.get(Calendar.MONTH), tmpData.get(Calendar.DAY_OF_MONTH));
+						agendamentoEnd.set(tmpData.get(Calendar.YEAR), tmpData.get(Calendar.MONTH), tmpData.get(Calendar.DAY_OF_MONTH));						
 
 						agendamento = new Agendamento(ag.getPaciente(), ag.getPsicologo(), ag.getgCalendarId(),
 								agendamentoStart, agendamentoEnd, ag.getGrupo(), null, false);	
 						
-						lstAgendamentosParaSalvar.add(agendamento);
+						lstAgendamentosParaSalvar.add(agendamento);						
+						lstParaApresentarView.add(agendamento);
 						
 					}
 				}
 				this.agendamentoRepositorio.save(lstAgendamentosParaSalvar);
-				//lstAgendamentos.addAll(lstAgendamentosParaSalvar);
 			}
+		}				
+		
+		if (!lstParaApresentarView.isEmpty()) {
+			lstAgendamentos.addAll(lstParaApresentarView);
 		}
-		if (!lstAgendamentosParaSalvar.isEmpty()) {
-			lstAgendamentos.addAll(lstAgendamentosParaSalvar);
-		}
-		// ARRUMAR APÓS LOGIN
-		//return (List<Agendamento>) this.agendamentoRepositorio.findByPeriod(di, df, this.psicologoRepositorio.findOne(1L));
+		
 		return lstAgendamentos;
 	}	
 	
@@ -139,9 +144,11 @@ public class AgendaController {
 				
 		List<Agendamento> lstAgendamento = new ArrayList<>();	
 		
-		if (agendamentoDTO.isRepetirSemanalmente()) {			
-			agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo()));
-			agendamento.setEventoPrincipal(true);
+		if (agendamentoDTO.isRepetirSemanalmente()) {	
+			if (agendamento.getGrupo() == 0) {
+				agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo()));
+				agendamento.setEventoPrincipal(true);
+			}			
 			
 			int diaSemanaAgendamento = agendamento.getStart().get(Calendar.DAY_OF_WEEK);			
 			Calendar dataInicialAgendamento = agendamento.getStart();			

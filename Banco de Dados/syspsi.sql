@@ -8,18 +8,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- Schema syspsi
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `syspsi` DEFAULT CHARACTER SET utf8 ;
-
 USE `syspsi` ;
-
--- -----------------------------------------------------
--- Table `syspsi`.`psicologo`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `nome` VARCHAR(45) NOT NULL,
-  `sobrenome` VARCHAR(90) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `syspsi`.`paciente`
@@ -31,7 +20,20 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
   `ativo` TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 5
+AUTO_INCREMENT = 8
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `syspsi`.`psicologo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NOT NULL,
+  `sobrenome` VARCHAR(90) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -48,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   `grupo` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
   `description` VARCHAR(50) NULL DEFAULT NULL,
   `eventoPrincipal` TINYINT(4) NOT NULL DEFAULT '0',
+  `ativo` TINYINT(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   INDEX `fk_Agendamento_Paciente_idx` (`idPaciente` ASC),
   INDEX `fk_agendamento_psicologo1_idx` (`idPsicologo` ASC),
@@ -62,13 +65,14 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 197
+AUTO_INCREMENT = 455
 DEFAULT CHARACTER SET = utf8;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
 
 -- Cria usuário da aplicação:
 

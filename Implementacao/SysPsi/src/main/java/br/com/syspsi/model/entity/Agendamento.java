@@ -34,6 +34,7 @@ public class Agendamento {
 	private String description;
 	@Column(name="eventoprincipal")
 	private boolean eventoPrincipal;
+	private boolean ativo;
 	@Transient
 	private String title;
 	
@@ -182,6 +183,20 @@ public class Agendamento {
 	 */
 	public void setEventoPrincipal(boolean eventoPrincipal) {
 		this.eventoPrincipal = eventoPrincipal;
+	}
+
+	/**
+	 * @return the ativo
+	 */
+	public boolean isAtivo() {
+		return ativo;
+	}
+
+	/**
+	 * @param ativo the ativo to set
+	 */
+	public void setAtivo(boolean ativo) {
+		this.ativo = ativo;
 	}
 
 	/**

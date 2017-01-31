@@ -55,14 +55,17 @@ $(document).ready(function() {
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		
 		eventDrop : function( event ) {	
+			var oldEvent = angular.copy(event); // evento dropado
+			oldEvent.repetirSemanalmente = false;
+			
 			var horas   = event.end.hours();
 			var minutos = event.end.minutes();
 			
-			event.end = moment(event.start);
-			event.end = moment(event.end).hours(horas).minutes(minutos)
+			event.end                 = moment(event.start);
+			event.end                 = moment(event.end).hours(horas).minutes(minutos);
+			event.repetirSemanalmente = false;
 			
-			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);
-			angular.element('#AgendaCtrl').scope().updateEventDroped();
+			angular.element('#AgendaCtrl').scope().updateEventDroped(angular.copy(event), angular.copy(oldEvent));						
 		},
 		viewRender: function (view, element) {				
 			$('#calendar').fullCalendar('removeEvents');

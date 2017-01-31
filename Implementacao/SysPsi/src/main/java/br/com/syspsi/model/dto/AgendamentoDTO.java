@@ -1,4 +1,4 @@
-package br.com.syspsi.dto;
+package br.com.syspsi.model.dto;
 
 import java.util.Calendar;
 
