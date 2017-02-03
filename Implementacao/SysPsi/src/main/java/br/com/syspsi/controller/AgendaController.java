@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class AgendaController {
 	
 	@Autowired
 	private PsicologoRepositorio psicologoRepositorio;
-				
+	
 	/**
 	 * @param dataInicial A data inicial dos agendamentos
 	 * @param dataFinal A data final dos agendamentos
@@ -45,7 +46,7 @@ public class AgendaController {
 			@RequestParam("dataFinal") String dataFinal) throws Exception {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar di = Calendar.getInstance();
-		Calendar df = Calendar.getInstance();
+		Calendar df = Calendar.getInstance();		
 		
 		try {
 			di.setTime(format.parse(dataInicial));
@@ -54,75 +55,70 @@ public class AgendaController {
 			throw new Exception("Formato de data inválido em listarAgendamento.");
 		}		
 		
+		//List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.findByPeriod(di, df);						
+		List<Agendamento> lstAgendamentos = new ArrayList<>();		
 		// ARRUMAR APÓS LOGIN
-		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.findByPeriod(di, df, this.psicologoRepositorio.findOne(1L));		
-				
-		List<Agendamento> lstAgendamentosParaSalvar = new ArrayList<>();
-		List<Agendamento> lstParaApresentarView     = new ArrayList<>();
-		for (Agendamento ag : lstAgendamentos) {
-			if (ag.isEventoPrincipal() && ag.isAtivo()) {			
-				List<String> lstDiasSalvos = new ArrayList<>();
-				List<String> lstDiasParaSalvar = new ArrayList<>();
-				lstAgendamentosParaSalvar = new ArrayList<>();	
+		for (Agendamento ag : this.agendamentoRepositorio.findByPeriod(di, df, psicologoRepositorio.findOne(1L))) {
+			if (ag.isEventoPrincipal()) {					
+				List<String> lstDiasSalvos = new ArrayList<>();	
 				Agendamento agendamento;
-				// dias para salvar no período				
-				for (Calendar dia = (Calendar)di.clone(); dia.before(df); dia.add(Calendar.DATE, 1)) {					
+								
+				// Dias já salvos no BD
+				lstDiasSalvos = this.agendamentoRepositorio.listarDatasAgendamentoPeriodoPorGrupo(di, df, ag.getGrupo(), ag.getPsicologo());
+				System.out.println("Salvos");
+				for (String s : lstDiasSalvos) {
+					System.out.println(s);
+				}
+				System.out.println("");
+
+				for (Calendar dia = (Calendar)di.clone(); dia.before(df); dia.add(Calendar.DATE, 1)) {						
 					if ((dia.get(Calendar.DAY_OF_WEEK) == ag.getStart().get(Calendar.DAY_OF_WEEK)) && 
-						    ((ag.getStart().before(dia) || ((!ag.getStart().before(dia)) && (!ag.getStart().after(dia)))))) {
+						    ((ag.getStart().before(dia) || ((!ag.getStart().before(dia)) && (!ag.getStart().after(dia)))))) {												
 						Calendar dayToSave = Calendar.getInstance();
 						dayToSave.set(dia.get(Calendar.YEAR), dia.get(Calendar.MONTH), dia.get(Calendar.DAY_OF_MONTH),
 								ag.getStart().get(Calendar.HOUR_OF_DAY), ag.getStart().get(Calendar.MINUTE), ag.getStart().get(Calendar.SECOND));
-						lstDiasParaSalvar.add(format.format(dayToSave.getTime()));
-					}
-				}			
-
-				// Dias já salvos no BD
-				lstDiasSalvos = this.agendamentoRepositorio.listarDatasAgendamentoPeriodoPorGrupo(di, df, ag.getGrupo(), ag.getPsicologo());
 				
-				for (String dayToSave : lstDiasParaSalvar) {					
-					if (!lstDiasSalvos.contains(dayToSave)) {					
-						Calendar agendamentoStart = Calendar.getInstance(); 					
-						Calendar agendamentoEnd = Calendar.getInstance();
-						Calendar tmpData = Calendar.getInstance();		
-						
-						agendamentoStart.setTime(ag.getStart().getTime());
-						agendamentoEnd.setTime(ag.getEnd().getTime());
-						tmpData.setTime(format.parse(dayToSave));
-						agendamentoStart.set(tmpData.get(Calendar.YEAR), tmpData.get(Calendar.MONTH), tmpData.get(Calendar.DAY_OF_MONTH));
-						agendamentoEnd.set(tmpData.get(Calendar.YEAR), tmpData.get(Calendar.MONTH), tmpData.get(Calendar.DAY_OF_MONTH));						
+						System.out.println("dayToSave: " + format.format(dayToSave.getTime()));
+						if (!lstDiasSalvos.contains(format.format(dayToSave.getTime()))) {							
+							Calendar agendamentoStart = Calendar.getInstance(); 					
+							Calendar agendamentoEnd = Calendar.getInstance();
+							
+							agendamentoStart.setTime(ag.getStart().getTime());
+							agendamentoEnd.setTime(ag.getEnd().getTime());
+							agendamentoStart.set(dia.get(Calendar.YEAR), dia.get(Calendar.MONTH), dia.get(Calendar.DAY_OF_MONTH));
+							agendamentoEnd.set(dia.get(Calendar.YEAR), dia.get(Calendar.MONTH), dia.get(Calendar.DAY_OF_MONTH));							
 
-						agendamento = new Agendamento(ag.getPaciente(), ag.getPsicologo(), ag.getgCalendarId(),
-								agendamentoStart, agendamentoEnd, ag.getGrupo(), null, false);	
-						
-						lstAgendamentosParaSalvar.add(agendamento);						
-						lstParaApresentarView.add(agendamento);
-						
+							agendamento = new Agendamento(ag.getPaciente(), ag.getPsicologo(), ag.getgCalendarId(),
+									agendamentoStart, agendamentoEnd, ag.getGrupo(), null, false, true);	
+							
+							lstAgendamentos.add(agendamento);													
+						}						
 					}
-				}
-				this.agendamentoRepositorio.save(lstAgendamentosParaSalvar);
+				}						
+			} else {
+				lstAgendamentos.add(ag);
 			}
 		}				
 		
-		if (!lstParaApresentarView.isEmpty()) {
-			lstAgendamentos.addAll(lstParaApresentarView);
+		/*
+		if (!lstAgendamentosParaSalvar.isEmpty()) {
+			lstAgendamentos.addAll(lstAgendamentosParaSalvar);
+			this.agendamentoRepositorio.save(lstAgendamentosParaSalvar);			
+		}
+		*/
+		this.agendamentoRepositorio.save(lstAgendamentos);
+		
+		// remove os inativos
+		for (Iterator<Agendamento> iterator = lstAgendamentos.iterator(); iterator.hasNext(); ) {
+		    Agendamento value = iterator.next();
+		    if (!value.isAtivo()) {
+		        iterator.remove();
+		    }
 		}
 		
 		return lstAgendamentos;
 	}	
 	
-	/**	
-	 * @return o próximo id a ser utilizado para um grupo de repetição de agendamento 
-	 */
-	@RequestMapping(
-			value = "/getNextValueForGroup", 
-			method={RequestMethod.GET},
-			produces = MediaType.APPLICATION_JSON_VALUE					
-			)		
-	public long getNextValueForGroup() {
-		// ARRUMAR APÓS LOGIN
-		return this.agendamentoRepositorio.getNextValueForGroup(this.psicologoRepositorio.findOne(1L));
-	}	
-		
 	/**
 	 * Salva um agendamento
 	 * @param agendamento O agendamento a ser salvo
@@ -137,44 +133,41 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public List<Agendamento> salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) {	
-		Agendamento agendamento = agendamentoDTO.getAgendamento();		
+	public List<Agendamento> salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) {
+		Agendamento agendamento = agendamentoDTO.getAgendamento();
 		
-		agendamento.setPsicologo(this.psicologoRepositorio.findOne(1L)); // RETIRAR APÓS TRATAMENTO ADEQUADO (LOGIN)					
+		// ARRUMAR APÓS LOGIN
+		agendamento.setPsicologo(psicologoRepositorio.findOne(1L));
 				
-		List<Agendamento> lstAgendamento = new ArrayList<>();	
-		
-		if (agendamentoDTO.isRepetirSemanalmente()) {	
-			if (agendamento.getGrupo() == 0) {
-				agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo()));
-				agendamento.setEventoPrincipal(true);
-			}			
+		List<Agendamento> lstAgendamento = new ArrayList<>();
+		if (agendamentoDTO.isRepetirSemanalmente()) {			
+			if (agendamento.getGrupo() == null || agendamento.getGrupo() == 0) {				
+				agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo()));				
+				agendamento.setEventoPrincipal(true);				
+			}						
 			
-			int diaSemanaAgendamento = agendamento.getStart().get(Calendar.DAY_OF_WEEK);			
-			Calendar dataInicialAgendamento = agendamento.getStart();			
-						
 			// percorre todos os dias constantes na view do calendário e repete o evento quando necessário			
 			for (Calendar dia = agendamentoDTO.getDataInicialViewFC(); 
 				 dia.before(agendamentoDTO.getDataFinalViewFC()); 
 				 dia.add(Calendar.DATE, 1)) {	
 				
-				if ((dia.get(Calendar.DAY_OF_WEEK) == diaSemanaAgendamento) && 
-				    ((dataInicialAgendamento.before(dia) || ((!dataInicialAgendamento.before(dia)) && (!dataInicialAgendamento.after(dia)))))) {																														
+				if ((dia.get(Calendar.DAY_OF_WEEK) == agendamento.getStart().get(Calendar.DAY_OF_WEEK)) &&
+				    ((agendamento.getStart().before(dia) || 
+				    ((!agendamento.getStart().before(dia)) && (!agendamento.getStart().after(dia)))))) {
 					Calendar agendamentoStart = Calendar.getInstance(); 					
-					Calendar agendamentoEnd = Calendar.getInstance();										
+					Calendar agendamentoEnd = Calendar.getInstance();
+										
 					agendamentoStart.setTime(agendamento.getStart().getTime());
 					agendamentoEnd.setTime(agendamento.getEnd().getTime());					
 					agendamentoStart.set(dia.get(Calendar.YEAR), dia.get(Calendar.MONTH), dia.get(Calendar.DAY_OF_MONTH));							
-					agendamentoEnd.set(dia.get(Calendar.YEAR), dia.get(Calendar.MONTH), dia.get(Calendar.DAY_OF_MONTH));					
-
-					agendamento.setStart(agendamentoStart);
-					agendamento.setEnd(agendamentoEnd);
-					lstAgendamento.add(agendamento);
-					
+					agendamentoEnd.set(dia.get(Calendar.YEAR), dia.get(Calendar.MONTH), dia.get(Calendar.DAY_OF_MONTH));
+									
 					agendamento = new Agendamento(agendamento.getPaciente(), agendamento.getPsicologo(), agendamento.getgCalendarId(),
-							agendamentoStart, agendamentoEnd, agendamento.getGrupo(), null, false);																										
+							agendamentoStart, agendamentoEnd, agendamento.getGrupo(), null, false, true);
+															
+					lstAgendamento.add(agendamento);					
 				}
-			}		
+			}
 			this.agendamentoRepositorio.save(lstAgendamento);
 		} else {
 			lstAgendamento.add(this.agendamentoRepositorio.save(agendamento));
@@ -196,39 +189,5 @@ public class AgendaController {
 			)
 	public void removerAgendamento(@RequestBody Agendamento agendamento) throws IllegalArgumentException {		
 		this.agendamentoRepositorio.delete(agendamento);								
-	}
-	
-	/**
-	 * @param dataInicial a data inicial do período
-	 * @param dataFinal a data final do período
-	 * @param grupo o id do agrupamento do agendamento
-	 * @throws Exception no caso do formato de alguma das datas informadas for inválido
-	 * @return uma lista contendo as datas dos agendamentos encontrados no período para um determinado grupo
-	 */
-	@RequestMapping(
-			value = "/listarAgendamentoPeriodoPorGrupo", 
-			method={RequestMethod.GET},
-			produces = MediaType.APPLICATION_JSON_VALUE					
-			)	
-	public List<String> listarAgendamentoPeriodoPorGrupo(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal, @RequestParam("grupo") long grupo) throws Exception {		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar di = Calendar.getInstance();
-		Calendar df = Calendar.getInstance();
-		
-		try {
-			di.setTime(format.parse(dataInicial));
-			df.setTime(format.parse(dataFinal));
-		} catch (ParseException e) {
-			throw new Exception("Formato de data inválido em listarAgendamento.");
-		}		
-		
-		/*
-		List<String> lstDatasAgendamentos = this.agendamentoRepositorio
-				.listarDatasAgendamentoPeriodoPorGrupo(di, df, grupo);
-		
-		return lstDatasAgendamentos;	
-		*/
-		return new ArrayList<>();
-	}
+	}		
 }

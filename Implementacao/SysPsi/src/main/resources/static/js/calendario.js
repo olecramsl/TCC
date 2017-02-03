@@ -5,9 +5,8 @@ $(document).ready(function() {
 			center : 'title',
 			right : 'month,agendaWeek,agendaDay'
 		},
-		timezone: 'local',				
+		timezone: "local",
 		allDaySlot: false,
-		ignoreTimezone: false,
 		locale : 'pt-br',
 		navLinks : true, // can click day/week names to navigate views
 		selectable : true,
@@ -15,26 +14,22 @@ $(document).ready(function() {
 		slotLabelFormat : [ 'ddd D/M', 'H:mm' ],
 		selectHelper : true,		
 		select : function(start, end) {	
-			angular.element('#AgendaCtrl').scope().LimparDadosAgendamento();			
+			angular.element('#AgendaCtrl').scope().LimparDadosAgendamento();					
 
 			// Verifica se existe um horario pre definido
 			if (!start.hasTime()) {		
-				// armazena a data selecionada
-				var dia = start.date();
-				var mes = start.month();
-				var ano = start.year();
-								
-				start = moment(); // reseta start com as informações atuais 
-				start = moment(start).date(dia).month(mes).year(ano); // seta a data que foi clicada								
-				
+				var time = moment();
+				start = moment(start).hour(time.hour()).minute(time.minute()).second(0).millisecond(0);
 				end = moment(start); // a consulta deve terminar no mesmo dia
 				end.add(1, 'h'); // tempo da consulta
 			}
 			
-			angular.element('#AgendaCtrl').scope().agendamento.start         = start;
-			angular.element('#AgendaCtrl').scope().agendamento.formatedStart = 
-				angular.element('#AgendaCtrl').scope().agendamento.start.format('H:mm');
-			angular.element('#AgendaCtrl').scope().agendamento.end           = end;
+			var dataInicialAgendamento = moment.tz(moment(start).format("YYYY-MM-DD H:mm"), "America/Sao_Paulo");
+			var dataFinalAgendamento = moment.tz(moment(end).format("YYYY-MM-DD H:mm"), "America/Sao_Paulo");		
+			
+			angular.element('#AgendaCtrl').scope().agendamento.start = new Date(dataInicialAgendamento);
+			angular.element('#AgendaCtrl').scope().agendamento.end = new Date(dataFinalAgendamento);
+			angular.element('#AgendaCtrl').scope().agendamento.formatedStart =	start.format('HH:mm');			
 			
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();															
 			angular.element('#AgendaCtrl').scope().$apply();			
@@ -54,18 +49,24 @@ $(document).ready(function() {
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		
-		eventDrop : function( event ) {	
+		eventDrop : function(event, delta, revertFunc, jsEvent, ui, view) {	
 			var oldEvent = angular.copy(event); // evento dropado
 			oldEvent.repetirSemanalmente = false;
+			
+			console.log(JSON.stringify(event));
+			
+			var days = moment.duration(delta).days()*(-1);
+			oldEvent.start.add(days, "d");
+			oldEvent.end.add(days, "d");						
 			
 			var horas   = event.end.hours();
 			var minutos = event.end.minutes();
 			
-			event.end                 = moment(event.start);
-			event.end                 = moment(event.end).hours(horas).minutes(minutos);
+			event.end  = moment(event.start);
+			event.end  = moment(event.end).hours(horas).minutes(minutos);
 			event.repetirSemanalmente = false;
 			
-			angular.element('#AgendaCtrl').scope().updateEventDroped(angular.copy(event), angular.copy(oldEvent));						
+			angular.element('#AgendaCtrl').scope().updateEventDroped(angular.copy(event), angular.copy(oldEvent));								
 		},
 		viewRender: function (view, element) {				
 			$('#calendar').fullCalendar('removeEvents');

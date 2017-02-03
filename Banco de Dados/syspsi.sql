@@ -11,20 +11,6 @@ CREATE SCHEMA IF NOT EXISTS `syspsi` DEFAULT CHARACTER SET utf8 ;
 USE `syspsi` ;
 
 -- -----------------------------------------------------
--- Table `syspsi`.`paciente`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
-  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `nome` VARCHAR(45) NOT NULL,
-  `sobrenome` VARCHAR(90) NOT NULL,
-  `ativo` TINYINT(1) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-AUTO_INCREMENT = 8
-DEFAULT CHARACTER SET = utf8;
-
-
--- -----------------------------------------------------
 -- Table `syspsi`.`psicologo`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
@@ -34,6 +20,27 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `syspsi`.`paciente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
+  `nome` VARCHAR(45) NOT NULL,
+  `sobrenome` VARCHAR(90) NOT NULL,
+  `ativo` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_paciente_psicologo1_idx` (`idPsicologo` ASC),
+  CONSTRAINT `fk_paciente_psicologo1`
+    FOREIGN KEY (`idPsicologo`)
+    REFERENCES `syspsi`.`psicologo` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 8
 DEFAULT CHARACTER SET = utf8;
 
 

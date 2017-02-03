@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.syspsi.model.entity.Paciente;
 import br.com.syspsi.repository.PacienteRepositorio;
+import br.com.syspsi.repository.PsicologoRepositorio;
 
 @RestController
 @EnableAutoConfiguration
@@ -18,13 +19,17 @@ public class PacienteController {
 	@Autowired
 	private PacienteRepositorio pacienteRepositorio;
 	
+	@Autowired
+	private PsicologoRepositorio psicologoRepositorio;
+	
 	@RequestMapping(
 			value = "/listarPacientesAtivos", 
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
-	public List<Paciente> listarPacientesAtivos() {		
-		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByAtivo(true);		
+	public List<Paciente> listarPacientesAtivos() {
+		// ARRUMAR APOS LOGIN
+		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByAtivoAndPsicologoOrderByNomeAsc(true, this.psicologoRepositorio.findOne(1L));		
 		return lstPacientes;
 	}
 }

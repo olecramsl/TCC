@@ -14,7 +14,7 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
       templateUrl: 'templates/eventoModal.html',
       controller: 'ModalInstanceCtrl',
       controllerAs: '$ctrl',
-      scope: $scope, // bind $scope to modal scope      
+      scope: $scope, // bind $scope to modal window      
       size: size
     });
     
@@ -35,7 +35,23 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
       templateUrl: 'templates/erroModal.html',
       controller: 'ModalInstanceCtrl',
       controllerAs: '$ctrl',
-      scope: $scope, // bind $scope to modal scope      
+      scope: $scope, // bind $scope to modal window      
+      size: size
+    });    
+  };
+  
+  /**
+   * Abre janela modal de erro
+   */
+  $ctrl.openConfirmModal = function (size) {	 	
+    var modalInstance = $uibModal.open({
+      animation: true,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: 'templates/confirmacaoModal.html',
+      controller: 'ModalInstanceCtrl',
+      controllerAs: '$ctrl',
+      scope: $scope, // bind $scope to modal window      
       size: size
     });    
   };
@@ -78,6 +94,9 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
   
   // Mensagem de erro
   $scope.msgErro = null;
+  
+  // Mensagem modal confirmação
+  $scope.msgConfirmacao = null;
   
   /**
    * Limpa os dados pertinentes a um agendamento
@@ -144,21 +163,19 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
    * Retorna o DTO a ser enviado ao método salvar
    */
   $scope.prepareAgendamentoDTO = function(agendamento) {
-	  view = $('#calendar').fullCalendar('getView');			
-	  // Necessário para evitar problemas na controller Java entre as datas
-	  var dataInicialView = moment();
-	  var dataFinalView = moment();
-	  dataInicialView = moment(dataInicialView).date(view.start.date()).month(view.start.month()).year(view.start.year())
-	  	.hour(agendamento.start.hour()).minute(agendamento.start.minute()).second(0).millisecond(0);
-	  dataFinalView = moment(dataFinalView).date(view.end.date()).month(view.end.month()).year(view.end.year())
-	  	.hour(agendamento.end.hour()).minute(agendamento.end.minute()).second(0).millisecond(0);
-	  // Fim
+	  view = $('#calendar').fullCalendar('getView');
+	  
+	  view.start.hour(agendamento.start.hour()).minute(agendamento.start.minute()).second(0).millisecond(0);	  	  
+	  view.end.hour(agendamento.end.hour()).minute(agendamento.end.minute()).second(0).millisecond(0);	  
+	  	  
+	  var dataInicialView = moment.tz(moment(view.start).format("YYYY-MM-DD H:mm"), "America/Sao_Paulo");
+	  var dataFinalView = moment.tz(moment(view.end).format("YYYY-MM-DD H:mm"), "America/Sao_Paulo");
 	  
 	  return agendamentoDTO = {
 				agendamento        : agendamento,
 				repetirSemanalmente: agendamento.repetirSemanalmente, 
-				dataInicialViewFC  : dataInicialView, 
-				dataFinalViewFC    : dataFinalView
+				dataInicialViewFC  : new Date(dataInicialView), 
+				dataFinalViewFC    : new Date(dataFinalView)
 	  };
   }
   
@@ -194,6 +211,11 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $sco
 	$scope.salvar = function (agendamento) {				
 		// Edicao				
 		if (agendamento.id) {
+			if ((agendamento.grupo > 0) && (!agendamento.repetirSemanalmente)) {
+				angular.element('#AgendaCtrl').scope().msgConfirmacao = "Você optou por não repetir este evento semanalmente. Deseja excluir os eventos futuros associados a este agendamento?";
+				angular.element('#AgendaCtrl').scope().$ctrl.openConfirmModal();				
+			}
+			
 			var agendamentoDTO = angular.element('#AgendaCtrl').scope().prepareAgendamentoDTO(agendamento); 
 			$http.post('http://localhost:8080/salvarAgendamento', agendamentoDTO).then(
 					successCallback = function(response) {	  				   					
@@ -220,11 +242,12 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $sco
 			);
 		// Novo agendamento
 		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {				
-			agendamento.title   = angular.element('#AgendaCtrl').scope().updateTitle(agendamento);
+			agendamento.title = angular.element('#AgendaCtrl').scope().updateTitle(agendamento);
 			var horarioConsulta = agendamento.formatedStart.split(":");
-			agendamento.start   = moment(agendamento.start).hour(horarioConsulta[0]).minute(horarioConsulta[1]).second(0).millisecond(0);
-			agendamento.end     = moment(agendamento.start).add(1, 'h');						
-						
+			agendamento.start = moment(agendamento.start).hour(horarioConsulta[0]).minute(horarioConsulta[1]).second(0).millisecond(0);
+			agendamento.end = moment(agendamento.start).add(1, 'h');
+			agendamento.ativo = true;									
+			
 			var agendamentoDTO = angular.element('#AgendaCtrl').scope().prepareAgendamentoDTO(agendamento);
 			$http.post('http://localhost:8080/salvarAgendamento', agendamentoDTO).then(
 					successCallback = function(response) {											
@@ -253,5 +276,17 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $sco
 			}
 		);	
 		$uibModalInstance.close();
-	};						
+	};		
+	
+	$scope.removerEventosFuturos = function (agendamento) {
+		$http.post('http://localhost:8080/removerAgendamentosFuturos', angular.copy(agendamento)).then(
+				successCallback = function(response) {	  				    									
+					$('#calendar').fullCalendar('removeEvents',response.data);				
+				},
+				errorCallback = function (error, status){					
+					angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  						
+				}
+		);	
+			$uibModalInstance.close();
+	}
 });

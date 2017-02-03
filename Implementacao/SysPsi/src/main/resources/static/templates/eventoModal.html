@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html ng-app="syspsi">
-	<head>
+	<head>		
 		<meta charset="UTF-8" />
-		<script type="text/javascript">
+		<script type="text/javascript">			
 			$('.clockpicker').clockpicker({
 				autoclose: true
-			});								
-		</script>
+			});			
+		</script>		
 	</head>
 	<body>
 		<div class="modal-header">
@@ -28,15 +28,15 @@
 							<option value="">Selecione o paciente</option>
 						</select>
 					</div>								
-					<div ng-class="agendamentoForm.inicio.$error.pattern || 
+					<div class="clockpicker" ng-class="agendamentoForm.inicio.$error.pattern || 
 						agendamentoForm.inicio.$error.required ? 
-						'clockpicker form-group has-error has-feedback' : 'clockpicker'"}}>
+						'form-group has-error has-feedback' : ''"}}>
 						<label for="inicio">Horário da consulta:</label>
 						<input id="inicio" name="inicio" type="text" class="form-control" 
 							ng-model="agendamento.formatedStart"
 							maxlength="5" ng-required="true" onKeyPress="mascara(this, '##:##')" 
 							ng-pattern="/^([01]\d|2[0-3]):?([0-5]\d)$/" ng-required="true">													 					
-					</div>											
+					</div>	
 					<label for="observacao">Observação: </label> 
 					<input id="observacao"	type="text" maxlength="50" class="form-control" ng-model="agendamento.description"></input>					
 					<div class="checkbox">

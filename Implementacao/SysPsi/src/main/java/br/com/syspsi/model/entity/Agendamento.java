@@ -17,10 +17,10 @@ import javax.persistence.Transient;
 public class Agendamento {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private long id;	
+	private Long id;	
 	@ManyToOne
     @JoinColumn(name="idpaciente")
-	private Paciente paciente;
+	private Paciente paciente;	
 	@ManyToOne
     @JoinColumn(name="idpsicologo")
 	private Psicologo psicologo;
@@ -30,7 +30,7 @@ public class Agendamento {
 	private Calendar start;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar end;	
-	private long grupo;
+	private Long grupo;
 	private String description;
 	@Column(name="eventoprincipal")
 	private boolean eventoPrincipal;
@@ -43,19 +43,18 @@ public class Agendamento {
 		super();
 	}
 	
-	public Agendamento(Paciente paciente, Psicologo psicologo, Calendar start, Calendar end, String description) {
+	public Agendamento(Paciente paciente, Calendar start, Calendar end, String description) {
 		super();		
 		this.paciente = paciente;
-		this.psicologo = psicologo;
 		this.start = start;
 		this.end = end;
 		this.description = description;		
 	}			
 
 	public Agendamento(Paciente paciente, Psicologo psicologo, Long gCalendarId, Calendar start, Calendar end,
-			long grupo, String description, boolean eventoPrincipal) {
+			Long grupo, String description, boolean eventoPrincipal, boolean ativo) {
 		super();		
-		this.paciente = paciente;
+		this.paciente = paciente;	
 		this.psicologo = psicologo;
 		this.gCalendarId = gCalendarId;
 		this.start = start;
@@ -63,19 +62,20 @@ public class Agendamento {
 		this.grupo = grupo;
 		this.description = description;
 		this.eventoPrincipal = eventoPrincipal;
+		this.ativo = ativo;
 	}
 
 	/**
 	 * @return the id
 	 */
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 	
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}		
 
@@ -149,11 +149,11 @@ public class Agendamento {
 		this.end = end;
 	}
 	
-	public long getGrupo() {
+	public Long getGrupo() {
 		return grupo;
 	}
 
-	public void setGrupo(long grupo) {
+	public void setGrupo(Long grupo) {
 		this.grupo = grupo;
 	}
 
