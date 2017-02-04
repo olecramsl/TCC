@@ -168,8 +168,8 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
 	  view.start.hour(agendamento.start.hour()).minute(agendamento.start.minute()).second(0).millisecond(0);	  	  
 	  view.end.hour(agendamento.end.hour()).minute(agendamento.end.minute()).second(0).millisecond(0);	  
 	  	  
-	  var dataInicialView = moment.tz(moment(view.start).format("YYYY-MM-DD H:mm"), "America/Sao_Paulo");
-	  var dataFinalView = moment.tz(moment(view.end).format("YYYY-MM-DD H:mm"), "America/Sao_Paulo");
+	  var dataInicialView =view.start.local();
+	  var dataFinalView = view.end.local();
 	  
 	  return agendamentoDTO = {
 				agendamento        : agendamento,
@@ -241,12 +241,13 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $sco
 					}
 			);
 		// Novo agendamento
-		} else if (angular.element('#AgendaCtrl').scope().agendamento.paciente) {				
+		} else if (agendamento.paciente) {				
 			agendamento.title = angular.element('#AgendaCtrl').scope().updateTitle(agendamento);
 			var horarioConsulta = agendamento.formatedStart.split(":");
 			agendamento.start = moment(agendamento.start).hour(horarioConsulta[0]).minute(horarioConsulta[1]).second(0).millisecond(0);
 			agendamento.end = moment(agendamento.start).add(1, 'h');
-			agendamento.ativo = true;									
+			agendamento.ativo = true;
+			agendamento.grupo = 0;					
 			
 			var agendamentoDTO = angular.element('#AgendaCtrl').scope().prepareAgendamentoDTO(agendamento);
 			$http.post('http://localhost:8080/salvarAgendamento', agendamentoDTO).then(

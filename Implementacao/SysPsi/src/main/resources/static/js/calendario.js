@@ -24,8 +24,8 @@ $(document).ready(function() {
 				end.add(1, 'h'); // tempo da consulta
 			}
 			
-			var dataInicialAgendamento = moment.tz(moment(start).format("YYYY-MM-DD H:mm"), "America/Sao_Paulo");
-			var dataFinalAgendamento = moment.tz(moment(end).format("YYYY-MM-DD H:mm"), "America/Sao_Paulo");		
+			var dataInicialAgendamento = start.local();
+			var dataFinalAgendamento = end.local();
 			
 			angular.element('#AgendaCtrl').scope().agendamento.start = new Date(dataInicialAgendamento);
 			angular.element('#AgendaCtrl').scope().agendamento.end = new Date(dataFinalAgendamento);

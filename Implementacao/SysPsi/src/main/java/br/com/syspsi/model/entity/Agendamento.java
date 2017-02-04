@@ -43,14 +43,6 @@ public class Agendamento {
 		super();
 	}
 	
-	public Agendamento(Paciente paciente, Calendar start, Calendar end, String description) {
-		super();		
-		this.paciente = paciente;
-		this.start = start;
-		this.end = end;
-		this.description = description;		
-	}			
-
 	public Agendamento(Paciente paciente, Psicologo psicologo, Long gCalendarId, Calendar start, Calendar end,
 			Long grupo, String description, boolean eventoPrincipal, boolean ativo) {
 		super();		
