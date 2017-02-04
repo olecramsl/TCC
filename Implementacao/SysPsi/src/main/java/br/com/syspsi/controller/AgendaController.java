@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +21,6 @@ import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
 
 @RestController
-@EnableAutoConfiguration
 public class AgendaController {	
 	
 	@Autowired
@@ -93,7 +91,7 @@ public class AgendaController {
 	 * @param agendamento O agendamento a ser salvo
 	 * @param dataInicial A data inicial da view visualizada
 	 * @param dataFinal A data final da view visualizada
-	 * @throws Exception Caso haja algum problema ao persistir os dados no BD ou data(s) informada(s) inválida(s)
+	 * @throws Exception Caso haja algum problema ao persistir os dados no BD
 	 * @return o id do agendamento persistido no BD
 	 */
 	@RequestMapping(
@@ -102,8 +100,22 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public List<Agendamento> salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) {
+	public List<Agendamento> salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {
 		Agendamento agendamento = agendamentoDTO.getAgendamento();
+		
+		SimpleDateFormat format = new SimpleDateFormat("H:mm");
+		Calendar di = Calendar.getInstance();
+		Calendar df = Calendar.getInstance();		
+		
+		int horaAgendamento = Integer.parseInt(format.format(agendamento.getStart().getTime()).split(":")[0]);
+		int minutoAgendamento = Integer.parseInt(format.format(agendamento.getEnd().getTime()).split(":")[1]);
+		
+		di.setTime(agendamentoDTO.getDataInicialViewFC().getTime());
+		df.setTime(agendamentoDTO.getDataFinalViewFC().getTime());
+		di.set(Calendar.HOUR_OF_DAY, horaAgendamento);
+		di.set(Calendar.MINUTE, minutoAgendamento);
+		df.set(Calendar.HOUR_OF_DAY, horaAgendamento+1);
+		df.set(Calendar.MINUTE, minutoAgendamento);						
 		
 		// ARRUMAR APÓS LOGIN
 		agendamento.setPsicologo(psicologoRepositorio.findOne(1L));
@@ -115,8 +127,7 @@ public class AgendaController {
 				agendamento.setEventoPrincipal(true);				
 			}									
 				
-			lstAgendamento = this.getLstAgendamentosParaSalvar(agendamentoDTO.getDataInicialViewFC(), 
-					agendamentoDTO.getDataFinalViewFC(), agendamento);
+			lstAgendamento = this.getLstAgendamentosParaSalvar(di, df, agendamento);
 			this.agendamentoRepositorio.save(lstAgendamento);
 		} else {			
 			lstAgendamento.add(this.agendamentoRepositorio.save(agendamento));

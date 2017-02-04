@@ -51,9 +51,7 @@ $(document).ready(function() {
 		},		
 		eventDrop : function(event, delta, revertFunc, jsEvent, ui, view) {	
 			var oldEvent = angular.copy(event); // evento dropado
-			oldEvent.repetirSemanalmente = false;
-			
-			console.log(JSON.stringify(event));
+			oldEvent.repetirSemanalmente = false;						
 			
 			var days = moment.duration(delta).days()*(-1);
 			oldEvent.start.add(days, "d");
