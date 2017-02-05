@@ -11,10 +11,12 @@ $(document).ready(function() {
 		navLinks : true, // can click day/week names to navigate views
 		selectable : true,
 		slotDuration : "00:30:00",
-		slotLabelFormat : [ 'ddd D/M', 'H:mm' ],
+		slotLabelFormat : [ 'ddd D/M', 'HH:mm' ],
+		timeFormat : "HH:mm",
 		selectHelper : true,		
-		select : function(start, end) {	
-			angular.element('#AgendaCtrl').scope().LimparDadosAgendamento();					
+		select : function(start, end) {					
+			angular.element('#AgendaCtrl').scope().LimparDadosAgendamento();
+			angular.element('#AgendaCtrl').scope().agendamentoCarregado = null;
 
 			// Verifica se existe um horario pre definido
 			if (!start.hasTime()) {		
@@ -29,12 +31,12 @@ $(document).ready(function() {
 			
 			angular.element('#AgendaCtrl').scope().agendamento.start = new Date(dataInicialAgendamento);
 			angular.element('#AgendaCtrl').scope().agendamento.end = new Date(dataFinalAgendamento);
-			angular.element('#AgendaCtrl').scope().agendamento.formatedStart =	start.format('HH:mm');			
+			angular.element('#AgendaCtrl').scope().agendamento.formatedStart =	start.format('HH:mm');									
 			
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();															
 			angular.element('#AgendaCtrl').scope().$apply();			
 		},
-		eventClick : function(event, jsEvent, view) {						
+		eventClick : function(event, jsEvent, view) {			
 			var tmpLst = angular.element('#AgendaCtrl').scope().lstPacientesAtivos;
 			for (var i = 0; i < tmpLst.length; i++) {
 				if (tmpLst[i].id == event.paciente.id) {					
@@ -45,7 +47,12 @@ $(document).ready(function() {
 			
 			event.formatedStart = event.start.format('H:mm');
 							
-			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);			
+			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);
+			
+			angular.element('#AgendaCtrl').scope().agendamentoCarregado = angular.copy(event);
+			
+			console.log(angular.element('#AgendaCtrl').scope().agendamento.id);
+			
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		
