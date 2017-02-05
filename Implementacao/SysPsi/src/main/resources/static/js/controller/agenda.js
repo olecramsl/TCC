@@ -133,15 +133,25 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
   /**
    * Atualiza na base de dados um evento que foi movido na agenda
    */
-  $scope.updateEventDroped = function(event, oldEvent) {	  
+  $scope.updateEventDroped = function(event, oldEvent) {
+	  event.repetirSemanalmente = false;
+	  event.grupo = 0;
+	  if (oldEvent.eventoPrincipal) {
+		  // Setar próximo evento do grupo como principal
+	  }
 	  var agendamentoDTO = angular.element('#AgendaCtrl').scope().prepareAgendamentoDTO(angular.copy(event));	 
 	  $http.post('http://localhost:8080/salvarAgendamento', agendamentoDTO).then(
 		  successCallback = function(response) {
+			  $('#calendar').fullCalendar('removeEvents', event.id);
+			  $('#calendar').fullCalendar('renderEvent', response.data);
+			  
 			  // Mantem o evento antigo no BD para evitar o save na view quando visualizada
 			  if (oldEvent.grupo > 0) {
-				  oldEvent.id = null;
+				  oldEvent.id = null;				  
 				  oldEvent.eventoPrincipal = false;
 				  oldEvent.ativo = false;
+				  oldEvent.repetirSemanalmente = false;				  
+				  
 				  agendamentoDTO = angular.element('#AgendaCtrl').scope().prepareAgendamentoDTO(angular.copy(oldEvent));
 				  $http.post('http://localhost:8080/salvarAgendamento', agendamentoDTO).then(
 						  successCallback = function(response) {
@@ -156,7 +166,7 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
 		  errorCallback = function (error){			  
 			  angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  						
 		  }
-	  );	
+	  );		  	 
   };
   
   /**
@@ -176,6 +186,9 @@ app.controller('AgendaCtrl', function ($scope, $uibModal, $http, $q) {
 	  };
   }
   
+  /**
+   * Verifica se algum campo da modal de novo evento foi alterado
+   */
   $scope.isDataChanged = function(agendamento, agendamentoCarregado) {	  
 	  if (agendamentoCarregado === null) {		  
 		  return true;	  
@@ -229,13 +242,14 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $sco
 						var event = $('#calendar').fullCalendar('clientEvents',agendamento.id);
 						if (event) {	
 							agendamento.title = angular.element('#AgendaCtrl').scope().updateTitle(agendamento);
-													
-							if (angular.element('#AgendaCtrl').scope().agendamento.repetirSemanalmente) {
+							
+							if (agendamento.repetirSemanalmente) {
 								$scope.atualizarViewFC();
-							} else {		
-								$('#calendar').fullCalendar('removeEvents', angular.element('#AgendaCtrl').scope().agendamento.id);											
-								$('#calendar').fullCalendar('renderEvents',response.data);
-							}						
+							} else {
+								$('#calendar').fullCalendar('removeEvents', agendamento.id);
+								  $('#calendar').fullCalendar('renderEvent', response.data);
+							}
+																		
 						} else {
 							angular.element('#AgendaCtrl').scope().msgErro = "Não foi possível encontrar o agendamento com o id informado!";
 							angular.element('#AgendaCtrl').scope().$ctrl.openErroModal(); 
@@ -268,8 +282,8 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $sco
 		
 		$('#calendar').fullCalendar('unselect');												
 		$uibModalInstance.close();
-	};
-	
+	};		
+		
 	/**
 	 * Remove os eventos da view e popula com eventos atualizados/salvos
 	 */
@@ -277,9 +291,9 @@ app.controller('ModalInstanceCtrl', function ($uibModalInstance, $http, $q, $sco
 		$('#calendar').fullCalendar('removeEvents');
 		// Atualiza a view para o caso de haver algum evento semanal
 		view = $('#calendar').fullCalendar('getView');
-		angular.element('#AgendaCtrl').scope().listarAgendamento(view.start, view.end);
+		$scope.listarAgendamento(view.start, view.end);
 	}
-		
+	
 	/**
 	 * Remove um agendamento
 	 */

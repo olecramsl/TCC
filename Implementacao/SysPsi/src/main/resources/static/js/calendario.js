@@ -49,16 +49,13 @@ $(document).ready(function() {
 							
 			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);
 			
-			angular.element('#AgendaCtrl').scope().agendamentoCarregado = angular.copy(event);
-			
-			console.log(angular.element('#AgendaCtrl').scope().agendamento.id);
+			angular.element('#AgendaCtrl').scope().agendamentoCarregado = angular.copy(event);					
 			
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		
 		eventDrop : function(event, delta, revertFunc, jsEvent, ui, view) {	
 			var oldEvent = angular.copy(event); // evento dropado
-			oldEvent.repetirSemanalmente = false;						
 			
 			var days = moment.duration(delta).days()*(-1);
 			oldEvent.start.add(days, "d");
@@ -68,8 +65,7 @@ $(document).ready(function() {
 			var minutos = event.end.minutes();
 			
 			event.end  = moment(event.start);
-			event.end  = moment(event.end).hours(horas).minutes(minutos);
-			event.repetirSemanalmente = false;
+			event.end  = moment(event.end).hours(horas).minutes(minutos);			
 			
 			angular.element('#AgendaCtrl').scope().updateEventDroped(angular.copy(event), angular.copy(oldEvent));								
 		},

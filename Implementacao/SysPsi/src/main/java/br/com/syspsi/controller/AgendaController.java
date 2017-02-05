@@ -98,7 +98,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {
+	public Agendamento salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {
 		Agendamento agendamento = agendamentoDTO.getAgendamento();
 		
 		// ARRUMAR APÓS LOGIN
@@ -109,7 +109,7 @@ public class AgendaController {
 			agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo()));
 			agendamento.setEventoPrincipal(true);
 		}
-		this.agendamentoRepositorio.save(agendamento);		
+		return this.agendamentoRepositorio.save(agendamento);		
 	}
 	
 	/**
