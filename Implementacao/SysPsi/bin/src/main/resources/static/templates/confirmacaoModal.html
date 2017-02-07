@@ -9,14 +9,14 @@
         </div>
         <div class="modal-body" id="modal-body">
 			<form>								
-				<p>{{msgConfirmacao}}</p>														
+				<p>{{msgConfirmacao}}</p>											
 			</form>
         </div>
         <div class="modal-footer">            
            	<div class="form-group">
-           		<button id="btnSim" type="button" class="btn btn-success" ng-click="confirmar(agendamento, tipoConfirmacao)">Sim</button>
-				<button id="btnNao" type="button" class="btn btn-danger"  ng-click="naoConfirmar(agendamento, tipoConfirmacao)">Não</button>					
+           		<button id="btnSim" type="button" class="btn btn-success" ng-click="removerEventosFuturos(agendamento)">Sim</button>
+				<button id="btnNao" type="button" class="btn btn-danger"  ng-click="cancelar()">Não</button>					
            	</div>        							
-		</div>		
+		</div>
 	</body>
 </html>

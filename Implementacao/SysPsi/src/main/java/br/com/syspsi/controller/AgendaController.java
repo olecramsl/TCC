@@ -30,6 +30,46 @@ public class AgendaController {
 	private PsicologoRepositorio psicologoRepositorio;
 	
 	/**
+	 * Retorna uma lista de objetos Agendamento para serem gravados na view FullCalendar
+	 * @param di a data inicial da view
+	 * @param df a data final da view
+	 * @param agendamento o objeto agendamento de referência
+	 * @return um lista de objetos Agendamento
+	 */
+	private List<Agendamento> getLstAgendamentosParaSalvar(Calendar di, Calendar df, Agendamento ag) {
+		List<Agendamento> lstAgendamento = new ArrayList<>();
+		Agendamento agendamento = new Agendamento(ag.getPaciente(), ag.getPsicologo(), ag.getgCalendarId(), 
+				ag.getStart(), ag.getEnd(), ag.getGrupo(), ag.getDescription(), ag.isEventoPrincipal(), 
+				ag.isAtivo());
+					
+		// Dias já salvos no BD
+		List<String> lstDiasSalvos = this.agendamentoRepositorio.listarDatasAgendamentoPeriodoPorGrupo(di, df, 
+				agendamento.getGrupo(), agendamento.getPsicologo());
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");		
+		// percorre todos os dias constantes na view do calendário e repete o evento quando necessário		
+		for (Calendar dia = (Calendar)di.clone(); dia.before(df); dia.add(Calendar.DATE, 1)) {			
+			if ((dia.get(Calendar.DAY_OF_WEEK) == agendamento.getStart().get(Calendar.DAY_OF_WEEK)) &&
+				    ((agendamento.getStart().before(dia) || 
+				    ((!agendamento.getStart().before(dia)) && (!agendamento.getStart().after(dia)))))) {								
+				// Verifica se o dia jah estah salvo no BD
+				if (lstDiasSalvos.isEmpty() || !lstDiasSalvos.contains(format.format(dia.getTime()))) {
+					agendamento.setStart((Calendar)dia.clone());
+					agendamento.setEnd((Calendar)dia.clone());
+					agendamento.getEnd().add(Calendar.HOUR, 1);
+
+					lstAgendamento.add(agendamento);
+					
+					agendamento = new Agendamento(agendamento.getPaciente(), agendamento.getPsicologo(), null,  
+							(Calendar)agendamento.getStart().clone(), (Calendar)agendamento.getEnd().clone(),
+							agendamento.getGrupo(),	null, false, true);
+				}
+			}
+		}
+		return lstAgendamento;
+	}	
+	
+	/**
 	 * @param dataInicial A data inicial dos agendamentos
 	 * @param dataFinal A data final dos agendamentos
 	 * @return A lista de agendamentos para o período informado
@@ -125,45 +165,107 @@ public class AgendaController {
 			)
 	public void removerAgendamento(@RequestBody Agendamento agendamento) throws IllegalArgumentException {		
 		this.agendamentoRepositorio.delete(agendamento);								
-	}		
+	}			
 	
 	/**
-	 * Retorna uma lista de objetos Agendamento para serem gravados na view FullCalendar
-	 * @param di a data inicial da view
-	 * @param df a data final da view
-	 * @param agendamento o objeto agendamento de referência
-	 * @return um lista de objetos Agendamento
+	 * Remove os agendamentos futuros com base em um agendamento
+	 * @param agendamento o agendamento a ser removido
+	 * @throws Exception caso algum erro ocorra
 	 */
-	private List<Agendamento> getLstAgendamentosParaSalvar(Calendar di, Calendar df, Agendamento ag) {
-		List<Agendamento> lstAgendamento = new ArrayList<>();
-		Agendamento agendamento = new Agendamento(ag.getPaciente(), ag.getPsicologo(), ag.getgCalendarId(), 
-				ag.getStart(), ag.getEnd(), ag.getGrupo(), ag.getDescription(), ag.isEventoPrincipal(), 
-				ag.isAtivo());
-					
-		// Dias já salvos no BD
-		List<String> lstDiasSalvos = this.agendamentoRepositorio.listarDatasAgendamentoPeriodoPorGrupo(di, df, 
-				agendamento.getGrupo(), agendamento.getPsicologo());
+	@RequestMapping(
+			value = "/removerAgendamentosFuturos", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void removerAgendamentosFuturos(@RequestBody Agendamento agendamento) throws Exception {
+		// Remove agendamentos futuros, caso existam
+		this.agendamentoRepositorio.removerAgendamentosFuturos(agendamento.getStart(), agendamento.getGrupo(), agendamento.getPsicologo());
 		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");		
-		// percorre todos os dias constantes na view do calendário e repete o evento quando necessário		
-		for (Calendar dia = (Calendar)di.clone(); dia.before(df); dia.add(Calendar.DATE, 1)) {			
-			if ((dia.get(Calendar.DAY_OF_WEEK) == agendamento.getStart().get(Calendar.DAY_OF_WEEK)) &&
-				    ((agendamento.getStart().before(dia) || 
-				    ((!agendamento.getStart().before(dia)) && (!agendamento.getStart().after(dia)))))) {								
-				// Verifica se o dia jah estah salvo no BD
-				if (lstDiasSalvos.isEmpty() || !lstDiasSalvos.contains(format.format(dia.getTime()))) {
-					agendamento.setStart((Calendar)dia.clone());
-					agendamento.setEnd((Calendar)dia.clone());
-					agendamento.getEnd().add(Calendar.HOUR, 1);
-
-					lstAgendamento.add(agendamento);
-					
-					agendamento = new Agendamento(agendamento.getPaciente(), agendamento.getPsicologo(), null,  
-							(Calendar)agendamento.getStart().clone(), (Calendar)agendamento.getEnd().clone(),
-							agendamento.getGrupo(),	null, false, true);
-				}
+		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.findByGrupoAndPsicologo(agendamento.getGrupo(), agendamento.getPsicologo());
+		for (Agendamento ag : lstAgendamentos) {
+			ag.setGrupo(0L);
+			ag.setEventoPrincipal(false);
+		}
+		this.agendamentoRepositorio.save(lstAgendamentos);
+	}
+	
+	/**
+	 * Move os agendamentos futuros com base em um agendamento
+	 * @param agendamento o agendamento a ser movido
+	 * @throws Exception caso algum erro ocorra
+	 */
+	@RequestMapping(
+			value = "/moverAgendamentosFuturos", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void moverAgendamentosFuturos(@RequestBody Agendamento agendamento) throws Exception {
+		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), agendamento.getPsicologo());
+		
+		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndPsicologoAndEventoPrincipal(agendamento.getGrupo(), 
+				agendamento.getPsicologo(), true);
+		ag.setEventoPrincipal(false);		
+		this.agendamentoRepositorio.save(ag);										
+		
+		Long novoGrupo = this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo());		
+		agendamento.setEventoPrincipal(true);
+		agendamento.setGrupo(novoGrupo);
+		this.agendamentoRepositorio.save(agendamento);
+		
+		int addDays = 0;
+		if (lstAgendamentos != null && !lstAgendamentos.isEmpty()) {
+			addDays = agendamento.getStart().get(Calendar.DAY_OF_WEEK) - lstAgendamentos.get(0).getStart().get(Calendar.DAY_OF_WEEK);
+		}
+		
+		for (Agendamento a : lstAgendamentos) {
+			if (a.isAtivo()) {
+				a.setGrupo(novoGrupo);
+				a.getStart().add(Calendar.DATE, addDays);
+				a.getEnd().add(Calendar.DATE, addDays);							
 			}
 		}
-		return lstAgendamento;
+
+		this.agendamentoRepositorio.save(lstAgendamentos);
+	}
+	
+	/**
+	 * Atualiza paciente e horários dos agendamentos futuros com base em um agendamento 
+	 * @param agendamento o agendamento a ser atualizado
+	 * @throws Exception caso algum erro ocorra
+	 */
+	@RequestMapping(
+			value = "/atualizarAgendamentosFuturos", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void atualizarAgendamentosFuturos(@RequestBody Agendamento agendamento) throws Exception {
+		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), agendamento.getPsicologo());
+		
+		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndPsicologoAndEventoPrincipal(agendamento.getGrupo(), 
+				agendamento.getPsicologo(), true);
+		ag.setEventoPrincipal(false);		
+		this.agendamentoRepositorio.save(ag);
+		
+		agendamento.setEventoPrincipal(true);
+		this.agendamentoRepositorio.save(agendamento);
+		
+		SimpleDateFormat format = new SimpleDateFormat("H:mm");
+		int hora = Integer.parseInt(format.format(agendamento.getStart().getTime()).split(":")[0]);
+		int minuto = Integer.parseInt(format.format(agendamento.getStart().getTime()).split(":")[1]);		
+				
+		for (Agendamento a : lstAgendamentos) {
+			if (a.isAtivo()) {
+				a.setPaciente(agendamento.getPaciente());
+				a.getStart().set(Calendar.HOUR_OF_DAY, hora);
+				a.getStart().set(Calendar.MINUTE, minuto);
+				a.getEnd().set(Calendar.HOUR_OF_DAY, hora + 1);
+				a.getEnd().set(Calendar.MINUTE, minuto);							
+			}
+		}
+
+		this.agendamentoRepositorio.save(lstAgendamentos);
 	}
 }

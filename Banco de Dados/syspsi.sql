@@ -8,7 +8,18 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- Schema syspsi
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `syspsi` DEFAULT CHARACTER SET utf8 ;
+
 USE `syspsi` ;
+
+-- -----------------------------------------------------
+-- Table `syspsi`.`Config`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`Config` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tempoSessao` INT UNSIGNED NOT NULL DEFAULT 1,
+  `intervaloTempoCalendario` INT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `syspsi`.`psicologo`
@@ -79,7 +90,6 @@ DEFAULT CHARACTER SET = utf8;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
 
 -- Cria usuário da aplicação:
 

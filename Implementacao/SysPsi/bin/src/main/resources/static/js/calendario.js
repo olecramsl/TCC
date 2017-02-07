@@ -45,7 +45,7 @@ $(document).ready(function() {
 				}				
 			}
 			
-			event.formatedStart = event.start.format('HH:mm');
+			event.formatedStart = event.start.format('H:mm');
 							
 			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);
 			
@@ -54,7 +54,7 @@ $(document).ready(function() {
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		
-		eventDrop : function(event, delta, revertFunc, jsEvent, ui, view) {			
+		eventDrop : function(event, delta, revertFunc, jsEvent, ui, view) {	
 			var oldEvent = angular.copy(event); // evento dropado
 			
 			var days = moment.duration(delta).days()*(-1);
@@ -63,11 +63,11 @@ $(document).ready(function() {
 			
 			var horas   = event.end.hours();
 			var minutos = event.end.minutes();
-				
-			event.end  = moment(event.start);
-			event.end  = moment(event.end).hours(horas).minutes(minutos);								
 			
-			angular.element('#AgendaCtrl').scope().updateEventDroped(angular.copy(event), angular.copy(oldEvent));
+			event.end  = moment(event.start);
+			event.end  = moment(event.end).hours(horas).minutes(minutos);			
+			
+			angular.element('#AgendaCtrl').scope().updateEventDroped(angular.copy(event), angular.copy(oldEvent));								
 		},
 		viewRender: function (view, element) {				
 			$('#calendar').fullCalendar('removeEvents');
