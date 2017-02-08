@@ -3,7 +3,9 @@ var app = angular.module('syspsi', ['ui.bootstrap']);
 app.constant('TIPOS_CONFIRMACOES', {
 	'REMOVER_EVENTOS_FUTUROS': 1,
 	'MOVER_EVENTOS': 2,
-	'ALTERAR_DADOS_FUTUROS': 3
+	'ALTERAR_DADOS_FUTUROS': 3,
+	'REMOVER_EVENTO': 4,
+	'REMOVER_EVENTOS_GRUPO': 5
 });
 
 app.controller('AgendaCtrl', ['$scope','$uibModal', '$http', '$q', 'TIPOS_CONFIRMACOES', function ($scope, $uibModal, $http, $q, TIPOS_CONFIRMACOES) {
@@ -62,19 +64,7 @@ app.controller('AgendaCtrl', ['$scope','$uibModal', '$http', '$q', 'TIPOS_CONFIR
     });    
   };
   
-  /**
-   * Popula a lista de pacientes ativos
-   */  
-  $http.get('http://localhost:8080/listarPacientesAtivos').then(
-      successCallback = function(response) {	  
-    	  $scope.lstPacientesAtivos = response.data;
-  	  },
-  	  errorCallback = function (error, status){
-  		$scope.tratarExcecao(error); 
-  	  }
-  );  
-  
-  //Objeto agendamento  
+  // Objeto agendamento  
   $scope.agendamento = {
 		  id                 : null,
 		  gCalendarId        : null,
@@ -102,7 +92,31 @@ app.controller('AgendaCtrl', ['$scope','$uibModal', '$http', '$q', 'TIPOS_CONFIR
   
   // Mensagem modal confirmação
   $scope.msgConfirmacao = null;  
-  $scope.tipoConfirmacao = null;  
+  $scope.tipoConfirmacao = null; 
+  
+  /**
+   * Popula a lista de pacientes ativos
+   */  
+  $http.get('http://localhost:8080/listarPacientesAtivos').then(
+      successCallback = function(response) {	  
+    	  $scope.lstPacientesAtivos = response.data;
+  	  },
+  	  errorCallback = function (error, status){
+  		$scope.tratarExcecao(error); 
+  	  }
+  );
+  
+  /**
+   * Configurações do sistema
+   */  
+  $http.get('http://localhost:8080/loadConfig').then(
+      successCallback = function(response) {	
+    	  $scope.config = response.data;    	  
+  	  },
+  	  errorCallback = function (error, status){
+  		$scope.tratarExcecao(error); 
+  	  }
+  );     
 
   /**
    * Limpa os dados pertinentes a um agendamento
@@ -140,10 +154,6 @@ app.controller('AgendaCtrl', ['$scope','$uibModal', '$http', '$q', 'TIPOS_CONFIR
    * Atualiza na base de dados um evento que foi movido na agenda
    */
   $scope.updateEventDroped = function(event, oldEvent) {	  
-	  if (oldEvent.eventoPrincipal) {
-		  // Setar próximo evento do grupo como principal
-	  } 
-		  
 	  event.repetirSemanalmente = false;
 	  event.grupo = 0;
 	  var agendamentoDTO = angular.element('#AgendaCtrl').scope().prepareAgendamentoDTO(angular.copy(event));	 
@@ -163,8 +173,21 @@ app.controller('AgendaCtrl', ['$scope','$uibModal', '$http', '$q', 'TIPOS_CONFIR
 				  $http.post('http://localhost:8080/salvarAgendamento', agendamentoDTO).then(
 						  successCallback = function(response) {
 							  $scope.agendamento = angular.copy(event);
-							// Mantem o grupo original para pesquisa e, caso assim deseje o usuário, deslocamento dos eventos futuros
-							  $scope.agendamento.grupo = oldEvent.grupo;  
+							  // Mantem o grupo original para pesquisa e, caso assim deseje o usuário, deslocamento dos eventos futuros
+							  $scope.agendamento.grupo = oldEvent.grupo;
+							  							  
+							  if ($scope.agendamento.eventoPrincipal) {
+								  $http.post('http://localhost:8080/atribuirNovoEventoPrincipal', angular.copy($scope.agendamento)).then(
+										  /*
+										  successCallback = function(response) {									
+												$('#calendar').fullCalendar('removeEvents',agendamento.id);				
+											},
+											errorCallback = function (error, status){					
+												angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  						
+											}
+											*/
+								  );
+							  }							    
 							  var diasDiferenca = oldEvent.start.dayOfYear() - event.start.dayOfYear();							  
 							  if ((diasDiferenca < 7) && (event.start.day() !== oldEvent.start.day())) {
 								  $scope.tipoConfirmacao = TIPOS_CONFIRMACOES.MOVER_EVENTOS;
@@ -173,7 +196,7 @@ app.controller('AgendaCtrl', ['$scope','$uibModal', '$http', '$q', 'TIPOS_CONFIR
 							  }
 						  },
 						  errorCallback = function (error){			  
-							  angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  						
+							  $scope.tratarExcecao(error);			  						
 						  }
 				  );
 			  }
@@ -220,10 +243,10 @@ app.controller('AgendaCtrl', ['$scope','$uibModal', '$http', '$q', 'TIPOS_CONFIR
   $scope.tratarExcecao = function(error) {
 	  try {
 		  // captura de excecao enviada pela Controller (codigo java)
-		  angular.element('#AgendaCtrl').scope().msgErro = error.data.message;
+		  $scope.msgErro = error.data.message;
 	  } catch(erro) {
 		  // Erro nivel Javascript
-		  angular.element('#AgendaCtrl').scope().msgErro = error;
+		  $scope.msgErro = error;
 	  }
 		
 	  $ctrl.openErroModal();
@@ -250,8 +273,8 @@ app.controller('ModalInstanceCtrl', ['$uibModalInstance', '$http', '$q', '$scope
 		if (agendamento.id) {	
 			var horas = agendamento.formatedStart.split(":")[0];
 			var minutos = agendamento.formatedStart.split(":")[1];
-			agendamento.start = moment(agendamento.start).hour(horas).minute(minutos);			
-			agendamento.end = moment(agendamento.end).hour(agendamento.start.hour()+1).minute(minutos);
+			agendamento.start = moment(agendamento.start).hour(horas).minute(minutos);
+			agendamento.end = moment(agendamento.start).add(angular.element('#AgendaCtrl').scope().config.tempoSessao, 'm');			
 
 			var agendamentoDTO = angular.element('#AgendaCtrl').scope().prepareAgendamentoDTO(agendamento); 
 			$http.post('http://localhost:8080/salvarAgendamento', agendamentoDTO).then(
@@ -293,7 +316,7 @@ app.controller('ModalInstanceCtrl', ['$uibModalInstance', '$http', '$q', '$scope
 			agendamento.title = angular.element('#AgendaCtrl').scope().updateTitle(agendamento);
 			var horarioConsulta = agendamento.formatedStart.split(":");
 			agendamento.start = moment(agendamento.start).hour(horarioConsulta[0]).minute(horarioConsulta[1]).second(0).millisecond(0);
-			agendamento.end = moment(agendamento.start).add(1, 'h');
+			agendamento.end = moment(agendamento.start).add(angular.element('#AgendaCtrl').scope().config.tempoSessao, 'm');
 			agendamento.ativo = true;
 			agendamento.grupo = 0;
 					
@@ -324,30 +347,66 @@ app.controller('ModalInstanceCtrl', ['$uibModalInstance', '$http', '$q', '$scope
 	}
 	
 	/**
-	 * Remove um agendamento
+	 * Confirma com o usuário a remoção do evento
 	 */
-	$scope.remover = function (agendamento) {											
-		$http.post('http://localhost:8080/removerAgendamento', angular.copy(agendamento)).then(
-			successCallback = function(response) {	  				    									
-				$('#calendar').fullCalendar('removeEvents',agendamento.id);				
-			},
-			errorCallback = function (error, status){					
-				angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  						
-			}
-		);	
+	$scope.confirmarRemocaoEvento = function (agendamento) {		
+		angular.element('#AgendaCtrl').scope().tipoConfirmacao = TIPOS_CONFIRMACOES.REMOVER_EVENTO;
+		angular.element('#AgendaCtrl').scope().msgConfirmacao = "Tem certeza que deseja excluir o agendamento?";
+		angular.element('#AgendaCtrl').scope().$ctrl.openConfirmModal();
+		
 		$uibModalInstance.close();
 	};		
 	
 	/**
+	 * Remove um evento
+	 */
+	$scope.removerEvento = function(agendamento) {			
+		$http.post('http://localhost:8080/removerAgendamento', angular.copy(agendamento)).then(
+				successCallback = function(response) {
+					if (agendamento.grupo > 0 && agendamento.eventoPrincipal) {
+						$http.post('http://localhost:8080/atribuirNovoEventoPrincipal', angular.copy(agendamento)).then(
+								successCallback = function(response) {									
+									$('#calendar').fullCalendar('removeEvents',agendamento.id);				
+								},
+								errorCallback = function (error, status){					
+									angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  						
+								}
+						);
+					}
+					$('#calendar').fullCalendar('removeEvents',agendamento.id);				
+				},
+				errorCallback = function (error, status){					
+					angular.element('#AgendaCtrl').scope().tratarExcecao(error);			  						
+				}
+			);				
+		$uibModalInstance.close();
+		
+		if (agendamento.grupo > 0) {
+			angular.element('#AgendaCtrl').scope().tipoConfirmacao = TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS;
+			angular.element('#AgendaCtrl').scope().msgConfirmacao = "Remover também os eventos futuros?";
+			angular.element('#AgendaCtrl').scope().$ctrl.openConfirmModal();
+		}
+		/*
+		else if((agendamento.grupo > 0) && (agendamento.eventoPrincipal)) {
+			angular.element('#AgendaCtrl').scope().tipoConfirmacao = TIPOS_CONFIRMACOES.REMOVER_EVENTOS_GRUPO;
+			angular.element('#AgendaCtrl').scope().msgConfirmacao = "Você está removendo o agendamento principal de um agendamento semanal. Isso removerá todos agendamentos futuros associados a este agendamento. Deseja prosseguir?";
+			angular.element('#AgendaCtrl').scope().$ctrl.openConfirmModal();
+		}
+		*/
+	};
+	
+	/**
 	 * Direciona para função correta quando selecionado "Sim" na janela modal de confirmação
 	 */
-	$scope.confirmar = function(agendamento, tipoConfirmacao) {		
+	$scope.confirmar = function(agendamento, tipoConfirmacao) {
 		if (tipoConfirmacao === TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS) {
 			$scope.removerEventosFuturos(agendamento);			
 		} else if (tipoConfirmacao === TIPOS_CONFIRMACOES.MOVER_EVENTOS) {			
 			$scope.moverEventosFuturos(agendamento);
-		} else if (tipoConfirmacao = TIPOS_CONFIRMACOES.ALTERAR_DADOS_FUTUROS) {
+		} else if (tipoConfirmacao === TIPOS_CONFIRMACOES.ALTERAR_DADOS_FUTUROS) {			
 			$scope.atualizarEventosFuturos(agendamento);
+		} else if (tipoConfirmacao === TIPOS_CONFIRMACOES.REMOVER_EVENTO) {			
+			$scope.removerEvento(agendamento);
 		}
 		$uibModalInstance.close();
 	}
@@ -392,7 +451,7 @@ app.controller('ModalInstanceCtrl', ['$uibModalInstance', '$http', '$q', '$scope
 	/**
 	 * Atualizar os agendamentos futuros associados a um evento semanal
 	 */
-	$scope.atualizarEventosFuturos = function (agendamento) {			 	
+	$scope.atualizarEventosFuturos = function (agendamento) {			
 		$http.post('http://localhost:8080/atualizarAgendamentosFuturos', agendamento).then(
 				successCallback = function(response) {					
 					$scope.atualizarViewFC();			

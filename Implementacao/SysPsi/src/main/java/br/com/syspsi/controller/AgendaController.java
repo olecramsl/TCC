@@ -28,7 +28,7 @@ public class AgendaController {
 	
 	@Autowired
 	private PsicologoRepositorio psicologoRepositorio;
-	
+		
 	/**
 	 * Retorna uma lista de objetos Agendamento para serem gravados na view FullCalendar
 	 * @param di a data inicial da view
@@ -95,7 +95,7 @@ public class AgendaController {
 		
 		List<Agendamento> lstAgendamentos = new ArrayList<>();
 		// ARRUMAR APÓS LOGIN
-		for (Agendamento ag : this.agendamentoRepositorio.findByPeriod(di, df, psicologoRepositorio.findOne(1L))) {
+		for (Agendamento ag : this.agendamentoRepositorio.listarPorPeriodo(di, df, psicologoRepositorio.findOne(1L))) {
 			if (ag.isEventoPrincipal() && ag.isAtivo()) {
 				lstAgendamentos.add(ag); // os eventos principais ativos devem ser adicionados para serem exibidos na view				
 				// Agendamento é criado com eventoPrincipal false, pois o evento principal já existe e está ativo,
@@ -148,6 +148,8 @@ public class AgendaController {
 		   (agendamento.getGrupo() == null || agendamento.getGrupo() == 0))) {
 			agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo()));
 			agendamento.setEventoPrincipal(true);
+		} else {
+			agendamento.setEventoPrincipal(false);
 		}
 		return this.agendamentoRepositorio.save(agendamento);		
 	}
@@ -155,7 +157,7 @@ public class AgendaController {
 	/**
 	 * Remove um agendamento do BD
 	 * @param agendamento o agendamento a ser removido
-	 * @throws IllegalArgumentException in case the given id is null
+	 * @throws Exception caso algum erro ocorra
 	 */
 	@RequestMapping(
 			value = "/removerAgendamento", 
@@ -163,8 +165,13 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void removerAgendamento(@RequestBody Agendamento agendamento) throws IllegalArgumentException {		
-		this.agendamentoRepositorio.delete(agendamento);								
+	public void removerAgendamento(@RequestBody Agendamento agendamento) throws Exception {
+		if (agendamento.getGrupo() > 0) {
+			agendamento.setAtivo(false);
+			this.agendamentoRepositorio.save(agendamento);
+		} else {
+			this.agendamentoRepositorio.delete(agendamento);
+		}
 	}			
 	
 	/**
@@ -206,8 +213,12 @@ public class AgendaController {
 		
 		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndPsicologoAndEventoPrincipal(agendamento.getGrupo(), 
 				agendamento.getPsicologo(), true);
-		ag.setEventoPrincipal(false);		
-		this.agendamentoRepositorio.save(ag);										
+		
+		// O evento movido foi o evento principal
+		if (ag != null) {
+			ag.setEventoPrincipal(false);		
+			this.agendamentoRepositorio.save(ag);
+		}
 		
 		Long novoGrupo = this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo());		
 		agendamento.setEventoPrincipal(true);
@@ -267,5 +278,39 @@ public class AgendaController {
 		}
 
 		this.agendamentoRepositorio.save(lstAgendamentos);
+	}
+	
+	/**
+	 * Marca um outro evento como principal
+	 * @param agendamento o agendamento a ser removido
+	 * @throws Exception caso algum erro ocorra
+	 */
+	@RequestMapping(
+			value = "/atribuirNovoEventoPrincipal", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void atribuirNovoEventoPrincipal(@RequestBody Agendamento agendamento) throws Exception {				
+		// Remove agendamentos futuros, caso existam
+		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), agendamento.getPsicologo());
+		
+		SimpleDateFormat format = new SimpleDateFormat("H:mm");
+		boolean achou = false;
+		String horarioConsulta = format.format(agendamento.getStart().getTime());
+		for (Agendamento ag : lstAgendamentos) {
+			if (horarioConsulta.equals(format.format(ag.getStart().getTime()))) {
+				ag.setEventoPrincipal(true);
+				this.agendamentoRepositorio.save(ag);
+				achou = true;
+				break;
+			}
+		}
+
+		if (!achou && !lstAgendamentos.isEmpty()) {
+			Agendamento ag = lstAgendamentos.get(0);
+			ag.setEventoPrincipal(true);
+			this.agendamentoRepositorio.save(ag);
+		}		
 	}
 }

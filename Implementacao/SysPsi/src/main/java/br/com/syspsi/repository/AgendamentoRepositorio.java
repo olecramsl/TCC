@@ -19,7 +19,7 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "WHERE ((a.start BETWEEN ?1 AND ?2) "
 			+ "OR (a.start <= ?1 AND a.eventoPrincipal = true)) "
 			+ "AND a.psicologo = ?3")
-	public List<Agendamento> findByPeriod(Calendar dataInicial, Calendar dataFinal, Psicologo psicologo);	
+	public List<Agendamento> listarPorPeriodo(Calendar dataInicial, Calendar dataFinal, Psicologo psicologo);	
 	@Query("SELECT DATE_FORMAT(a.start,'%Y-%m-%d') FROM Agendamento a "			
 			+ "WHERE (a.start BETWEEN ?1 AND ?2) "
 			+ "AND (a.grupo = ?3) "

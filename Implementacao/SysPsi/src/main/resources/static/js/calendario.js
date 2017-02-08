@@ -23,7 +23,7 @@ $(document).ready(function() {
 				var time = moment();
 				start = moment(start).hour(time.hour()).minute(time.minute()).second(0).millisecond(0);
 				end = moment(start); // a consulta deve terminar no mesmo dia
-				end.add(1, 'h'); // tempo da consulta
+				end.add(angular.element('#AgendaCtrl').scope().config.tempoSessao, 'm');
 			}
 			
 			var dataInicialAgendamento = start.local();

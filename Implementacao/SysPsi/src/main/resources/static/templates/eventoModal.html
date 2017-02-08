@@ -50,7 +50,7 @@
 				<button id="btnSalvar" type="button" class="btn btn-primary" 
 					ng-click="salvar(agendamento, agendamentoCarregado)" ng-disabled="agendamentoForm.$invalid || !isDataChanged(agendamento, agendamentoCarregado)">Salvar</button>
 				<button id="btnRemove" type="button" class="btn btn-danger"	
-					ng-click="remover(agendamento)" ng-if="agendamento.id">Remover</button>
+					ng-click="confirmarRemocaoEvento(agendamento)" ng-if="agendamento.id">Remover</button>
 				<button id="btnCancel" type="button" class="btn btn-default" ng-click="cancelar()">Cancelar</button>
 			</div>
 		</div>

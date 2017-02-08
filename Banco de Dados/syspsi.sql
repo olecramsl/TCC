@@ -8,18 +8,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- Schema syspsi
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `syspsi` DEFAULT CHARACTER SET utf8 ;
-
 USE `syspsi` ;
-
--- -----------------------------------------------------
--- Table `syspsi`.`Config`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`Config` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `tempoSessao` INT UNSIGNED NOT NULL DEFAULT 1,
-  `intervaloTempoCalendario` INT UNSIGNED NOT NULL DEFAULT 1,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `syspsi`.`psicologo`
@@ -33,6 +22,23 @@ ENGINE = InnoDB
 AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8;
 
+
+-- -----------------------------------------------------
+-- Table `syspsi`.`Config`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`Config` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
+  `tempoSessao` INT UNSIGNED NOT NULL DEFAULT 1,
+  `intervaloTempoCalendario` INT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  INDEX `fk_Config_psicologo_idx` (`idPsicologo` ASC),
+  CONSTRAINT `fk_Config_psicologo`
+    FOREIGN KEY (`idPsicologo`)
+    REFERENCES `syspsi`.`psicologo` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `syspsi`.`paciente`
@@ -90,6 +96,7 @@ DEFAULT CHARACTER SET = utf8;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
 
 -- Cria usuário da aplicação:
 
