@@ -138,13 +138,13 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public Agendamento salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {
-		Agendamento agendamento = agendamentoDTO.getAgendamento();
+	public Agendamento salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {		
+		Agendamento agendamento = agendamentoDTO.getAgendamento();		
 		
 		// ARRUMAR APÓS LOGIN
 		agendamento.setPsicologo(psicologoRepositorio.findOne(1L));
 				
-		if ((agendamentoDTO.isRepetirSemanalmente() && 
+		if ((agendamentoDTO.isRepetirSemanalmente() &&				
 		   (agendamento.getGrupo() == null || agendamento.getGrupo() == 0))) {
 			agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo()));
 			agendamento.setEventoPrincipal(true);
@@ -213,8 +213,7 @@ public class AgendaController {
 		
 		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndPsicologoAndEventoPrincipal(agendamento.getGrupo(), 
 				agendamento.getPsicologo(), true);
-		
-		// O evento movido foi o evento principal
+				
 		if (ag != null) {
 			ag.setEventoPrincipal(false);		
 			this.agendamentoRepositorio.save(ag);
@@ -257,8 +256,11 @@ public class AgendaController {
 		
 		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndPsicologoAndEventoPrincipal(agendamento.getGrupo(), 
 				agendamento.getPsicologo(), true);
-		ag.setEventoPrincipal(false);		
-		this.agendamentoRepositorio.save(ag);
+		
+		if(ag != null) {
+			ag.setEventoPrincipal(false);		
+			this.agendamentoRepositorio.save(ag);
+		}
 		
 		agendamento.setEventoPrincipal(true);
 		this.agendamentoRepositorio.save(agendamento);

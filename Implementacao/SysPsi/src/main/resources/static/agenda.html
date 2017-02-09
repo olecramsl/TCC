@@ -23,6 +23,7 @@
 	<script type="text/javascript" src='js/services/agendaAPIService.js'></script>
 	<script type="text/javascript" src='js/services/pacienteAPIService.js'></script>
 	<script type="text/javascript" src='js/services/configAPIService.js'></script>	
+	<script type="text/javascript" src='js/services/modalInstanceService.js'></script>
 	<script type="text/javascript" src="js/util.js"></script>
 </head>
 <body>	
@@ -33,7 +34,8 @@
     		</div>
     		<div class="row">    	
 				<!-- <div id='calendar' class="col-md-12"></div>  -->
-				<div ui-calendar="uiConfig.calendar" class="span8 calendar"></div>																		
+				<!--<div class="span8 calendar" data-calendar="calendar" data-config="uiConfig.calendar" data-ui-calendar="uiConfig.calendar"></div>-->
+				<div ui-calendar="uiConfig.calendar" calendar="myCalendar" class="calendar"></div> 																		
 			</div>
 		</div>			
 	</div>	
