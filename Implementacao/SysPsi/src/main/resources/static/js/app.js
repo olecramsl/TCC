@@ -1,0 +1,1 @@
+angular.module('syspsi', ['ui.calendar', 'ui.bootstrap']);

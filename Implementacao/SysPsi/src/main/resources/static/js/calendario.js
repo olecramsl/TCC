@@ -1,3 +1,4 @@
+/*
 $(document).ready(function() {
 	$('#calendar').fullCalendar({
 		header : {
@@ -15,7 +16,7 @@ $(document).ready(function() {
 		timeFormat : "HH:mm",
 		selectHelper : true,		
 		select : function(start, end) {					
-			angular.element('#AgendaCtrl').scope().LimparDadosAgendamento();
+			angular.element('#AgendaCtrl').scope().limparDadosAgendamento();
 			angular.element('#AgendaCtrl').scope().agendamentoCarregado = null;
 
 			// Verifica se existe um horario pre definido
@@ -45,12 +46,9 @@ $(document).ready(function() {
 				}				
 			}
 			
-			event.formatedStart = event.start.format('HH:mm');
-							
-			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);
-			
-			angular.element('#AgendaCtrl').scope().agendamentoCarregado = angular.copy(event);					
-			
+			event.formatedStart = event.start.format('HH:mm');							
+			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);			
+			angular.element('#AgendaCtrl').scope().agendamentoCarregado = angular.copy(event);								
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		
@@ -77,3 +75,4 @@ $(document).ready(function() {
 		eventLimit : true // allow "more" link when too many events			
 	});	
 });
+*/
