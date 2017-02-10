@@ -161,7 +161,7 @@ angular.module('syspsi').controller('AgendaCtrl', function ($scope, $uibModal, $
   // O index do paciente atribuido ao agendamento selecionado na agenda
   $scope.indexPacienteSelecionado = null;    
   
-  // Mensagem de erro
+  // Mensagem de erro 
   $scope.msgErro = null;
   
   // Mensagem modal confirmação
@@ -237,14 +237,6 @@ angular.module('syspsi').controller('AgendaCtrl', function ($scope, $uibModal, $
 			  }
 	  );	  
   };      
-  
-  /**
-   * Atualiza o título do agendamento
-   */
-  $scope.updateTitle = function (agendamento) {		
-	  return agendamento.description ? agendamento.paciente.nomeExibicao + " (" +
-			  agendamento.description + ")" : agendamento.paciente.nomeExibicao;			  
-  };       
   
   /**
    * Atualiza na base de dados um evento que foi movido na agenda

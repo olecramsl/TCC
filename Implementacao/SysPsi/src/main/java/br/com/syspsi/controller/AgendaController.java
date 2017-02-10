@@ -301,7 +301,7 @@ public class AgendaController {
 		boolean achou = false;
 		String horarioConsulta = format.format(agendamento.getStart().getTime());
 		for (Agendamento ag : lstAgendamentos) {
-			if (horarioConsulta.equals(format.format(ag.getStart().getTime()))) {
+			if (horarioConsulta.equals(format.format(ag.getStart().getTime())) && ag.isAtivo()) {
 				ag.setEventoPrincipal(true);
 				this.agendamentoRepositorio.save(ag);
 				achou = true;

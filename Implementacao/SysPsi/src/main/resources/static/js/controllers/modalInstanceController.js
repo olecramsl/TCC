@@ -1,6 +1,6 @@
 // Please note that $uibModalInstance represents a modal window (instance) dependency.
 // It is not the same as the $uibModal service used above.
-angular.module('syspsi').controller('ModalInstanceCtrl', function ($uibModalInstance, $q, $scope, agendaAPI, configAPI, config, modal) {
+angular.module('syspsi').controller('ModalInstanceCtrl', function ($uibModalInstance, $q, $scope, agendaAPI, configAPI, config, modal) {		
 	
 	/**
 	 * Configurações do sistema
@@ -14,6 +14,14 @@ angular.module('syspsi').controller('ModalInstanceCtrl', function ($uibModalInst
 					$scope.tratarExcecao(error); 
 		  	  	}
 		  	);     
+	 };
+	 
+	 /**
+	  * Atualiza o campo description do agendamento
+	  */
+	 var updateTitle = function (agendamento) {		
+		 return agendamento.description ? agendamento.paciente.nomeExibicao + " (" +
+				 agendamento.description + ")" : agendamento.paciente.nomeExibicao;			  
 	 };
 	
 	/**
@@ -225,15 +233,7 @@ angular.module('syspsi').controller('ModalInstanceCtrl', function ($uibModalInst
 				}
 		);	
 		$uibModalInstance.close();
-	};
-	
-	/**
-	 * Atualiza o campo description do agendamento
-	 */
-	var updateTitle = function (agendamento) {		
-		  return agendamento.description ? agendamento.paciente.nomeExibicao + " (" +
-			  agendamento.description + ")" : agendamento.paciente.nomeExibicao;			  
-	};
+	};		
 	
 	carregarConfiguracoes();
 });
