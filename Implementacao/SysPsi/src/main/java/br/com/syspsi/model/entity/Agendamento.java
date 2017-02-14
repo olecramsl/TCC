@@ -1,5 +1,6 @@
 package br.com.syspsi.model.entity;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 import javax.persistence.Column;
@@ -14,7 +15,9 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 @Entity
-public class Agendamento {
+public class Agendamento implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;	

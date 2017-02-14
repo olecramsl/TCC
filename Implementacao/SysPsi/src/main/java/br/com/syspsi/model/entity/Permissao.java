@@ -8,26 +8,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Psicologo implements Serializable {
+public class Permissao implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id;
+	private int id;
 	private String nome;
-	private String sobrenome;
-
+	private String descricao;
+	
 	/**
 	 * @return the id
 	 */
-	public Long getId() {
+	public int getId() {
 		return id;
 	}
 	
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(Long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	
@@ -39,23 +39,23 @@ public class Psicologo implements Serializable {
 	}
 	
 	/**
-	 * @param nome the nome to set	
+	 * @param nome the nome to set
 	 */
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
 	
 	/**
-	 * @return the sobrenome
+	 * @return the descricao
 	 */
-	public String getSobrenome() {
-		return sobrenome;
+	public String getDescricao() {
+		return descricao;
 	}
 	
 	/**
-	 * @param sobrenome the sobrenome to set
+	 * @param descricao the descricao to set
 	 */
-	public void setSobrenome(String sobrenome) {
-		this.sobrenome = sobrenome;
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 }

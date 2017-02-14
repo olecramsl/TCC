@@ -11,8 +11,6 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,8 +41,7 @@ import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
 
 @RestController
-public class AgendaController {	
-	
+public class AgendaController {			
 	/** Application name. */
     private static final String APPLICATION_NAME = "syspsi";
 
@@ -79,39 +76,13 @@ public class AgendaController {
             System.exit(1);
         }
     }
-
-	
-    @PostConstruct
-	private void initIt() throws Exception {
-    	// Build a new authorized API client service.
-        // Note: Do not confuse this class with the
-        //   com.google.api.services.calendar.model.Calendar class.
-        com.google.api.services.calendar.Calendar service =
-            getCalendarService();
-
-        // List the next 10 events from the primary calendar.
-        DateTime now = new DateTime(System.currentTimeMillis());
-        Events events = service.events().list("primary")
-            .setMaxResults(10)
-            .setTimeMin(now)
-            .setOrderBy("startTime")
-            .setSingleEvents(true)
-            .execute();
-        List<Event> items = events.getItems();
-        if (items.size() == 0) {
-            System.out.println("No upcoming events found.");
-        } else {
-            System.out.println("Upcoming events");
-            for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    start = event.getStart().getDate();
-                }
-                System.out.printf("%s (%s)\n", event.getSummary(), start);
-            }
-        }
-	}    
     
+    @Autowired
+	private AgendamentoRepositorio agendamentoRepositorio;
+	
+	@Autowired
+	private PsicologoRepositorio psicologoRepositorio;
+	    
     /**
      * Creates an authorized Credential object.
      * @return an authorized Credential object.
@@ -170,12 +141,56 @@ public class AgendaController {
 	    mv.setViewName("agenda");
 	    return mv;
     }
-       
-	@Autowired
-	private AgendamentoRepositorio agendamentoRepositorio;
-	
-	@Autowired
-	private PsicologoRepositorio psicologoRepositorio;			
+    
+    @RequestMapping(
+    		value="/listarAgendamentoGCalendar", 
+    		method=RequestMethod.GET,
+    		produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public List<Agendamento> listarAgendamentosGCalendar(@RequestParam("dataInicial") String dataInicial, 
+			@RequestParam("dataFinal") String dataFinal) throws Exception {
+    	List<Agendamento> lstAgendamentosGCalendar = new ArrayList<>();
+    	
+    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar di = Calendar.getInstance();
+		Calendar df = Calendar.getInstance();		
+		
+		try {
+			di.setTime(format.parse(dataInicial));
+			df.setTime(format.parse(dataFinal));
+		} catch (ParseException e) {
+			throw new Exception("Formato de data inválido em listarAgendamento.");
+		}	
+    	
+    	// Build a new authorized API client service.
+        // Note: Do not confuse this class with the
+        //   com.google.api.services.calendar.model.Calendar class.
+        com.google.api.services.calendar.Calendar service =
+            getCalendarService();
+
+        // List the next 10 events from the primary calendar.
+        DateTime now = new DateTime(System.currentTimeMillis());
+        Events events = service.events().list("primary")
+            .setMaxResults(10)
+            .setTimeMin(now)
+            .setOrderBy("startTime")
+            .setSingleEvents(true)
+            .execute();
+        List<Event> items = events.getItems();
+        if (items.size() == 0) {
+            System.out.println("No upcoming events found.");
+        } else {
+            System.out.println("Upcoming events");
+            for (Event event : items) {
+                DateTime start = event.getStart().getDateTime();
+                if (start == null) {
+                    start = event.getStart().getDate();
+                }
+                System.out.printf("%s (%s)\n", event.getSummary(), start);
+            }
+        }
+        return lstAgendamentosGCalendar;
+    }       		
 	
 	/**
 	 * Retorna uma lista de objetos Agendamento para serem gravados na view FullCalendar

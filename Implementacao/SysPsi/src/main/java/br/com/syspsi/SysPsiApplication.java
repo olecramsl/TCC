@@ -25,9 +25,9 @@ import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 public class SysPsiApplication extends SpringBootServletInitializer {
 	
 	@PostConstruct
-	  void started() {
-	    TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
-	  }
+	void started() {
+		TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
+	}
 	
 	@Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
