@@ -139,6 +139,27 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
+-- -----------------------------------------------------
+-- Table `syspsi`.`tmpGCalendarEvent`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`tmpGCalendarEvent` (
+  `id` BIGINT(20) UNSIGNED NOT NULL,
+  `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
+  `idGCalendar` TEXT NOT NULL,
+  `start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `end` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `summary` VARCHAR(50) NULL,
+  `description` VARCHAR(50) NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_tmpGoogleCalendarEvents_psicologo1_idx` (`idPsicologo` ASC),
+  CONSTRAINT `fk_tmpGoogleCalendarEvents_psicologo1`
+    FOREIGN KEY (`idPsicologo`)
+    REFERENCES `syspsi`.`psicologo` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

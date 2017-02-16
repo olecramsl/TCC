@@ -2,21 +2,29 @@
 <html ng-app="syspsi">
 <head>
 	<meta charset="UTF-8" />	
-	<link href='css/bootstrap-3.3.7.min.css' rel='stylesheet' type="text/css" />
-	<link href="css/bootstrap-clockpicker.min.css" rel="stylesheet" type="text/css" >
-	<link href='css/fullcalendar-3.1.0.min.css' rel='stylesheet' type="text/css" />
-	<link href='css/fullcalendar.print-3.1.0.min.css' rel='stylesheet' type="text/css" media='print' />							
+	<link href='lib/bootstrap-3.3.7.min.css' rel='stylesheet' type="text/css" />
+	<link href="lib/bootstrap-clockpicker.min.css" rel="stylesheet" type="text/css" >
+	<link href='lib/fullcalendar-3.1.0.min.css' rel='stylesheet' type="text/css" />
+	<link href='lib/fullcalendar.print-3.1.0.min.css' rel='stylesheet' type="text/css" media='print' />							
 		
-	<script type="text/javascript" src='js/jquery-3.1.1.min.js'></script>	
-	<script type="text/javascript" src='js/angular-1.6.0.min.js'></script>
-	<script type="text/javascript" src='js/moment-2.17.1.min.js'></script>	
-	<script type="text/javascript" src='js/fullcalendar-3.1.0.min.js'></script>
-	<script type="text/javascript" src='js/locale-all.js'></script>	
-	<script type="text/javascript" src='js/ui-bootstrap-tpls-2.3.2.min.js'></script>
-	<script type="text/javascript" src='js/calendario.js'></script>	
-	<script type="text/javascript" src='js/controller/agenda.js'></script>
-	<script type="text/javascript" src="js/bootstrap-clockpicker.min.js"></script>				
-	<script type="text/javascript" src="js/syspsi.js"></script>
+	<script type="text/javascript" src='lib/jquery-3.1.1.min.js'></script>	
+	<script type="text/javascript" src='lib/angular-1.6.0.min.js'></script>
+	<script type="text/javascript" src='lib/moment-2.17.1.min.js'></script>	
+	<script type="text/javascript" src='lib/fullcalendar-3.1.0.min.js'></script>
+	<script type="text/javascript" src='lib/calendar.js'></script>
+	<script type="text/javascript" src='lib/locale-all.js'></script>	
+	<script type="text/javascript" src='lib/ui-bootstrap-tpls-2.3.2.min.js'></script>
+	<script type="text/javascript" src="lib/bootstrap-clockpicker.min.js"></script>
+	<!--<script type="text/javascript" src='js/calendario.js'></script>-->	
+	<script type="text/javascript" src="js/app.js"></script>
+	<script type="text/javascript" src='js/value/configValue.js'></script>
+	<script type="text/javascript" src='js/controllers/agendaController.js'></script>				
+	<script type="text/javascript" src='js/controllers/modalInstanceController.js'></script>
+	<script type="text/javascript" src='js/services/agendaAPIService.js'></script>
+	<script type="text/javascript" src='js/services/pacienteAPIService.js'></script>
+	<script type="text/javascript" src='js/services/configAPIService.js'></script>	
+	<script type="text/javascript" src='js/services/modalInstanceService.js'></script>
+	<script type="text/javascript" src="js/util.js"></script>
 </head>
 <body>	
 	<div id="AgendaCtrl" ng-controller="AgendaCtrl as $ctrl">				    	    	
@@ -25,7 +33,9 @@
     			<h1>SysPsi Menu</h1>
     		</div>
     		<div class="row">    	
-				<div id='calendar' class="col-md-12"></div>														
+				<!-- <div id='calendar' class="col-md-12"></div>  -->
+				<!--<div class="span8 calendar" data-calendar="calendar" data-config="uiConfig.calendar" data-ui-calendar="uiConfig.calendar"></div>-->
+				<div ui-calendar="uiConfig.calendar" calendar="myCalendar" class="calendar"></div> 																		
 			</div>
 		</div>			
 	</div>	

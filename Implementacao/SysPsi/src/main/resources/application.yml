@@ -1,0 +1,10 @@
+spring:
+    datasource:
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/syspsi
+        username: USERSYSPSIAPP
+        password: "@Rtu3v!xK0l#"
+        
+security:
+  user:
+    password: 123      
