@@ -1,3 +1,4 @@
+/*
 $(document).ready(function() {
 	$('#calendar').fullCalendar({
 		header : {
@@ -15,7 +16,7 @@ $(document).ready(function() {
 		timeFormat : "HH:mm",
 		selectHelper : true,		
 		select : function(start, end) {					
-			angular.element('#AgendaCtrl').scope().LimparDadosAgendamento();
+			angular.element('#AgendaCtrl').scope().limparDadosAgendamento();
 			angular.element('#AgendaCtrl').scope().agendamentoCarregado = null;
 
 			// Verifica se existe um horario pre definido
@@ -23,7 +24,7 @@ $(document).ready(function() {
 				var time = moment();
 				start = moment(start).hour(time.hour()).minute(time.minute()).second(0).millisecond(0);
 				end = moment(start); // a consulta deve terminar no mesmo dia
-				end.add(1, 'h'); // tempo da consulta
+				end.add(angular.element('#AgendaCtrl').scope().config.tempoSessao, 'm');
 			}
 			
 			var dataInicialAgendamento = start.local();
@@ -45,16 +46,13 @@ $(document).ready(function() {
 				}				
 			}
 			
-			event.formatedStart = event.start.format('H:mm');
-							
-			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);
-			
-			angular.element('#AgendaCtrl').scope().agendamentoCarregado = angular.copy(event);					
-			
+			event.formatedStart = event.start.format('HH:mm');							
+			angular.element('#AgendaCtrl').scope().agendamento = angular.copy(event);			
+			angular.element('#AgendaCtrl').scope().agendamentoCarregado = angular.copy(event);								
 			angular.element('#AgendaCtrl').scope().$ctrl.openEventModal();					
 			angular.element('#AgendaCtrl').scope().$apply();				
 		},		
-		eventDrop : function(event, delta, revertFunc, jsEvent, ui, view) {	
+		eventDrop : function(event, delta, revertFunc, jsEvent, ui, view) {			
 			var oldEvent = angular.copy(event); // evento dropado
 			
 			var days = moment.duration(delta).days()*(-1);
@@ -63,11 +61,11 @@ $(document).ready(function() {
 			
 			var horas   = event.end.hours();
 			var minutos = event.end.minutes();
-			
+				
 			event.end  = moment(event.start);
-			event.end  = moment(event.end).hours(horas).minutes(minutos);			
+			event.end  = moment(event.end).hours(horas).minutes(minutos);								
 			
-			angular.element('#AgendaCtrl').scope().updateEventDroped(angular.copy(event), angular.copy(oldEvent));								
+			angular.element('#AgendaCtrl').scope().updateEventDroped(angular.copy(event), angular.copy(oldEvent));
 		},
 		viewRender: function (view, element) {				
 			$('#calendar').fullCalendar('removeEvents');
@@ -77,3 +75,4 @@ $(document).ready(function() {
 		eventLimit : true // allow "more" link when too many events			
 	});	
 });
+*/

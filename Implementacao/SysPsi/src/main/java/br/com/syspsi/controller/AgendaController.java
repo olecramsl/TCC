@@ -37,7 +37,9 @@ import com.google.api.services.calendar.model.Events;
 
 import br.com.syspsi.model.dto.AgendamentoDTO;
 import br.com.syspsi.model.entity.Agendamento;
+import br.com.syspsi.model.entity.TmpGCalendarEvent;
 import br.com.syspsi.repository.AgendamentoRepositorio;
+import br.com.syspsi.repository.TmpGCalendarEventRepositorio;
 
 @RestController
 public class AgendaController {			
@@ -74,10 +76,13 @@ public class AgendaController {
             t.printStackTrace();
             System.exit(1);
         }
-    }       
+    }
     
     @Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
+    
+    @Autowired
+    private TmpGCalendarEventRepositorio gCalendarEventRepositorio;
 	
     /**
      * Creates an authorized Credential object.
@@ -97,7 +102,8 @@ public class AgendaController {
                         HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
                 .setDataStoreFactory(DATA_STORE_FACTORY)
                 .setAccessType("offline")
-                .build();
+                .build();        
+        
         Credential credential = new AuthorizationCodeInstalledApp(
             flow, new LocalServerReceiver()).authorize("user");
         System.out.println(
@@ -136,57 +142,7 @@ public class AgendaController {
 	    */
 	    mv.setViewName("agenda");
 	    return mv;
-    }
-    
-    @RequestMapping(
-    		value="/listarAgendamentoGCalendar", 
-    		method=RequestMethod.GET,
-    		produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public List<Agendamento> listarAgendamentosGCalendar(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal) throws Exception {
-    	List<Agendamento> lstAgendamentosGCalendar = new ArrayList<>();
-    	
-    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar di = Calendar.getInstance();
-		Calendar df = Calendar.getInstance();		
-		
-		try {
-			di.setTime(format.parse(dataInicial));
-			df.setTime(format.parse(dataFinal));
-		} catch (ParseException e) {
-			throw new Exception("Formato de data inválido em listarAgendamento.");
-		}	
-    	
-    	// Build a new authorized API client service.
-        // Note: Do not confuse this class with the
-        //   com.google.api.services.calendar.model.Calendar class.
-        com.google.api.services.calendar.Calendar service =
-            getCalendarService();
-
-        // List the next 10 events from the primary calendar.
-        DateTime now = new DateTime(System.currentTimeMillis());
-        Events events = service.events().list("primary")
-            .setMaxResults(10)
-            .setTimeMin(now)
-            .setOrderBy("startTime")
-            .setSingleEvents(true)
-            .execute();
-        List<Event> items = events.getItems();
-        if (items.size() == 0) {
-            System.out.println("No upcoming events found.");
-        } else {
-            System.out.println("Upcoming events");
-            for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    start = event.getStart().getDate();
-                }
-                System.out.printf("%s (%s)\n", event.getSummary(), start);
-            }
-        }
-        return lstAgendamentosGCalendar;
-    }       		
+    }           	
 	
 	/**
 	 * Retorna uma lista de objetos Agendamento para serem gravados na view FullCalendar
@@ -226,7 +182,78 @@ public class AgendaController {
 			}
 		}			
 		return lstAgendamento;
-	}	
+	}
+	
+    /**
+     * Acessa o Google Calendar para buscar os eventos de um determinado período
+     * @param di a data inicial do período
+     * @param df a data final do período
+     * @return uma lista de objetos TmpGCalendarEvent
+     * @throws Exception caso algum erro ocorra
+     */
+    public List<TmpGCalendarEvent> listarAgendamentosGCalendar(Calendar di, Calendar df) throws Exception {
+    	List<TmpGCalendarEvent> lstAgendamentosGCalendar = new ArrayList<>();
+    	    	
+    	// Build a new authorized API client service.
+        // Note: Do not confuse this class with the
+        //   com.google.api.services.calendar.model.Calendar class.
+        com.google.api.services.calendar.Calendar service =
+            getCalendarService();
+
+        System.out.println("");
+        // List the next 10 events from the primary calendar.
+        //DateTime now = new DateTime(System.currentTimeMillis());
+        DateTime timeMin = new DateTime(di.getTimeInMillis());
+        DateTime timeMax = new DateTime(df.getTimeInMillis());
+        Events events = service.events().list("primary")
+            .setMaxResults(10)
+            .setTimeMin(timeMin)
+            .setTimeMax(timeMax)
+            .setOrderBy("startTime")
+            .setSingleEvents(true)
+            .execute();
+        List<Event> items = events.getItems();
+        if (items.size() == 0) {
+            System.out.println("No upcoming events found.");
+        } else {
+            System.out.println("Upcoming events");
+            for (Event event : items) {
+                DateTime start = event.getStart().getDateTime();
+                if (start == null) {
+                    start = event.getStart().getDate();
+                }
+                // ARRUMAR APÓS LOGIN    
+                Calendar startEvent = Calendar.getInstance();
+                Calendar endEvent = Calendar.getInstance();
+                startEvent.setTimeInMillis(event.getStart().getDateTime().getValue());
+                endEvent.setTimeInMillis(event.getEnd().getDateTime().getValue());
+                lstAgendamentosGCalendar.add(new TmpGCalendarEvent(LoginController.getPsicologoLogado(),
+                		event.getId(), startEvent, endEvent, event.getSummary(), 
+                		event.getDescription()));
+                System.out.printf("%s (%s)\n", event.getSummary(), start);
+            }
+        }
+        
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");       
+        for(TmpGCalendarEvent event : lstAgendamentosGCalendar) {
+        	System.out.println(format.format(event.getStart()));
+        	System.out.println(format.format(event.getEnd()));
+        	System.out.println(format.format(event.getSummary()));
+        	System.out.println("");
+        }        
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+        
+        if (!lstAgendamentosGCalendar.isEmpty()) {
+        	gCalendarEventRepositorio.save(lstAgendamentosGCalendar);
+        }
+        
+        return lstAgendamentosGCalendar;
+    }
 	
 	/**
 	 * @param dataInicial A data inicial dos agendamentos
@@ -251,6 +278,9 @@ public class AgendaController {
 		} catch (ParseException e) {
 			throw new Exception("Formato de data inválido em listarAgendamento.");
 		}																	
+		
+		// AGENDAMENTOS CALENDAR
+		//listarAgendamentosGCalendar(di, df);
 		
 		List<Agendamento> lstAgendamentos = new ArrayList<>();
 		for (Agendamento ag : this.agendamentoRepositorio.listarPorPeriodo(di, df, LoginController.getPsicologoLogado())) {
