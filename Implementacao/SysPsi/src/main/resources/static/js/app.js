@@ -1,1 +1,1 @@
-angular.module('syspsi', ['ui.calendar', 'ui.bootstrap']);
+angular.module('syspsi', []);

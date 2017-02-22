@@ -38,7 +38,6 @@ import com.google.api.services.calendar.model.Events;
 import br.com.syspsi.model.dto.AgendamentoDTO;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.repository.AgendamentoRepositorio;
-import br.com.syspsi.repository.PsicologoRepositorio;
 
 @RestController
 public class AgendaController {			
@@ -75,14 +74,11 @@ public class AgendaController {
             t.printStackTrace();
             System.exit(1);
         }
-    }
+    }       
     
     @Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
 	
-	@Autowired
-	private PsicologoRepositorio psicologoRepositorio;
-	    
     /**
      * Creates an authorized Credential object.
      * @return an authorized Credential object.
@@ -257,8 +253,7 @@ public class AgendaController {
 		}																	
 		
 		List<Agendamento> lstAgendamentos = new ArrayList<>();
-		// ARRUMAR APÓS LOGIN
-		for (Agendamento ag : this.agendamentoRepositorio.listarPorPeriodo(di, df, psicologoRepositorio.findOne(1L))) {
+		for (Agendamento ag : this.agendamentoRepositorio.listarPorPeriodo(di, df, LoginController.getPsicologoLogado())) {
 			if (ag.isEventoPrincipal() && ag.isAtivo()) {
 				lstAgendamentos.add(ag); // os eventos principais ativos devem ser adicionados para serem exibidos na view				
 				// Agendamento é criado com eventoPrincipal false, pois o evento principal já existe e está ativo,
@@ -303,9 +298,8 @@ public class AgendaController {
 			)
 	public Agendamento salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {		
 		Agendamento agendamento = agendamentoDTO.getAgendamento();		
-		
-		// ARRUMAR APÓS LOGIN
-		agendamento.setPsicologo(psicologoRepositorio.findOne(1L));
+				
+		agendamento.setPsicologo(LoginController.getPsicologoLogado());
 				
 		if ((agendamentoDTO.isRepetirSemanalmente() &&				
 		   (agendamento.getGrupo() == null || agendamento.getGrupo() == 0))) {

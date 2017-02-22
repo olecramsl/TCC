@@ -5,4 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 import br.com.syspsi.model.entity.Psicologo;
 
 public interface PsicologoRepositorio extends CrudRepository<Psicologo, Long> {
+	public Psicologo findByLogin(String login);
 }

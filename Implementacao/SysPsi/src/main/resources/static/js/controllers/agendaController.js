@@ -1,6 +1,13 @@
-angular.module('syspsi').controller('AgendaCtrl', function ($scope, $uibModal, $q, agendaAPI, pacienteAPI, configAPI, modal, config, $http) {
-  var $ctrl = this;  
-    
+// Modulos desta controller
+var lazyModules = ['ui.calendar', 'ui.bootstrap'];
+  
+angular.forEach(lazyModules, function(dependency) {
+	angular.module('syspsi').requires.push(dependency);
+});
+
+angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, $uibModal, $q, agendaAPI, pacienteAPI, configAPI, modal, config, $http) {
+  var $ctrl = this;      
+  
   $scope.select = function(start, end) {						  	
 	  	limparDadosAgendamento();
 		$scope.agendamentoCarregado = null;
