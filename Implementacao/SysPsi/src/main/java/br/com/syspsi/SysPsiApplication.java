@@ -74,14 +74,14 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 			http
 		    	.httpBasic().and()
 		    	.authorizeRequests()
-		        	.antMatchers("/lib/**", "/js/**", "/", "/index.html", "/webjars/**").permitAll()
+		        	.antMatchers("/lib/**", "/js/**", "/", "/index.html", "/login.html", "/webjars/**").permitAll()
 		        	.anyRequest().authenticated().and()		        
 		        .csrf()
 		        	.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 			
 			http
 	        	.formLogin()
-	            	.loginPage("/index.html");	            	
+	            	.loginPage("/login.html");	            	
 		}	
 		
 		@Override
