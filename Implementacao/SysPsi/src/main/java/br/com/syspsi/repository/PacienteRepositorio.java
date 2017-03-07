@@ -8,5 +8,5 @@ import br.com.syspsi.model.entity.Paciente;
 import br.com.syspsi.model.entity.Psicologo;
 
 public interface PacienteRepositorio extends CrudRepository<Paciente, Long> {
- List<Paciente> findByAtivoAndPsicologoOrderByNomeAsc(boolean ativo, Psicologo psicologo);
+	public List<Paciente> findByAtivoAndPsicologoOrderByNomeCompletoAsc(boolean ativo, Psicologo psicologo);
 }

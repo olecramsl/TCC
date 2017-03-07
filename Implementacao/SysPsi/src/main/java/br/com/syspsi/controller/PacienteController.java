@@ -25,7 +25,7 @@ public class PacienteController {
 			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
 	public List<Paciente> listarPacientesAtivos(Principal principal) {
-		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByAtivoAndPsicologoOrderByNomeAsc(true, LoginController.getPsicologoLogado());
+		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByAtivoAndPsicologoOrderByNomeCompletoAsc(true, LoginController.getPsicologoLogado());
 		return lstPacientes;
 	}
 }

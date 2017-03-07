@@ -36,8 +36,18 @@ DEFAULT CHARACTER SET = utf8;
 CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
-  `nome` VARCHAR(45) NOT NULL,
-  `sobrenome` VARCHAR(90) NOT NULL,
+  `nomeCompleto` VARCHAR(130) NOT NULL,
+  `dataNascimento` DATE NOT NULL,
+  `cpf` VARCHAR(11) NOT NULL,
+  `sexo` CHAR NOT NULL,
+  `telefoneContato` VARCHAR(11) NOT NULL,
+  `email` VARCHAR(90) NULL,
+  `logradouro` VARCHAR(150) NOT NULL,
+  `complemento` VARCHAR(45) NULL,
+  `bairro` VARCHAR(60) NOT NULL,
+  `localidade` VARCHAR(50) NOT NULL,
+  `uf` VARCHAR(2) NOT NULL,
+  `cep` VARCHAR(8) NOT NULL,
   `ativo` TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_paciente_psicologo1_idx` (`idPsicologo` ASC),
@@ -47,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 11
+AUTO_INCREMENT = 14
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -79,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
+AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -98,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`config` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -138,21 +149,21 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo_tem_permissao` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
+AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `syspsi`.`tmpGCalendarEvent`
+-- Table `syspsi`.`tmpgcalendarevent`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`tmpGCalendarEvent` (
+CREATE TABLE IF NOT EXISTS `syspsi`.`tmpgcalendarevent` (
   `id` BIGINT(20) UNSIGNED NOT NULL,
   `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
   `idGCalendar` TEXT NOT NULL,
   `start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `end` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `summary` VARCHAR(50) NULL,
-  `description` VARCHAR(50) NULL,
+  `summary` VARCHAR(50) NULL DEFAULT NULL,
+  `description` VARCHAR(50) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_tmpGoogleCalendarEvents_psicologo1_idx` (`idPsicologo` ASC),
   CONSTRAINT `fk_tmpGoogleCalendarEvents_psicologo1`
@@ -160,7 +171,8 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`tmpGCalendarEvent` (
     REFERENCES `syspsi`.`psicologo` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

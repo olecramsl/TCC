@@ -1,45 +1,88 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html ng-app="syspsi">
+
 <head>
-	<meta charset="UTF-8" />
-	<title>Bem vindo ao Syspsi</title>	
-	<link href="lib/wro-css/angular-bootstrap.css" rel="stylesheet">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<title>Syspsi</title>
+
+<link href="lib/wro-css/angular-bootstrap.css" rel="stylesheet">
+
+<!-- MetisMenu CSS -->
+<link href="lib/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+<!-- Custom CSS -->
+<link href="lib/sb-admin/css/sb-admin-2.css" rel="stylesheet">
+
+<!-- Morris Charts CSS -->
+<link href="lib/morrisjs/morris.css" rel="stylesheet">
+
+<!-- Custom Fonts -->
+<link href="lib/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+	type="text/css">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
 </head>
 
 <body>
-	<div class="container">
-		<!-- Static navbar -->
-	    <nav class="navbar navbar-default">
-	    	<div class="container-fluid">
-	        	<div class="navbar-header">
-	            	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-	              		<span class="sr-only">Toggle navigation</span>
-	              		<span class="icon-bar"></span>
-	              		<span class="icon-bar"></span>
-	              		<span class="icon-bar"></span>
-	            	</button>
-	            	<a class="navbar-brand" href="#">Syspsi</a>
-	          	</div>
-		     	<div id="navbar" class="navbar-collapse collapse">
-			        <ul class="nav navbar-nav">
-			        	<li class="active"><a href="/home.html">Home</a></li>
-			            <li class="dropdown">
-			            	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Pacientes <span class="caret"></span></a>
-			                <ul class="dropdown-menu">			                	
-								<li><a href="#">Cadastrar Paciente</a></li>
-			                  	<li><a href="#">Editar Paciente</a></li>
-			                  	<li><a href="#">Excluir Paciente</a></li>
-			                </ul>
-			         	</li>
-			   		</ul>
-			        <ul class="nav navbar-nav navbar-right">			        				           
-			            <li><a href="#">Logout</a></li>
-			      	</ul>
-		  		</div><!--/.nav-collapse -->
-			</div><!--/.container-fluid -->
-    	</nav>
+	<div ng-include="'menu.html'"></div>
+	<div id="page-wrapper">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Dashboard</h1>
+			</div>
+			<!-- /.col-lg-12 -->
+		</div>
+		<div class="row">
+			<div class="col-lg-8">
+				<!-- /.panel -->
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<i class="fa fa-bar-chart-o fa-fw"></i> Consultas
+					</div>
+					<!-- /.panel-heading -->
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-8">
+								<div id="morris-bar-chart"></div>
+							</div>
+							<!-- /.col-lg-8 (nested) -->
+						</div>
+						<!-- /.row -->
+					</div>
+					<!-- /.panel-body -->
+				</div>
+			</div>
+		</div>
+		<!-- /.row -->
 	</div>
-	<script type="text/javascript" src='lib/wro-js/angular-bootstrap.js'></script>
+	<!-- /#page-wrapper -->
+
+	<script src='lib/wro-js/angular-bootstrap.js' type="text/javascript"></script>
+	<script src='js/app.js' type="text/javascript"></script>
+
+	<!-- Metis Menu Plugin JavaScript -->
+	<script src="lib/metisMenu/metisMenu.min.js"></script>
+
+	<!-- Morris Charts JavaScript -->
+	<script src="lib/raphael/raphael.min.js"></script>
+	<script src="lib/morrisjs/morris.min.js"></script>
+	<script src="lib/morris-data.js"></script>
+
+	<!-- Custom Theme JavaScript -->
+	<script src="lib/sb-admin/js/sb-admin-2.js"></script>
+
 </body>
+
 </html>
