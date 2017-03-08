@@ -22,6 +22,9 @@ public class Paciente implements Serializable {
 	@ManyToOne
     @JoinColumn(name="idpsicologo")
 	private Psicologo psicologo;
+	@ManyToOne
+    @JoinColumn(name="idconvenio")
+	private Convenio convenio;
 	@Column(name="nomecompleto")
 	private String nomeCompleto;
 	@Column(name="datanascimento")
@@ -79,6 +82,20 @@ public class Paciente implements Serializable {
 	 */
 	public void setPsicologo(Psicologo psicologo) {
 		this.psicologo = psicologo;
+	}
+
+	/**
+	 * @return the convenio
+	 */
+	public Convenio getConvenio() {
+		return convenio;
+	}
+
+	/**
+	 * @param convenio the convenio to set
+	 */
+	public void setConvenio(Convenio convenio) {
+		this.convenio = convenio;
 	}
 
 	/**

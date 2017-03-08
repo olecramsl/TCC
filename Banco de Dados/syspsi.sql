@@ -31,11 +31,32 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
+-- Table `syspsi`.`convenio`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`convenio` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `cnpj` VARCHAR(13) NOT NULL,
+  `email` VARCHAR(90) NOT NULL,
+  `telefoneContato` VARCHAR(11) NOT NULL,
+  `logradouro` VARCHAR(150) NOT NULL,
+  `complemento` VARCHAR(45) NULL,
+  `bairro` VARCHAR(60) NOT NULL,
+  `localidade` VARCHAR(50) NOT NULL,
+  `uf` VARCHAR(2) NOT NULL,
+  `cep` VARCHAR(8) NOT NULL,
+  `ativo` TINYINT(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `syspsi`.`paciente`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
+  `idConvenio` INT UNSIGNED NULL,
   `nomeCompleto` VARCHAR(130) NOT NULL,
   `dataNascimento` DATE NOT NULL,
   `cpf` VARCHAR(11) NOT NULL,
@@ -51,9 +72,15 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
   `ativo` TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_paciente_psicologo1_idx` (`idPsicologo` ASC),
+  INDEX `fk_paciente_convenio1_idx` (`idConvenio` ASC),
   CONSTRAINT `fk_paciente_psicologo1`
     FOREIGN KEY (`idPsicologo`)
     REFERENCES `syspsi`.`psicologo` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_paciente_convenio1`
+    FOREIGN KEY (`idConvenio`)
+    REFERENCES `syspsi`.`convenio` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
