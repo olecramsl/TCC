@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
   `localidade` VARCHAR(50) NOT NULL,
   `uf` VARCHAR(2) NOT NULL,
   `cep` VARCHAR(8) NOT NULL,
-  `ativo` TINYINT(1) NOT NULL,
+  `ativo` TINYINT(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   INDEX `fk_paciente_psicologo1_idx` (`idPsicologo` ASC),
   INDEX `fk_paciente_convenio1_idx` (`idConvenio` ASC),
