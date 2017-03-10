@@ -38,6 +38,7 @@ public class CadastroController {
 	/**
 	 * Salva um paciente no BD
 	 * @param paciente o paciente a ser persistido no BD
+	 * @throws Exception caso algum problema ocorra
 	 */
 	@RequestMapping(
 			value = "/salvarPaciente", 
@@ -45,8 +46,8 @@ public class CadastroController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void salvarPaciente(@RequestBody Paciente paciente) {		
-		paciente.setPsicologo(LoginController.getPsicologoLogado());				
+	public void salvarPaciente(@RequestBody Paciente paciente) throws Exception {		
+		paciente.setPsicologo(LoginController.getPsicologoLogado());		
 		this.pacienteRepositorio.save(paciente);		
 	}
 }

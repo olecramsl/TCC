@@ -48,26 +48,16 @@ angular.module('syspsi').controller('CadastroCtrl', function ($scope, $http, con
 		);
 	};
 	
-	$scope.salvarPaciente = function(paciente) {
-		paciente = formatarDados(paciente);
-		paciente.ativo = true;
+	$scope.salvarPaciente = function(paciente) {		
 		pacienteAPI.salvarPaciente(paciente).then(
-				successCallback = function(response) {	  					
+				successCallback = function(response) {
+					delete $scope.paciente;
 				},
 				errorCallback = function (error, status){
 					console.log(error);
 					//$scope.tratarExcecao(error); 
 				}
 		);
-	};
-	
-	var formatarDados = function(paciente) {		
-		var arrDataNascimento = paciente.dataNascimento.split("/");
-		paciente.dataNascimento = new Date(arrDataNascimento[2], arrDataNascimento[1], arrDataNascimento[0]);		
-		paciente.cpf = paciente.cpf.replace(/[^0-9]/g,'');
-		paciente.telefoneContato = paciente.telefoneContato.replace(/[^0-9]/g,'');
-		paciente.cep = paciente.cep.replace(/[^0-9]/g,'');
-		return paciente;
 	};
 	
 	/**
