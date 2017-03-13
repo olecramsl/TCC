@@ -3,6 +3,7 @@ package br.com.syspsi.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +48,15 @@ public class CadastroController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public void salvarPaciente(@RequestBody Paciente paciente) throws Exception {		
-		paciente.setPsicologo(LoginController.getPsicologoLogado());		
-		this.pacienteRepositorio.save(paciente);		
+		paciente.setPsicologo(LoginController.getPsicologoLogado());
+		if (paciente.getPsicologo() != null) {
+			try {
+				this.pacienteRepositorio.save(paciente);
+			} catch (DataIntegrityViolationException e) {
+				if (e.getMessage().toLowerCase().contains("cpf")) {
+					throw new Exception("O CPF informado já está cadastrado");
+				}
+			}
+		}
 	}
 }

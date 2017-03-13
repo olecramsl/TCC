@@ -101,7 +101,7 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
       templateUrl: 'templates/eventoModal.html',
-      controller: 'ModalInstanceCtrl',
+      controller: 'ModalAgendamentoCtrl',
       controllerAs: '$ctrl',
       scope: $scope, // bind $scope to modal window      
       size: size
@@ -122,7 +122,7 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
       templateUrl: 'templates/erroModal.html',
-      controller: 'ModalInstanceCtrl',
+      controller: 'ModalAgendamentoCtrl',
       controllerAs: '$ctrl',
       scope: $scope, // bind $scope to modal window      
       size: size
@@ -137,8 +137,8 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
       animation: true,
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
-      templateUrl: 'templates/confirmacaoModal.html',
-      controller: 'ModalInstanceCtrl',
+      templateUrl: 'templates/confirmacaoAgendamentoModal.html',
+      controller: 'ModalAgendamentoCtrl',
       controllerAs: '$ctrl',
       scope: $scope, // bind $scope to modal window      
       size: size

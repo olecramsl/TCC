@@ -1,10 +1,16 @@
-angular.module('syspsi').controller('CadastroCtrl', function ($scope, $http, configAPI, convenioAPI, pacienteAPI) {
+// Modulos desta controller
+var lazyModules = ['ui.bootstrap'];
+  
+angular.forEach(lazyModules, function(dependency) {
+	angular.module('syspsi').requires.push(dependency);
+});
+
+angular.module('syspsi').controller('CadastroCtrl', function ($uibModal, $uibModalStack, $scope, $http, configAPI, convenioAPI, pacienteAPI) {
 	var $ctrl = this;
 	
 	/**
 	 * Abre janela modal de erro
-	 */
-	/*
+	 */	
 	$ctrl.openErroModal = function (size) {	 	
 		var modalInstance = $uibModal.open({
 			animation: true,
@@ -17,7 +23,19 @@ angular.module('syspsi').controller('CadastroCtrl', function ($scope, $http, con
 			size: size
 		});    	
 	};
-	*/
+	
+	$ctrl.openPleaseWaitDialog = function (size) {	 	
+		var pleaseWaitDialog = $uibModal.open({
+			animation: true,
+			ariaLabelledBy: 'modal-title',
+			ariaDescribedBy: 'modal-body',
+			templateUrl: 'templates/pleaseWaitDialog.html',
+			controller: 'ModalInstanceCtrl',
+			controllerAs: '$ctrl',
+			scope: $scope, // bind $scope to modal window      
+			size: size
+		});    	
+	};	
 	  
 	$scope.paciente = {};
 	
@@ -27,14 +45,14 @@ angular.module('syspsi').controller('CadastroCtrl', function ($scope, $http, con
 					$scope.lstConveniosAtivos = response.data;					
 				},
 				errorCallback = function (error, status){					
-					//$scope.tratarExcecao(error); 
+					$scope.tratarExcecao(error); 
 				}
 		);
 	};
 	
 	$scope.buscarCep = function(strCep) {
 		var cep = strCep.replace(/[^0-9]/g,'');		
-		
+		$ctrl.openPleaseWaitDialog();
 		$http.get("https://viacep.com.br/ws/" + cep + "/json/").then(
 				successCallback = function(response) {
 					$scope.paciente.logradouro = response.data.logradouro;
@@ -43,19 +61,22 @@ angular.module('syspsi').controller('CadastroCtrl', function ($scope, $http, con
 					$scope.paciente.uf = response.data.uf;					
 				},
 			  	errorCallback = function (error, status){
-					//$scope.tratarExcecao(error); 
-			  	}
-		);
+					$scope.paciente.logradouro = "";
+					$scope.paciente.bairro = "";
+					$scope.paciente.localidade = "";
+					$scope.paciente.uf = "";						
+			  	}		
+		);		
+		console.log($uibModalStack.getTop());
 	};
 	
 	$scope.salvarPaciente = function(paciente) {		
 		pacienteAPI.salvarPaciente(paciente).then(
 				successCallback = function(response) {
-					delete $scope.paciente;
+					$scope.paciente = {};
 				},
-				errorCallback = function (error, status){
-					console.log(error);
-					//$scope.tratarExcecao(error); 
+				errorCallback = function (error, status){					
+					$scope.tratarExcecao(error); 
 				}
 		);
 	};
@@ -72,6 +93,7 @@ angular.module('syspsi').controller('CadastroCtrl', function ($scope, $http, con
 			$scope.msgErro = error;
 		}
 			
+		console.log($scope.msgErro);
 		$ctrl.openErroModal();
 	};    
 	

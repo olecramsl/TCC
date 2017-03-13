@@ -26,8 +26,9 @@ public class LoginController {
 	}
 	
 	@RequestMapping("/user")
-	public Principal user(Principal user) {
-		psicologoLogado = psicologoRepositorio.findByLogin(user.getName());		
+	public Principal user(Principal user) {		
+		psicologoLogado = psicologoRepositorio.findByLogin(user.getName());
+		System.out.println("Entrei: " + psicologoLogado == null?"null":psicologoLogado.getNome());
 		return user;
 	}	
 }
