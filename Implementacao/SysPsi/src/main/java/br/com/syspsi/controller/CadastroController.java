@@ -51,12 +51,13 @@ public class CadastroController {
 		paciente.setPsicologo(LoginController.getPsicologoLogado());
 		if (paciente.getPsicologo() != null) {
 			try {
+				paciente.validarCPF();
 				this.pacienteRepositorio.save(paciente);
 			} catch (DataIntegrityViolationException e) {
 				if (e.getMessage().toLowerCase().contains("cpf")) {
 					throw new Exception("O CPF informado já está cadastrado");
 				}
-			}
+			} 
 		}
 	}
 }
