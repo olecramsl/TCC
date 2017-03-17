@@ -5,93 +5,55 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, $uibModal, $q, agendaAPI, pacienteAPI, configAPI, 
-		modalAgendamentoAPI, config, $http) {
+angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$uibModal', 'agendamentoFactory', 'pacienteFactory', 'configFactory', 
+	'modalAgendamentoFactory', 'modalInstanceFactory', 'modalAgendamentoService', 'modalInstanceService', 'config',  function ($scope, 
+			$uibModal, agendamentoFactory, pacienteFactory,	configFactory, modalAgendamentoFactory, modalInstanceFactory, 
+			modalAgendamentoService, modalInstanceService, config) {
+	
   var ctrl = this;
   
-  $scope.$watch(function () { return modalAgendamentoAPI.getMsgErro(); }, function (newValue, oldValue) {
-   	  ctrl.msgErro = newValue;
-  });
-  
-  $scope.$watch(function () { return modalAgendamentoAPI.getMsgConfirmacao(); }, function (newValue, oldValue) {
+  $scope.$watch(function () { return modalAgendamentoFactory.getMsgConfirmacao(); }, function (newValue, oldValue) {
    	  ctrl.msgConfirmacao = newValue;
   });
   
-  $scope.$watch(function () { return modalAgendamentoAPI.getTipoConfirmacao(); }, function (newValue, oldValue) {
+  $scope.$watch(function () { return modalAgendamentoFactory.getTipoConfirmacao(); }, function (newValue, oldValue) {
    	  ctrl.tipoConfirmacao = newValue;
   });   
-  
-  $scope.$watch(function () { return agendaAPI.getAgendamento(); }, function (newValue, oldValue) {
+    
+  $scope.$watch(function () { return agendamentoFactory.getAgendamento(); }, function (newValue, oldValue) {
    	  ctrl.agendamento = newValue;
   });
   
-  $scope.$watch(function () { return agendaAPI.getAgendamentoCarregado(); }, function (newValue, oldValue) {
+  $scope.$watch(function () { return agendamentoFactory.getAgendamentoCarregado(); }, function (newValue, oldValue) {
    	  ctrl.agendamentoCarregado = newValue;
   });
   
-  $scope.$watch(function () { return agendaAPI.getLstPacientesAtivos(); }, function (newValue, oldValue) {
+  $scope.$watch(function () { return agendamentoFactory.getLstPacientesAtivos(); }, function (newValue, oldValue) {
    	  ctrl.lstPacientesAtivos = newValue;
   });
   
-  $scope.$watch(function () { return agendaAPI.getIndexPacienteSelecionado(); }, function (newValue, oldValue) {
+  $scope.$watch(function () { return agendamentoFactory.getIndexPacienteSelecionado(); }, function (newValue, oldValue) {
    	  ctrl.indexPacienteSelecionado = newValue;
   });    
   
   /**
-   * Abre janela modal do agendamento
+   * Trata eventuais excessoes que possam ocorrer
    */
-  var openEventModal = function (size) {	 	
-	  var modalInstance = $uibModal.open({
-	      animation: true,
-	      ariaLabelledBy: 'modal-title',
-	      ariaDescribedBy: 'modal-body',
-	      templateUrl: 'templates/eventoModal.html',
-	      controller: 'ModalAgendamentoCtrl',
-	      controllerAs: 'ctrl',      
-	      size: size
-	  });
-    
-	  modalInstance.result.then(function (selectedItem) {}, function () {        	
-	  		limparDadosAgendamento();
-	  });
-  };
-  
-  /**
-   * Abre janela modal de erro
-   */
-  var openErroModal = function (size) {	 	
-	  var modalInstance = $uibModal.open({
-	      animation: true,
-	      ariaLabelledBy: 'modal-title',
-	      ariaDescribedBy: 'modal-body',
-	      templateUrl: 'templates/erroModal.html',
-	      controller: 'ModalAgendamentoCtrl',
-	      controllerAs: 'ctrl',
-	      scope: $scope, // bind $scope to modal window      
-	      size: size
-	  });    
-  };
-  
-  /**
-   * Abre janela modal de erro
-   */
-  /*
-  var openConfirmModal = function (size) {	 	
-	  var modalInstance = $uibModal.open({
-	      animation: true,
-	      ariaLabelledBy: 'modal-title',
-	      ariaDescribedBy: 'modal-body',
-	      templateUrl: 'templates/confirmacaoAgendamentoModal.html',
-	      controller: 'ModalAgendamentoCtrl',
-	      controllerAs: 'ctrl',      
-	      size: size
-	  });    
-  };
-  */  
+  var tratarExcecao = function(error) {
+	  try {
+		  // captura de excecao enviada pela Controller (codigo java)
+		  modalInstanceFactory.setMsgErro(error.data.message);
+	  } catch(erro) {
+		  // Erro nivel Javascript
+		  modalInstanceFactory.setMsgErro(error);
+	  }
+		
+	  modalInstanceService.openErroModal();
+  }    
   
   var select = function(start, end) {	  
 	  limparDadosAgendamento();
-	  agendaAPI.setAgendamentoCarregado(null);	  
+	  agendamentoFactory.setAgendamentoCarregado(null);	  
 
 	  // Verifica se existe um horario pre definido
 	  if (!start.hasTime()) {		
@@ -104,26 +66,26 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
 	  var dataInicialAgendamento = start.local();
 	  var dataFinalAgendamento = end.local();
 		
-	  agendaAPI.setStart(new Date(dataInicialAgendamento));
-	  agendaAPI.setEnd(new Date(dataFinalAgendamento));
-	  agendaAPI.setFormatedStart(start.format('HH:mm'));
+	  agendamentoFactory.setStart(new Date(dataInicialAgendamento));
+	  agendamentoFactory.setEnd(new Date(dataFinalAgendamento));
+	  agendamentoFactory.setFormatedStart(start.format('HH:mm'));
 		
-	  openEventModal();																			
+	  modalAgendamentoService.openEventModal();																			
   };
 	
   var eventClick = function(event, jsEvent, view) {			
-	  var tmpLst = agendaAPI.getLstPacientesAtivos();
+	  var tmpLst = agendamentoFactory.getLstPacientesAtivos();
 	  for (var i = 0; i < tmpLst.length; i++) {
 		  if (tmpLst[i].id == event.paciente.id) {					
-			  agendaAPI.setIndexPacienteSelecionado(i);					
+			  agendamentoFactory.setIndexPacienteSelecionado(i);					
 			  break;
 		  }				
 	  }
 		
 	  event.formatedStart = event.start.format('HH:mm');							
-	  agendaAPI.setAgendamento(angular.copy(event));
-	  agendaAPI.setAgendamentoCarregado(angular.copy(event));	  
-	  openEventModal();											
+	  agendamentoFactory.setAgendamento(angular.copy(event));
+	  agendamentoFactory.setAgendamentoCarregado(angular.copy(event));	  
+	  modalAgendamentoService.openEventModal();											
   };
 	
   var eventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {			
@@ -177,9 +139,9 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
    * Popula a lista de pacientes ativos
    */
   var carregarPacientesAtivos = function() {
-	  pacienteAPI.listarPacientesAtivos().then(
+	  pacienteFactory.listarPacientesAtivos().then(
 	      successCallback = function(response) {	  
-	    	  agendaAPI.setLstPacientesAtivos(response.data);	    	  
+	    	  agendamentoFactory.setLstPacientesAtivos(response.data);	    	  
 	  	  },
 	  	  errorCallback = function (error, status){
 	  		tratarExcecao(error); 
@@ -191,7 +153,7 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
    * Configurações do sistema
    */  
   var carregarConfiguracoes = function() {
-	  configAPI.loadConfig().then(
+	  configFactory.loadConfig().then(
 	      successCallback = function(response) {	
 	    	  configSys = response.data;	    	  
 	  	  },
@@ -205,8 +167,8 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
    * Limpa os dados pertinentes a um agendamento
    */
   var limparDadosAgendamento = function() {
-	  agendaAPI.setAgendamento({});
-	  agendaAPI.setIndexPacienteSelecionado(null);
+	  agendamentoFactory.setAgendamento({});
+	  agendamentoFactory.setIndexPacienteSelecionado(null);
   };
   
   /**
@@ -215,12 +177,12 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
    */ 
   var listarAgendamento = function(dataInicial, dataFinal) {
 	  var params = {dataInicial: dataInicial.format(), dataFinal: dataFinal.format()};
-	  agendaAPI.listarAgendamentos(params).then(
+	  agendamentoFactory.listarAgendamentos(params).then(
 			  successCallback = function (response) {
 				  angular.element('.calendar').fullCalendar('renderEvents',response.data);
 			  },
 			  errorCallback = function (error) {	  			  		  
-				  ctrl.tratarExcecao(error);
+				  tratarExcecao(error);
 			  }
 	  );	  
   };      
@@ -231,8 +193,8 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
   var updateEventDroped = function(event, oldEvent) {
 	  event.repetirSemanalmente = false;
 	  event.grupo = 0;
-	  var agendamentoDTO = agendaAPI.prepararAgendamentoDTO(event);	 
-	  agendaAPI.salvarAgendamento(agendamentoDTO).then(
+	  var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(event);	 
+	  agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
 		  successCallback = function(response) {
 			  angular.element('.calendar').fullCalendar('removeEvents', event.id);
 			  angular.element('.calendar').fullCalendar('renderEvent', response.data);
@@ -244,23 +206,23 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
 				  oldEvent.ativo = false;
 				  oldEvent.repetirSemanalmente = false;
 				  
-				  agendamentoDTO = agendaAPI.prepararAgendamentoDTO(oldEvent);
-				  agendaAPI.salvarAgendamento(agendamentoDTO).then(
+				  agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(oldEvent);
+				  agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
 						  successCallback = function(response) {
-							  agendaAPI.setAgendamento(angular.copy(event));
+							  agendamentoFactory.setAgendamento(angular.copy(event));
 							  // Mantem o grupo original para pesquisa e, caso assim deseje o usuário, deslocamento dos eventos futuros
-							  agendaAPI.setGrupo(oldEvent.grupo);
+							  agendamentoFactory.setGrupo(oldEvent.grupo);
 
-							  if (agendaAPI.getEventoPrincipal()) {									  
-								  agendaAPI.atribuirNovoEventoPrincipal(agendaAPI.getAgendamento());
+							  if (agendamentoFactory.getEventoPrincipal()) {									  
+								  agendamentoFactory.atribuirNovoEventoPrincipal(agendamentoFactory.getAgendamento());
 							  }
 							  
-							  if (agendaAPI.getStart().format("WW") === oldEvent.start.format("WW")) {								  							  
+							  if (agendamentoFactory.getStart().format("WW") === oldEvent.start.format("WW")) {								  							  
 								  var diasDiferenca = oldEvent.start.dayOfYear() - event.start.dayOfYear();
 								  if ((diasDiferenca < 7) && (event.start.day() !== oldEvent.start.day())) {
-									  modalAgendamentoAPI.setTipoConfirmacao(config.tiposConfirmacoes.MOVER_EVENTOS);
-									  modalAgendamentoAPI.setMsgConfirmacao("Você moveu um agendamento configurado para repetir semanalmente. Deseja mover também os eventos futuros associados a este agendamento?");
-									  modalAgendamentoAPI.openConfirmModal();	
+									  modalAgendamentoFactory.setTipoConfirmacao(config.tiposConfirmacoes.MOVER_EVENTOS);
+									  modalAgendamentoFactory.setMsgConfirmacao("Você moveu um agendamento configurado para repetir semanalmente. Deseja mover também os eventos futuros associados a este agendamento?");
+									  modalAgendamentoService.openConfirmModal();	
 								  }
 							  }
 						  },
@@ -274,23 +236,8 @@ angular.module('syspsi').controller('AgendaCtrl', function ($rootScope, $scope, 
 			  tratarExcecao(error);			  						
 		  }
 	  );		  	 	 
-  };    
-  
-  /**
-   * Trata eventuais excessoes que possam ocorrer
-   */
-  var tratarExcecao = function(error) {
-	  try {
-		  // captura de excecao enviada pela Controller (codigo java)
-		  ctrl.msgErro = error.data.message;
-	  } catch(erro) {
-		  // Erro nivel Javascript
-		  ctrl.msgErro = error;
-	  }
-		
-	  openErroModal();
-  }           
+  };                
   
   carregarPacientesAtivos();
   carregarConfiguracoes();
-});
+}]);

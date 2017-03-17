@@ -36,6 +36,7 @@ public class Paciente implements Serializable {
 	private String telefoneContato;
 	private String email;
 	private String logradouro;
+	private String numero;
 	private String complemento;
 	private String bairro;
 	private String localidade;
@@ -211,6 +212,20 @@ public class Paciente implements Serializable {
 	 */
 	public void setLogradouro(String logradouro) {
 		this.logradouro = logradouro;
+	}
+
+	/**
+	 * @return the numero
+	 */
+	public String getNumero() {
+		return numero;
+	}
+
+	/**
+	 * @param numero the numero to set
+	 */
+	public void setNumero(String numero) {
+		this.numero = numero;
 	}
 
 	/**

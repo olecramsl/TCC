@@ -1,4 +1,4 @@
-angular.module('syspsi').factory('consultaAPI', function() {
+angular.module('syspsi').factory('consultaFactory', function() {
 	var _paciente;
 	
 	return {

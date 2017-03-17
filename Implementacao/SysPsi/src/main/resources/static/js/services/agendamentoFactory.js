@@ -1,4 +1,4 @@
-angular.module('syspsi').factory('agendaAPI', function($http, config) {
+angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', function($http, config) {
 	var _agendamento = {};
 	var _agendamentoCarregado = {};
 	var _lstPacientesAtivos = null;
@@ -53,7 +53,7 @@ angular.module('syspsi').factory('agendaAPI', function($http, config) {
 			
 	return {		
 		getAgendamento: function() { return _agendamento; },
-		setAgendamento: function(agendamento) { _agendamento = agendamento; },
+		setAgendamento: function(agendamento) { _agendamento = agendamento; },		
 		getId: function() { return _agendamento.id; },
 		setId: function(id) { _agendamento.id = id; },
 		getGCalendarId: function() { return _agendamento.gCalendarId; },
@@ -79,7 +79,7 @@ angular.module('syspsi').factory('agendaAPI', function($http, config) {
 		getRepetirSemanalmente: function() { return _agendamento.repetirSemanalmente; },
 		setRepetirSemanalmente: function(repetirSemanalmente) { _agendamento.repetirSemanalmente = repetirSemanalmente; },
 		getAtivo: function() { return _agendamento.ativo; },
-		setAtivo: function(ativo) { _agendamento.ativo = ativo; },
+		setAtivo: function(ativo) { _agendamento.ativo = ativo; },		
 		getAgendamentoCarregado: function() { return _agendamentoCarregado; },
 		setAgendamentoCarregado: function(agendamentoCarregado) { _agendamentoCarregado = agendamentoCarregado; },
 		getLstPacientesAtivos: function() { return _lstPacientesAtivos; },
@@ -95,4 +95,4 @@ angular.module('syspsi').factory('agendaAPI', function($http, config) {
 		atualizarAgendamentosFuturos: _atualizarAgendamentosFuturos,
 		prepararAgendamentoDTO: _prepararAgendamentoDTO,		
 	};
-});
+}]);

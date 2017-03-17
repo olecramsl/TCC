@@ -1,4 +1,4 @@
-angular.module('syspsi').factory('pacienteAPI', function($http, config) {
+angular.module('syspsi').factory('pacienteFactory', ['$http', 'config', function($http, config) {
 	var _listarPacientesAtivos = function() {
 		return $http.get(config.baseUrl + '/listarPacientesAtivos');
 	};
@@ -17,4 +17,4 @@ angular.module('syspsi').factory('pacienteAPI', function($http, config) {
 		listarPacientesAtivos: _listarPacientesAtivos,
 		salvarPaciente: _salvarPaciente
 	};
-});
+}]);

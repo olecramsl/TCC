@@ -1,4 +1,4 @@
-angular.module('syspsi').controller('loginCtrl', function($scope, $rootScope, $http) {				  
+angular.module('syspsi').controller('loginCtrl', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {				  
 	var authenticate = function(credentials, callback) {
 		var headers = credentials ? {authorization : "Basic "
 			+ btoa(credentials.username + ":" + credentials.password)
@@ -7,7 +7,7 @@ angular.module('syspsi').controller('loginCtrl', function($scope, $rootScope, $h
 		$http.get('http://localhost:8080/user', {headers : headers}).then(function(response) {			
 			if (response.data.name) {
 				$rootScope.authenticated = true;				
-				window.location.href="/home.html";									
+				window.location.href="/home.html#!/dashboard";				
 			} else {											
 				$rootScope.authenticated = false;
 				window.location.href="/login.html";
@@ -31,4 +31,4 @@ angular.module('syspsi').controller('loginCtrl', function($scope, $rootScope, $h
 		    }
 		  });
 	};
-});
+}]);

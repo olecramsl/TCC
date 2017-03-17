@@ -12,6 +12,14 @@ angular.module('syspsi', ['ngRoute'])
 				templateUrl: "templates/consulta.html",
 				controller: "ConsultaCtrl",
 				controllerAs: "ctrl"
+			}).when('/cadastrarPaciente', { 
+				templateUrl: "templates/cadastrar_pacientes.html",
+				controller: "CadastroCtrl",
+				controllerAs: "ctrl"
+			}).when('/consultarPacientes', { 
+				templateUrl: "templates/consultar_pacientes.html",
+				controller: "CadastroCtrl",
+				controllerAs: "ctrl"
 			});
 	
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';

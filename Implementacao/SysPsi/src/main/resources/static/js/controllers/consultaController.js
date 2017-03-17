@@ -5,10 +5,10 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('ConsultaCtrl', function ($scope, consultaAPI) {
+angular.module('syspsi').controller('ConsultaCtrl', ['$scope', 'consultaFactory', function ($scope, consultaFactory) {
 	var ctrl = this;			
 	
-	$scope.$watch(function () { return consultaAPI.getPaciente(); }, function (newValue, oldValue) {
+	$scope.$watch(function () { return consultaFactory.getPaciente(); }, function (newValue, oldValue) {
 		ctrl.paciente = newValue;		
 	});
 	
@@ -23,4 +23,4 @@ angular.module('syspsi').controller('ConsultaCtrl', function ($scope, consultaAP
 	ctrl.onReady = function () {
 		// ...
 	};
-});
+}]);

@@ -1,4 +1,4 @@
-angular.module('syspsi').factory('configAPI', function($http, config) {
+angular.module('syspsi').factory('configFactory', ['$http', 'config', function($http, config) {
 	var _loadConfig = function() {
 		return $http.get(config.baseUrl + '/loadConfig');
 	};
@@ -6,4 +6,4 @@ angular.module('syspsi').factory('configAPI', function($http, config) {
 	return {			
 		loadConfig: _loadConfig
 	};
-});
+}]);
