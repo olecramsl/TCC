@@ -139,8 +139,8 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$uibModal', 'agend
    * Popula a lista de pacientes ativos
    */
   var carregarPacientesAtivos = function() {
-	  pacienteFactory.listarPacientesAtivos().then(
-	      successCallback = function(response) {	  
+	  pacienteFactory.listarPacientesAtivosInativos(true).then(
+	      successCallback = function(response) {	    	  
 	    	  agendamentoFactory.setLstPacientesAtivos(response.data);	    	  
 	  	  },
 	  	  errorCallback = function (error, status){
@@ -176,8 +176,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$uibModal', 'agend
    * na view atual, caso necessário
    */ 
   var listarAgendamento = function(dataInicial, dataFinal) {
-	  var params = {dataInicial: dataInicial.format(), dataFinal: dataFinal.format()};
-	  agendamentoFactory.listarAgendamentos(params).then(
+	  agendamentoFactory.listarAgendamentos(dataInicial, dataFinal).then(
 			  successCallback = function (response) {
 				  angular.element('.calendar').fullCalendar('renderEvents',response.data);
 			  },

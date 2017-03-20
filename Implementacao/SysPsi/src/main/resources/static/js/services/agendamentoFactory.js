@@ -4,7 +4,8 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', funct
 	var _lstPacientesAtivos = null;
 	var _indexPacienteSelecionado = null;
 	
-	var _listarAgendamentos = function(params) {
+	var _listarAgendamentos = function(dataInicial, dataFinal) {
+		var params = {dataInicial: dataInicial.format(), dataFinal: dataFinal.format()};
 		return $http.get(config.baseUrl + '/listarAgendamentos', {params});
 	};
 	

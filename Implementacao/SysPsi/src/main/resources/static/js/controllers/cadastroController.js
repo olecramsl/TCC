@@ -10,6 +10,15 @@ angular.module('syspsi').controller('CadastroCtrl', ['$uibModal', '$scope', '$ht
 			modalInstanceService) {
 	
 	var ctrl = this;		
+
+	/*
+	 Ativos = 1
+	 Inativos = 2
+	 Todos = 3 
+	 */
+	ctrl.pesquisa = {};
+	// pacientes ativos
+	ctrl.pesquisa.tipoPesquisa = "1";
 	
 	/**
 	 * Trata eventuais excessoes que possam ocorrer
@@ -38,6 +47,37 @@ angular.module('syspsi').controller('CadastroCtrl', ['$uibModal', '$scope', '$ht
 				}
 		);
 	};
+	
+	ctrl.carregarPacientes = function() {	
+		if (ctrl.pesquisa.tipoPesquisa === "1") {			
+			pacienteFactory.listarPacientesAtivosInativos(true).then(
+					successCallback = function(response) {	  
+						ctrl.lstPacientes = response.data;					
+					},
+					errorCallback = function (error, status){					
+						tratarExcecao(error); 
+					}
+			);
+		} else if (ctrl.pesquisa.tipoPesquisa === "2") {			
+			pacienteFactory.listarPacientesAtivosInativos(false).then(
+					successCallback = function(response) {	  
+						ctrl.lstPacientes = response.data;					
+					},
+					errorCallback = function (error, status){					
+						tratarExcecao(error); 
+					}
+			);
+		} else {			
+			pacienteFactory.listarPacientes().then(
+					successCallback = function(response) {	  
+						ctrl.lstPacientes = response.data;					
+					},
+					errorCallback = function (error, status){					
+						tratarExcecao(error); 
+					}
+			);
+		}		
+	}
 	
 	ctrl.buscarCep = function(strCep) {
 		ctrl.loading = true;
@@ -78,4 +118,5 @@ angular.module('syspsi').controller('CadastroCtrl', ['$uibModal', '$scope', '$ht
 	};	   
 	
 	carregarConveniosAtivos();
+	ctrl.carregarPacientes();
 }]);

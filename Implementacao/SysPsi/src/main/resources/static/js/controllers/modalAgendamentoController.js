@@ -56,8 +56,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 		 angular.element('.calendar').fullCalendar('removeEvents');
 		 // Atualiza a view para o caso de haver algum evento semanal
 		 view = angular.element('.calendar').fullCalendar('getView');
-		 var params = {dataInicial: view.start.format(), dataFinal: view.end.format()};
-		 agendamentoFactory.listarAgendamentos(params).then(
+		 agendamentoFactory.listarAgendamentos(view.start, view.end).then(
 				 successCallback = function (response) {
 					 angular.element('.calendar').fullCalendar('renderEvents',response.data);
 				 },
