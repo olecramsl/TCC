@@ -32,7 +32,7 @@
 
 <body>
 	<!-- <div ng-include="'templates/menu.html'"></div> -->
-	<div id="wrapper">
+	<div id="wrapper" ng-controller="homeCtrl as ctrl">
 		<!-- Navigation -->
 		<nav class="navbar navbar-default navbar-static-top" role="navigation"
 			style="margin-bottom: 0">
@@ -67,8 +67,7 @@
 			<div class="navbar-default sidebar" role="navigation">
 				<div class="sidebar-nav navbar-collapse">
 					<ul class="nav" id="side-menu">
-						<li>
-							<!-- <a href="home.html"><i class="fa fa-dashboard fa-fw"></i>Dashboard</a>  -->
+						<li>							
 							<a href="#!/dashboard"><i class="fa fa-dashboard fa-fw"></i>Dashboard</a>
 						</li>
 						
@@ -80,7 +79,7 @@
                             <a href="#"><i class="fa fa-user-o fa-fw"></i> Pacientes<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#!/cadastrarPaciente"><i class="fa fa-user-plus fa-fw"></i>Cadastrar</a>
+                                    <a href="#!/cadastrarPaciente" ng-click="ctrl.resetarPaciente()"><i class="fa fa-user-plus fa-fw"></i>Cadastrar</a>
                                 </li>
                                 <li>
                                     <a href="#!/consultarPacientes"><i class="fa fa-search fa-fw"></i>Consultar</a>
@@ -127,6 +126,7 @@
 	<script type="text/javascript" src='js/controllers/modalInstanceController.js'></script>
 	<script type="text/javascript" src='js/controllers/consultaController.js'></script>
 	<script type="text/javascript" src='js/controllers/cadastroController.js'></script>
+	<script type="text/javascript" src='js/controllers/homeController.js'></script>
 	<script type="text/javascript" src='js/services/agendamentoFactory.js'></script>
 	<script type="text/javascript" src='js/services/pacienteFactory.js'></script>
 	<script type="text/javascript" src='js/services/configFactory.js'></script>	
@@ -134,10 +134,16 @@
 	<script type="text/javascript" src='js/services/modalAgendamentoFactory.js'></script>
 	<script type="text/javascript" src='js/services/modalInstanceFactory.js'></script>
 	<script type="text/javascript" src='js/services/consultaFactory.js'></script>
+	<script type="text/javascript" src='js/services/cadastroFactory.js'></script>
 	<script type="text/javascript" src='js/services/modalAgendamentoService.js'></script>
 	<script type="text/javascript" src='js/services/modalInstanceService.js'></script>
 	<script type="text/javascript" src='js/filters/cpfFilter.js'></script>
 	<script type="text/javascript" src='js/filters/telefoneFilter.js'></script>
+	<script type="text/javascript" src='js/filters/cepFilter.js'></script>
+	<script type="text/javascript" src='js/directives/cpfDirective.js'></script>
+	<script type="text/javascript" src='js/directives/telefoneDirective.js'></script>
+	<script type="text/javascript" src='js/directives/cepDirective.js'></script>
+	<script type="text/javascript" src='js/directives/dataNascimentoDirective.js'></script>
 	<script type="text/javascript" src="js/util.js"></script>
 	
 	<!-- Metis Menu Plugin JavaScript -->

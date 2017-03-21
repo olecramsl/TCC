@@ -16,6 +16,10 @@ angular.module('syspsi', ['ngRoute'])
 				templateUrl: "templates/cadastrar_pacientes.html",
 				controller: "CadastroCtrl",
 				controllerAs: "ctrl"
+			}).when('/editarPaciente', { 
+				templateUrl: "templates/cadastrar_pacientes.html",
+				controller: "CadastroCtrl",
+				controllerAs: "ctrl"
 			}).when('/consultarPacientes', { 
 				templateUrl: "templates/consultar_pacientes.html",
 				controller: "CadastroCtrl",
