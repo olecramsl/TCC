@@ -3,6 +3,7 @@ package br.com.syspsi.repository;
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.syspsi.model.entity.Paciente;
 import br.com.syspsi.model.entity.Psicologo;
@@ -10,4 +11,6 @@ import br.com.syspsi.model.entity.Psicologo;
 public interface PacienteRepositorio extends CrudRepository<Paciente, Long> {
 	public List<Paciente> findByAtivoAndPsicologoOrderByNomeCompletoAsc(boolean ativo, Psicologo psicologo);
 	public List<Paciente> findByPsicologoOrderByNomeCompletoAsc(Psicologo psicologo);
+	@Transactional
+	public void deleteById(long id);
 }

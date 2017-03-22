@@ -1,4 +1,3 @@
-//angular.module('syspsi', [])
 angular.module('syspsi', ['ngRoute'])
 	.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
 		$routeProvider.
@@ -10,19 +9,19 @@ angular.module('syspsi', ['ngRoute'])
 				controllerAs: "ctrl"
 			}).when('/consulta', { 
 				templateUrl: "templates/consulta.html",
-				controller: "ConsultaCtrl",
+				controller: "ConsultaPacienteCtrl",
 				controllerAs: "ctrl"
 			}).when('/cadastrarPaciente', { 
 				templateUrl: "templates/cadastrar_pacientes.html",
-				controller: "CadastroCtrl",
+				controller: "CadastroPacienteCtrl",
 				controllerAs: "ctrl"
 			}).when('/editarPaciente', { 
 				templateUrl: "templates/cadastrar_pacientes.html",
-				controller: "CadastroCtrl",
+				controller: "CadastroPacienteCtrl",
 				controllerAs: "ctrl"
 			}).when('/consultarPacientes', { 
 				templateUrl: "templates/consultar_pacientes.html",
-				controller: "CadastroCtrl",
+				controller: "CadastroPacienteCtrl",
 				controllerAs: "ctrl"
 			});
 	

@@ -45,10 +45,10 @@
 <div class="modal-footer">
 	<div class="form-group">
 		<button id="btnSalvar" type="button" class="btn btn-primary" 
-			ng-click="ctrl.salvar(ctrl.agendamento, ctrl.agendamentoCarregado)" ng-disabled="agendamentoForm.$invalid || !ctrl.isDataChanged(ctrl.agendamento, ctrl.agendamentoCarregado)">Salvar</button>
+			ng-click="ctrl.salvar(ctrl.agendamento, ctrl.agendamentoCarregado)" ng-disabled="agendamentoForm.$invalid || !ctrl.isDataChanged(ctrl.agendamento, ctrl.agendamentoCarregado)">Salvar</button>		
+		<button id="btnConsulta" type="button" class="btn btn-info" ng-if="ctrl.agendamento.id" ng-click="ctrl.iniciarConsulta(ctrl.agendamento)">Iniciar Consulta</button>
 		<button id="btnRemove" type="button" class="btn btn-danger"	
 			ng-click="ctrl.confirmarRemocaoEvento(ctrl.agendamento)" ng-if="ctrl.agendamento.id">Remover</button>
-		<button id="btnConsulta" type="button" class="btn btn-default" ng-if="ctrl.agendamento.id" ng-click="ctrl.iniciarConsulta(ctrl.agendamento)">Iniciar Consulta</button>
 		<button id="btnCancel" type="button" class="btn btn-default" ng-click="ctrl.cancelar()">Cancelar</button>
 	</div>
 </div>

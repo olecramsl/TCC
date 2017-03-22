@@ -26,7 +26,10 @@
 			<div class="panel-body">				
 				<div class="row">
 					<div class="col-lg-12">
-						<form novalidate name="cadastroClienteForm" ng-submit="cadastroClienteForm.$valid?ctrl.salvarPaciente(ctrl.paciente):false" role="form">
+						<form novalidate name="cadastroClienteForm" 
+							ng-submit="cadastroClienteForm.$valid?ctrl.salvarPaciente(ctrl.paciente):false"
+							exit-html-page 
+							role="form">
 							<div class="form-group">
 								<div class="form-group row">
 									<div class="col-lg-10">

@@ -32,7 +32,7 @@
 
 <body>
 	<!-- <div ng-include="'templates/menu.html'"></div> -->
-	<div id="wrapper" ng-controller="homeCtrl as ctrl">
+	<div id="wrapper">
 		<!-- Navigation -->
 		<nav class="navbar navbar-default navbar-static-top" role="navigation"
 			style="margin-bottom: 0">
@@ -79,7 +79,7 @@
                             <a href="#"><i class="fa fa-user-o fa-fw"></i> Pacientes<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#!/cadastrarPaciente" ng-click="ctrl.resetarPaciente()"><i class="fa fa-user-plus fa-fw"></i>Cadastrar</a>
+                                    <a href="#!/cadastrarPaciente"><i class="fa fa-user-plus fa-fw"></i>Cadastrar</a>
                                 </li>
                                 <li>
                                     <a href="#!/consultarPacientes"><i class="fa fa-search fa-fw"></i>Consultar</a>
@@ -124,17 +124,16 @@
 	<script type="text/javascript" src='js/controllers/agendaController.js'></script>				
 	<script type="text/javascript" src='js/controllers/modalAgendamentoController.js'></script>
 	<script type="text/javascript" src='js/controllers/modalInstanceController.js'></script>
-	<script type="text/javascript" src='js/controllers/consultaController.js'></script>
-	<script type="text/javascript" src='js/controllers/cadastroController.js'></script>
-	<script type="text/javascript" src='js/controllers/homeController.js'></script>
+	<script type="text/javascript" src='js/controllers/consultaPacienteController.js'></script>
+	<script type="text/javascript" src='js/controllers/cadastroPacienteController.js'></script>		
 	<script type="text/javascript" src='js/services/agendamentoFactory.js'></script>
 	<script type="text/javascript" src='js/services/pacienteFactory.js'></script>
 	<script type="text/javascript" src='js/services/configFactory.js'></script>	
 	<script type="text/javascript" src='js/services/convenioFactory.js'></script>
 	<script type="text/javascript" src='js/services/modalAgendamentoFactory.js'></script>
 	<script type="text/javascript" src='js/services/modalInstanceFactory.js'></script>
-	<script type="text/javascript" src='js/services/consultaFactory.js'></script>
-	<script type="text/javascript" src='js/services/cadastroFactory.js'></script>
+	<script type="text/javascript" src='js/services/consultaPacienteFactory.js'></script>
+	<script type="text/javascript" src='js/services/cadastroPacienteFactory.js'></script>
 	<script type="text/javascript" src='js/services/modalAgendamentoService.js'></script>
 	<script type="text/javascript" src='js/services/modalInstanceService.js'></script>
 	<script type="text/javascript" src='js/filters/cpfFilter.js'></script>
@@ -144,6 +143,7 @@
 	<script type="text/javascript" src='js/directives/telefoneDirective.js'></script>
 	<script type="text/javascript" src='js/directives/cepDirective.js'></script>
 	<script type="text/javascript" src='js/directives/dataNascimentoDirective.js'></script>
+	<script type="text/javascript" src='js/directives/exitHtmlPageDirective.js'></script>
 	<script type="text/javascript" src="js/util.js"></script>
 	
 	<!-- Metis Menu Plugin JavaScript -->

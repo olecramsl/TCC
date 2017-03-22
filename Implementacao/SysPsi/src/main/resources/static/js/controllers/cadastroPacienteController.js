@@ -5,10 +5,10 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('CadastroCtrl', ['$uibModal', '$scope', '$http', '$location', 'configFactory', 'convenioFactory', 'pacienteFactory', 
-	'consultaFactory', 'cadastroFactory', 'agendamentoFactory', 'modalInstanceFactory', 'modalInstanceService', function ($uibModal, $scope, 
-	$http, $location, configFactory, convenioFactory, pacienteFactory, consultaFactory, cadastroFactory, agendamentoFactory, 
-	modalInstanceFactory, modalInstanceService) {
+angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scope', '$http', '$location', 'configFactory', 'convenioFactory', 
+	'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'modalInstanceFactory', 'modalInstanceService', function ($uibModal, 
+			$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, consultaPacienteFactory, 
+			agendamentoFactory,	modalInstanceFactory, modalInstanceService) {
 	
 	var ctrl = this;			
 
@@ -21,7 +21,11 @@ angular.module('syspsi').controller('CadastroCtrl', ['$uibModal', '$scope', '$ht
 	// pacientes ativos
 	ctrl.pesquisa.tipoPesquisa = "1";
 	
-	ctrl.paciente = cadastroFactory.getPaciente();
+	if (cadastroPacienteFactory.isEditandoPaciente()) {
+		ctrl.paciente = cadastroPacienteFactory.getPaciente();		
+	} else {
+		ctrl.paciente = {};
+	}
 	
 	/**
 	 * Configurações do sistema
@@ -120,8 +124,13 @@ angular.module('syspsi').controller('CadastroCtrl', ['$uibModal', '$scope', '$ht
 		);						
 	};
 	
-	ctrl.salvarPaciente = function(paciente) {				
-		pacienteFactory.salvarPaciente(paciente).then(
+	ctrl.salvarPaciente = function(paciente) {		
+		if (cadastroPacienteFactory.isEditandoPaciente()) {			
+			var dataFormatada = new Date(paciente.dataNascimento);
+			paciente.dataNascimento = dataFormatada.getDate() + "/" + (dataFormatada.getMonth()+1) + "/" + dataFormatada.getFullYear();
+		}
+		
+		cadastroPacienteFactory.salvarPaciente(paciente).then(
 				successCallback = function(response) {						
 					ctrl.paciente = {};
 					$scope.cadastroClienteForm.$setPristine();					
@@ -131,7 +140,7 @@ angular.module('syspsi').controller('CadastroCtrl', ['$uibModal', '$scope', '$ht
 				errorCallback = function (error, status){					
 					tratarExcecao(error); 
 				}
-		);
+		);		
 	};	
 	
 	ctrl.iniciarConsulta = function(paciente) {		
@@ -164,20 +173,59 @@ angular.module('syspsi').controller('CadastroCtrl', ['$uibModal', '$scope', '$ht
 		agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
 				successCallback = function(response) {
 					// seta paciente para prontuário
-					consultaFactory.setPaciente(paciente);
+					consultaPacienteFactory.setPaciente(paciente);
 					
 					$location.path("/consulta");
 				},
 				errorCallback = function (error, status){					
 					tratarExcecao(error); 
 				}
-		);					
-	};
+		);				
+	};		
 	
-	ctrl.editarPaciente = function(paciente) {
-		cadastroFactory.setPaciente(paciente);		
+	ctrl.editarPaciente = function(paciente) {		
+		cadastroPacienteFactory.setPaciente(paciente);
+		cadastroPacienteFactory.setEditandoPaciente(true);
 		$location.path("/editarPaciente");
 	};
+		
+	ctrl.excluirPaciente = function(id) {
+		cadastroPacienteFactory.excluirPaciente(id).then(
+				successCallback = function(response) {														
+					ctrl.pacienteParaExcluir = {};					
+					ctrl.carregarPacientes();					
+					modalInstanceFactory.setMsgOk("Paciente excluído com sucesso!");
+					modalInstanceService.openOkModal();					
+				},
+				errorCallback = function (error, status) { 	
+					tratarExcecao(error); 
+				}
+		);		
+	}
+	
+	ctrl.ativarDesativarPaciente = function(paciente) {
+		if (paciente.ativo) {
+			paciente.ativo = false;
+		} else {
+			paciente.ativo = true;
+		}
+		
+		cadastroPacienteFactory.atualizarPaciente(paciente).then(
+				successCallback = function(response) {														
+					ctrl.pacienteParaExcluir = {};					
+					ctrl.carregarPacientes();			
+					if (paciente.ativo) {
+						modalInstanceFactory.setMsgOk("Paciente ativado com sucesso!");
+					} else {
+						modalInstanceFactory.setMsgOk("Paciente desativado com sucesso!");
+					}					
+					modalInstanceService.openOkModal();					
+				},
+				errorCallback = function (error, status) { 	
+					tratarExcecao(error); 
+				}
+		);	
+	}
 	
 	carregarConfiguracoes();
 	carregarConveniosAtivos();

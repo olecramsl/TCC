@@ -51,7 +51,7 @@ public class CadastroController {
 		paciente.setPsicologo(LoginController.getPsicologoLogado());
 		if (paciente.getPsicologo() != null) {
 			try {
-				paciente.validarCPF();
+				paciente.validarCPF();				
 				this.pacienteRepositorio.save(paciente);
 			} catch (DataIntegrityViolationException e) {
 				if (e.getMessage().toLowerCase().contains("cpf")) {

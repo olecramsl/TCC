@@ -1,7 +1,7 @@
 angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance', '$location', 'agendamentoFactory', 'configFactory', 
-	'modalAgendamentoFactory', 'modalInstanceFactory', 'modalAgendamentoService', 'modalInstanceService', 'consultaFactory', 'config', 
+	'modalAgendamentoFactory', 'modalInstanceFactory', 'modalAgendamentoService', 'modalInstanceService', 'consultaPacienteFactory', 'config', 
 	function ($uibModalInstance, $location,	agendamentoFactory, configFactory, modalAgendamentoFactory, modalInstanceFactory, 
-			modalAgendamentoService, modalInstanceService, consultaFactory, config) {
+			modalAgendamentoService, modalInstanceService, consultaPacienteFactory, config) {
 	
 	var ctrl = this;
 	
@@ -237,7 +237,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	
 	ctrl.iniciarConsulta = function(agendamento) {		
 		if (agendamento.paciente) {
-			consultaFactory.setPaciente(agendamento.paciente);				
+			consultaPacienteFactory.setPaciente(agendamento.paciente);				
 			$uibModalInstance.close();			
 			$location.path('/consulta');
 			

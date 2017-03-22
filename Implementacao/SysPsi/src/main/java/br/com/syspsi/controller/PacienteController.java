@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,5 +36,25 @@ public class PacienteController {
 	public List<Paciente> listarPacientes() throws Exception {		
 		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByPsicologoOrderByNomeCompletoAsc(LoginController.getPsicologoLogado());
 		return lstPacientes;
+	}
+	
+	@RequestMapping(
+			value = "/excluirPaciente", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void excluirPaciente(@RequestBody long id) throws Exception {
+		this.pacienteRepositorio.deleteById(id);
+	}
+	
+	@RequestMapping(
+			value = "/atualizarPaciente", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void atualizarPaciente(@RequestBody Paciente paciente) throws Exception {
+		this.pacienteRepositorio.save(paciente);
 	}
 }
