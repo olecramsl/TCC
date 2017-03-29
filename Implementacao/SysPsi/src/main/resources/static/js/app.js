@@ -1,4 +1,4 @@
-angular.module('syspsi', ['ngRoute'])
+angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngMessages'])
 	.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
 		$routeProvider.
 			when('/dashboard', { 
@@ -7,9 +7,9 @@ angular.module('syspsi', ['ngRoute'])
 				templateUrl: "templates/agenda.html",
 				controller: "AgendaCtrl",
 				controllerAs: "ctrl"
-			}).when('/consulta', { 
-				templateUrl: "templates/consulta.html",
-				controller: "ConsultaPacienteCtrl",
+			}).when('/prontuario', { 
+				templateUrl: "templates/prontuario.html",
+				controller: "ProntuarioPacienteCtrl",
 				controllerAs: "ctrl"
 			}).when('/cadastrarPaciente', { 
 				templateUrl: "templates/cadastrar_pacientes.html",
@@ -23,7 +23,7 @@ angular.module('syspsi', ['ngRoute'])
 				templateUrl: "templates/consultar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
 				controllerAs: "ctrl"
-			});
+			}).otherwise('/');
 	
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 	}]);

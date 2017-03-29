@@ -1,0 +1,23 @@
+<div class="row">
+	<div class="col-lg-12">
+		<h1 class="page-header">{{ctrl.paciente.nomeExibicao}}</h1>
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel-body">
+			<div class="row">
+				<form name="cadastrarConsultaForm" role="form" exit-prontuario-paciente-page>															
+					<div ckeditor="ctrl.options" ng-model="ctrl.content" ready="ctrl.onReady()"></div>
+					<br />
+					<div class="form-group">
+   						<button id="btnSalvar" type="button" class="btn btn-success" style="float: right;" 
+   							ng-click="ctrl.salvar(ctrl.content)" ng-disabled="!ctrl.paciente || !ctrl.content">Salvar</button>					
+   					</div>													
+				</form>																		
+			</div>
+		</div>        						
+	</div>
+</div>

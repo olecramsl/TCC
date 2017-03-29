@@ -22,4 +22,16 @@ angular.module('syspsi').service('modalInstanceService', ['$uibModal', function(
 			size: size
 		});    	
 	};
+	
+	this.openConfirmacaoModal = function (size) {	 	
+		var modalInstance = $uibModal.open({
+			animation: true,
+			ariaLabelledBy: 'modal-title',
+			ariaDescribedBy: 'modal-body',
+			templateUrl: 'templates/confirmacao_modal.html',
+			controller: 'ModalInstanceCtrl',
+			controllerAs: 'ctrl',			      
+			size: size
+		});    	
+	};
 }]);

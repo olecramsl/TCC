@@ -1,7 +1,7 @@
 angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance', '$location', 'agendamentoFactory', 'configFactory', 
-	'modalAgendamentoFactory', 'modalInstanceFactory', 'modalAgendamentoService', 'modalInstanceService', 'consultaPacienteFactory', 'config', 
+	'modalAgendamentoFactory', 'modalInstanceFactory', 'modalAgendamentoService', 'modalInstanceService', 'prontuarioPacienteFactory', 'config', 
 	function ($uibModalInstance, $location,	agendamentoFactory, configFactory, modalAgendamentoFactory, modalInstanceFactory, 
-			modalAgendamentoService, modalInstanceService, consultaPacienteFactory, config) {
+			modalAgendamentoService, modalInstanceService, prontuarioPacienteFactory, config) {
 	
 	var ctrl = this;
 	
@@ -237,9 +237,12 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	
 	ctrl.iniciarConsulta = function(agendamento) {		
 		if (agendamento.paciente) {
-			consultaPacienteFactory.setPaciente(agendamento.paciente);				
+			prontuarioPacienteFactory.setId(null);
+			prontuarioPacienteFactory.setPaciente(agendamento.paciente);
+			// seta inicio da consulta
+			prontuarioPacienteFactory.setInicio(new Date());
 			$uibModalInstance.close();			
-			$location.path('/consulta');
+			$location.path('/prontuario');
 			
 		} else {
 			modalInstanceFactory.setMsgErro("Não foi possível localizar o paciente da consulta!");

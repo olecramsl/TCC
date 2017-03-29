@@ -10,7 +10,8 @@
 
 	<title>Syspsi</title>
 	
-	<link href="lib/wro-css/angular-bootstrap.css" rel="stylesheet">
+	<link href="lib/wro-css/angular-bootstrap.css" rel="stylesheet">	
+	<link href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css" rel="stylesheet" type="text/css">	 	
 	<link href="lib/clockpicker/bootstrap-clockpicker.min.css" rel="stylesheet" type="text/css" >
 	<link href='lib/fullcalendar/fullcalendar-3.1.0.min.css' rel='stylesheet' type="text/css" />
 	<link href='lib/fullcalendar/fullcalendar.print-3.1.0.min.css' rel='stylesheet' type="text/css" media='print' />
@@ -109,8 +110,16 @@
 	<div id="page-wrapper">
 		<div ng-view></div>
 	</div>	
-
+	
 	<script type="text/javascript" src='lib/wro-js/angular-bootstrap.js'></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular-messages.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>	
+	 <!-- 
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular-animate.min.js"></script>
+  	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular-aria.min.js"></script>
+  	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular-messages.min.js"></script>
+  	<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+  	 -->  	
 	<script type="text/javascript" src='lib/moment/moment-2.17.1.min.js'></script>	
 	<script type="text/javascript" src='lib/fullcalendar/fullcalendar-3.1.0.min.js'></script>
 	<script type="text/javascript" src='lib/fullcalendar/calendar.js'></script>
@@ -119,12 +128,12 @@
 	<script type="text/javascript" src="lib/clockpicker/bootstrap-clockpicker.min.js"></script>
 	<script type="text/javascript" src='lib/ckeditor/ckeditor.js'></script>	
 	<script type="text/javascript" src='lib/angular-ckeditor/angular-ckeditor.min.js'></script>	
-	<script type="text/javascript" src='js/app.js'></script>	
+	<script type="text/javascript" src='js/app.js'></script>
 	<script type="text/javascript" src='js/value/configValue.js'></script>
 	<script type="text/javascript" src='js/controllers/agendaController.js'></script>				
 	<script type="text/javascript" src='js/controllers/modalAgendamentoController.js'></script>
 	<script type="text/javascript" src='js/controllers/modalInstanceController.js'></script>
-	<script type="text/javascript" src='js/controllers/consultaPacienteController.js'></script>
+	<script type="text/javascript" src='js/controllers/prontuarioPacienteController.js'></script>
 	<script type="text/javascript" src='js/controllers/cadastroPacienteController.js'></script>		
 	<script type="text/javascript" src='js/services/agendamentoFactory.js'></script>
 	<script type="text/javascript" src='js/services/pacienteFactory.js'></script>
@@ -132,7 +141,7 @@
 	<script type="text/javascript" src='js/services/convenioFactory.js'></script>
 	<script type="text/javascript" src='js/services/modalAgendamentoFactory.js'></script>
 	<script type="text/javascript" src='js/services/modalInstanceFactory.js'></script>
-	<script type="text/javascript" src='js/services/consultaPacienteFactory.js'></script>
+	<script type="text/javascript" src='js/services/prontuarioPacienteFactory.js'></script>
 	<script type="text/javascript" src='js/services/cadastroPacienteFactory.js'></script>
 	<script type="text/javascript" src='js/services/modalAgendamentoService.js'></script>
 	<script type="text/javascript" src='js/services/modalInstanceService.js'></script>
@@ -143,8 +152,9 @@
 	<script type="text/javascript" src='js/directives/telefoneDirective.js'></script>
 	<script type="text/javascript" src='js/directives/cepDirective.js'></script>
 	<script type="text/javascript" src='js/directives/dataNascimentoDirective.js'></script>
-	<script type="text/javascript" src='js/directives/exitHtmlPageDirective.js'></script>
-	<script type="text/javascript" src="js/util.js"></script>
+	<script type="text/javascript" src='js/directives/exitCadastroPacientePageDirective.js'></script>
+	<script type="text/javascript" src='js/directives/exitProntuarioPacientePageDirective.js'></script>
+	<script type="text/javascript" src="js/util.js"></script>	
 	
 	<!-- Metis Menu Plugin JavaScript -->
 	<script src="lib/metisMenu/metisMenu.min.js"></script>

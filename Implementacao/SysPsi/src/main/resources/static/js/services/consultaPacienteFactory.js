@@ -1,4 +1,4 @@
-angular.module('syspsi').factory('consultaPacienteFactory', function() {
+angular.module('syspsi').factory('prontuarioPacienteFactory', function() {
 	var _paciente;
 	
 	return {

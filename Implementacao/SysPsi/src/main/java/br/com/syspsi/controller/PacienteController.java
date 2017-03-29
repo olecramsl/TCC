@@ -44,8 +44,8 @@ public class PacienteController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void excluirPaciente(@RequestBody long id) throws Exception {
-		this.pacienteRepositorio.deleteById(id);
+	public void excluirPaciente(@RequestBody Paciente paciente) throws Exception {		
+		this.pacienteRepositorio.delete(paciente);			
 	}
 	
 	@RequestMapping(

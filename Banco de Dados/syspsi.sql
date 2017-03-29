@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
   `numero` VARCHAR(10) NOT NULL,
   `complemento` VARCHAR(45) NULL,
   `bairro` VARCHAR(60) NOT NULL,
-  `localidade` VARCHAR(50) NOT NULL,  
+  `localidade` VARCHAR(50) NOT NULL,
   `uf` VARCHAR(2) NOT NULL,
   `cep` VARCHAR(8) NOT NULL,
   `ativo` TINYINT(1) NOT NULL DEFAULT 1,
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   CONSTRAINT `fk_Agendamento_Paciente`
     FOREIGN KEY (`idPaciente`)
     REFERENCES `syspsi`.`paciente` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_agendamento_psicologo1`
     FOREIGN KEY (`idPsicologo`)
@@ -203,6 +203,25 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`tmpgcalendarevent` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `syspsi`.`prontuario`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`prontuario` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idPaciente` BIGINT(20) UNSIGNED NOT NULL,
+  `conteudo` TEXT NOT NULL,
+  `inicio` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `fim` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_prontuario_paciente1_idx` (`idPaciente` ASC),
+  CONSTRAINT `fk_prontuario_paciente1`
+    FOREIGN KEY (`idPaciente`)
+    REFERENCES `syspsi`.`paciente` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

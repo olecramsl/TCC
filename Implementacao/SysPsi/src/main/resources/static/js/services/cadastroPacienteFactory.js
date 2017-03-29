@@ -13,8 +13,8 @@ angular.module('syspsi').factory('cadastroPacienteFactory', ['$http', 'config', 
 		return $http.post(config.baseUrl + '/salvarPaciente', novoPaciente);
 	};
 	
-	var _excluirPaciente = function(id) {
-		return $http.post(config.baseUrl + '/excluirPaciente', id);
+	var _excluirPaciente = function(paciente) {
+		return $http.post(config.baseUrl + '/excluirPaciente', paciente);
 	};
 	
 	var _atualizarPaciente = function(paciente) {

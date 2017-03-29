@@ -6,8 +6,8 @@ angular.forEach(lazyModules, function(dependency) {
 });
 
 angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scope', '$http', '$location', 'configFactory', 'convenioFactory', 
-	'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'modalInstanceFactory', 'modalInstanceService', function ($uibModal, 
-			$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, consultaPacienteFactory, 
+	'pacienteFactory', 'cadastroPacienteFactory', 'prontuarioPacienteFactory', 'agendamentoFactory', 'modalInstanceFactory', 'modalInstanceService', function ($uibModal, 
+			$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, prontuarioPacienteFactory, 
 			agendamentoFactory,	modalInstanceFactory, modalInstanceService) {
 	
 	var ctrl = this;			
@@ -28,20 +28,6 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scop
 	}
 	
 	/**
-	 * Configurações do sistema
-	 */  
-	var carregarConfiguracoes = function() {
-		configFactory.loadConfig().then(
-				successCallback = function(response) {	
-					configSys = response.data;	    	  
-				},
-				errorCallback = function (error, status){
-					tratarExcecao(error); 
-				}
-		);     
-	}
-	
-	/**
 	 * Trata eventuais excessoes que possam ocorrer
 	 */
 	var tratarExcecao = function(error) {
@@ -54,6 +40,21 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scop
 		}				
 		modalInstanceService.openErroModal();
 	};
+	
+	/**
+	 * Configurações do sistema
+	 */  
+	var carregarConfiguracoes = function() {
+		configFactory.loadConfig().then(
+				successCallback = function(response) {	
+					configSys = response.data;	    	  
+				},
+				errorCallback = function (error, status){
+					tratarExcecao(error); 
+				}
+		);     
+	}
+		
 		  
 	// Busca CEP
 	ctrl.loading = false;
@@ -173,9 +174,15 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scop
 		agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
 				successCallback = function(response) {
 					// seta paciente para prontuário
-					consultaPacienteFactory.setPaciente(paciente);
+					prontuarioPacienteFactory.setId(null);
 					
-					$location.path("/consulta");
+					// seta paciente para prontuário
+					prontuarioPacienteFactory.setPaciente(paciente);
+					
+					// seta inicio da consulta
+					prontuarioPacienteFactory.setInicio(new Date());
+					
+					$location.path("/prontuario");
 				},
 				errorCallback = function (error, status){					
 					tratarExcecao(error); 
@@ -189,8 +196,8 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scop
 		$location.path("/editarPaciente");
 	};
 		
-	ctrl.excluirPaciente = function(id) {
-		cadastroPacienteFactory.excluirPaciente(id).then(
+	ctrl.excluirPaciente = function(paciente) {
+		cadastroPacienteFactory.excluirPaciente(paciente).then(
 				successCallback = function(response) {														
 					ctrl.pacienteParaExcluir = {};					
 					ctrl.carregarPacientes();					
