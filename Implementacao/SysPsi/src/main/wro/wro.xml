@@ -4,12 +4,10 @@
     <css>file:./src/main/wro/main.less</css>    
     <js>webjar:jquery/3.1.1/jquery.min.js</js>
     <js>webjar:angularjs/1.6.0/angular.min.js</js>
-    <js>webjar:angularjs/1.6.0/angular-route.min.js</js>
-    <!-- 
+    <js>webjar:angularjs/1.6.0/angular-route.min.js</js>    
     <js>webjar:angularjs/1.6.0/angular-animate.min.js</js>
     <js>webjar:angularjs/1.6.0/angular-aria.min.js</js>     
-    <js>webjar:angularjs/1.6.0/angular-messages.min.js</js>
-     -->       
+    <js>webjar:angularjs/1.6.0/angular-messages.min.js</js>             
     <js>webjar:bootstrap/3.3.7-1/js/bootstrap.min.js</js>
   </group>
 </groups>

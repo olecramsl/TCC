@@ -74,25 +74,28 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 			http
 		    	.httpBasic().and()
 		    	.authorizeRequests()
-		        	.antMatchers("/lib/**", "/js/**", "/", "/index.html", "/login.html", "/webjars/**").permitAll()
-		        	.anyRequest().authenticated().and()		        
+		        	.antMatchers("/lib/**", "/js/**", "/", "/index.html", "/templates/login.html", "/webjars/**").permitAll()
+		        	.anyRequest().authenticated().and()
+		        .logout().and()
 		        .csrf()
 		        	.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 			
+			/*
 			http
 	        	.formLogin()
-	            	.loginPage("/login.html");	            	
+	            	.loginPage("/login.html");
+	       */
 		}	
 		
 		@Override
-		public void configure(AuthenticationManagerBuilder builder) throws Exception {		
+		public void configure(AuthenticationManagerBuilder builder) throws Exception {
 			builder
 	        	.jdbcAuthentication()
 	        		.dataSource(dataSource)
 	        		.passwordEncoder(new BCryptPasswordEncoder())
 	        		.usersByUsernameQuery(USUARIO_POR_LOGIN) 
 	        		.authoritiesByUsernameQuery(PERMISSAO_POR_USUARIO)
-	        	.rolePrefix("ROLE_");        
+	        	.rolePrefix("ROLE_");
 		}
 	}
 }

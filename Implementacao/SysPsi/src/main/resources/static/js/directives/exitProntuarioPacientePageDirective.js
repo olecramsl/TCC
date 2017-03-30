@@ -1,5 +1,5 @@
-angular.module("syspsi").directive('exitProntuarioPacientePage', ['prontuarioPacienteFactory', 'modalInstanceFactory', 'modalInstanceService', '$mdDialog', 
-	function(prontuarioPacienteFactory, modalInstanceFactory, modalInstanceService, $mdDialog) {
+angular.module("syspsi").directive('exitProntuarioPacientePage', ['$mdDialog', 'prontuarioPacienteFactory', 'modalInstanceFactory', 
+	'modalInstanceService',	function($mdDialog, prontuarioPacienteFactory, modalInstanceFactory, modalInstanceService) {
 	return {
 		link: function($scope, elem, attrs) {
 			window.onbeforeunload = function(){				
@@ -7,24 +7,28 @@ angular.module("syspsi").directive('exitProntuarioPacientePage', ['prontuarioPac
             $scope.$on('$locationChangeStart', function(event, next, current) {			
             	//modalInstanceFactory.setMsgConfirmacao("Are you sure you want to leave this page?");            	
             	//modalInstanceService.openConfirmacaoModal();
-            	
-            	$scope.showConfirm = function(ev) {
-            	    // Appending dialog to document.body to cover sidenav in docs app
-            	    var confirm = $mdDialog.confirm()
-            	          .title('Would you like to delete your debt?')
-            	          .textContent('All of the banks have agreed to forgive you your debts.')
-            	          .ariaLabel('Lucky day')
-            	          .targetEvent(ev)
-            	          .ok('Please do it!')
-            	          .cancel('Sounds like a scam');
+            	            	
+            	// Appending dialog to document.body to cover sidenav in docs app
+            	var confirm = $mdDialog.confirm()
+            		.title('Atenção')
+            	    .textContent('Há informações não salvas no prontuário. Deseja realmente sair?')
+            	    .ariaLabel('Sim')
+            	    .targetEvent(event)
+            	    .ok('Please do it!')
+            	    .cancel('Sounds like a scam');
 
-            	    $mdDialog.show(confirm).then(function() {
-            	      $scope.status = 'You decided to get rid of your debt.';
-            	    }, function() {
-            	      $scope.status = 'You decided to keep your debt.';
-            	    });
-            	  }; 
-            	  /*
+            	$mdDialog.show(confirm).then(function() {
+            		$scope.status = 'You decided to get rid of your debt.';
+            		event.preventDefault();
+            		console.log("1");
+            	}, function() {
+            		$scope.status = 'You decided to keep your debt.';
+            		event.preventDefault();
+            		console.log("2");
+            	});
+            	event.preventDefault();  
+            	  
+            	/*  
             	if (!modalInstanceFactory.getSelecao()) {
                     event.preventDefault();
                 } else {
@@ -32,8 +36,8 @@ angular.module("syspsi").directive('exitProntuarioPacientePage', ['prontuarioPac
 	            	prontuarioPacienteFactory.setPaciente(null);
 	            	prontuarioPacienteFactory.setInicio(null);
 	            	prontuarioPacienteFactory.setFim(null);
-                }
-                */
+                } 
+                */               
             });            
         }
     };

@@ -1,0 +1,38 @@
+<head>
+    <meta charset="utf-8">
+    <title>Login Syspsi</title>    
+</head>
+<div class="row">	
+    <div class="col-md-4 col-md-offset-4">    			
+        <div class="login-panel panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Informe nome de usuário e senha</h3>
+            </div>
+            <div class="panel-body">
+            	<div class="alert alert-danger" ng-show="ctrl.error">
+					Houve um problema no login. Por favor, tente novamente.					
+				</div>
+                <form role="form" ng-submit="ctrl.login()">
+                    <fieldset>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Usuário" id="username" name="username" 
+                            	ng-model="ctrl.credentials.username" autofocus>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="Senha" id="password" name="password" type="password" 
+                            	ng-model="ctrl.credentials.password" value="">
+                        </div>      
+                        <!--                   
+                        <div class="checkbox">
+                            <label>
+                                <input name="remember" type="checkbox" value="Remember Me">Lembrar-me
+                            </label>
+                        </div>
+                         -->                                                                                       
+                        <button type="submit" class="btn btn-lg btn-success btn-block">Entrar</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

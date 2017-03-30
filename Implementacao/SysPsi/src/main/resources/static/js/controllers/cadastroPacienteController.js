@@ -6,12 +6,13 @@ angular.forEach(lazyModules, function(dependency) {
 });
 
 angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scope', '$http', '$location', 'configFactory', 'convenioFactory', 
-	'pacienteFactory', 'cadastroPacienteFactory', 'prontuarioPacienteFactory', 'agendamentoFactory', 'modalInstanceFactory', 'modalInstanceService', function ($uibModal, 
+	'pacienteFactory', 'cadastroPacienteFactory', 'prontuarioPacienteFactory', 'agendamentoFactory', 'modalInstanceFactory', 
+	'modalInstanceService', function ($uibModal, 
 			$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, prontuarioPacienteFactory, 
 			agendamentoFactory,	modalInstanceFactory, modalInstanceService) {
 	
-	var ctrl = this;			
-
+	var ctrl = this;		
+	
 	/*
 	 Ativos = 1
 	 Inativos = 2

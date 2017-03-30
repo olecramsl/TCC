@@ -1,7 +1,11 @@
-angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngMessages'])
+angular.module('syspsi', ['ngRoute', 'ngMaterial'])
 	.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
 		$routeProvider.
-			when('/dashboard', { 
+			when('/login', { 
+				templateUrl: "templates/login.html",
+				controller: "LoginCtrl",
+				controllerAs: "ctrl"
+			}).when('/dashboard', { 
 				templateUrl: "templates/dashboard.html"					
 			}).when('/agenda', { 
 				templateUrl: "templates/agenda.html",
@@ -23,7 +27,7 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngMessages'])
 				templateUrl: "templates/consultar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
 				controllerAs: "ctrl"
-			}).otherwise('/');
+			}).otherwise({redirectTo: '/'});
 	
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 	}]);

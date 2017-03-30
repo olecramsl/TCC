@@ -1,18 +1,21 @@
-angular.module('syspsi').controller('loginCtrl', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {				  
+angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'loginFactory', function($scope, $rootScope, 
+		$http, $location, loginFactory) {
+	var ctrl = this;
+	
 	var authenticate = function(credentials, callback) {
 		var headers = credentials ? {authorization : "Basic "
 			+ btoa(credentials.username + ":" + credentials.password)
 		} : {};
 
-		$http.get('http://localhost:8080/user', {headers : headers}).then(function(response) {			
+		loginFactory.login(headers).then(function(response) {						
 			if (response.data.name) {
 				$rootScope.authenticated = true;				
-				window.location.href="/home.html#!/dashboard";				
+				$location.path('/dashboard');
 			} else {											
 				$rootScope.authenticated = false;
-				window.location.href="/login.html";
+				$location.path('/login');
 			}
-			$scope.$apply();
+			//$scope.$apply();
 			callback && callback();
 		}, function() {
 			$rootScope.authenticated = false;
@@ -21,14 +24,28 @@ angular.module('syspsi').controller('loginCtrl', ['$scope', '$rootScope', '$http
 	}
 
 	authenticate();
-	$scope.credentials = {};
-	$scope.login = function() {		
-		authenticate($scope.credentials, function() {
+	ctrl.credentials = {};
+	ctrl.login = function() {	
+		authenticate(ctrl.credentials, function() {
 			if ($rootScope.authenticated) {				
-				$scope.error = false;
+				ctrl.error = false;
 		    } else {		    	
-		    	$scope.error = true;
+		    	ctrl.error = true;
 		    }
 		  });
+	};
+	
+	ctrl.logout = function() {
+		loginFactory.logout();
+		$rootScope.authenticated = false;
+	    $location.path("/");
+		/*
+		$http.post('logout', {}).success(function() {
+			$rootScope.authenticated = false;
+		    $location.path("/");
+		}).error(function(data) {
+		    $rootScope.authenticated = false;
+		});
+		*/
 	};
 }]);
