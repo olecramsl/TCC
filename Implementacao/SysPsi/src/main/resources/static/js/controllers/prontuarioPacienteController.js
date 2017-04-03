@@ -5,8 +5,8 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('ProntuarioPacienteCtrl', ['$scope', 'prontuarioPacienteFactory', 'modalInstanceFactory', 
-	function ($scope, prontuarioPacienteFactory, modalInstanceFactory) {
+angular.module('syspsi').controller('ProntuarioPacienteCtrl', ['$scope', '$mdDialog', 'prontuarioPacienteFactory', function ($scope, 
+		$mdDialog, prontuarioPacienteFactory) {
 	
 	var ctrl = this;
 	
@@ -18,14 +18,23 @@ angular.module('syspsi').controller('ProntuarioPacienteCtrl', ['$scope', 'prontu
 	 * Trata eventuais excessoes que possam ocorrer
 	 */
 	var tratarExcecao = function(error) {
+		var msg;
 		try {
 			// captura de excecao enviada pela Controller (codigo java)
-			modalInstanceFactory.setMsgErro(error.data.message);
+			msg = error.data.message;
 		} catch(erro) {
 			// Erro nivel Javascript
-			modalInstanceFactory.setMsgErro(error.data.message);
-		}				
-		modalInstanceService.openErroModal();
+			msg = error.data.message;
+		}
+		
+		$mdDialog.show(
+			$mdDialog.alert()
+				.clickOutsideToClose(true)
+				.title('Algo saiu errado ...')
+				.textContent(msg)
+				.ariaLabel('Alerta')
+				.ok('Ok')						
+		);
 	};		
 	
 	// Editor options.
@@ -51,11 +60,6 @@ angular.module('syspsi').controller('ProntuarioPacienteCtrl', ['$scope', 'prontu
 		prontuarioPacienteFactory.salvarProntuarioPaciente(prontuario).then(
 				successCallback = function(response) {		
 					prontuarioPacienteFactory.setId(response.data.id)
-					/*
-					$scope.cadastroClienteForm.$setPristine();					
-					modalInstanceFactory.setMsgOk("Paciente cadastrado com sucesso!");
-					modalInstanceService.openOkModal();
-					*/
 				},
 				errorCallback = function (error, status){					
 					tratarExcecao(error); 

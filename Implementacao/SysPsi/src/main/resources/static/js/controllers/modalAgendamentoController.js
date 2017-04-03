@@ -1,30 +1,37 @@
-angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance', '$location', 'agendamentoFactory', 'configFactory', 
-	'modalAgendamentoFactory', 'modalInstanceFactory', 'modalAgendamentoService', 'modalInstanceService', 'prontuarioPacienteFactory', 'config', 
-	function ($uibModalInstance, $location,	agendamentoFactory, configFactory, modalAgendamentoFactory, modalInstanceFactory, 
-			modalAgendamentoService, modalInstanceService, prontuarioPacienteFactory, config) {
+angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance', '$location', '$mdDialog', 'agendamentoFactory', 'configFactory', 
+	'modalAgendamentoFactory', 'modalAgendamentoService', 'prontuarioPacienteFactory', 'config', function ($uibModalInstance, $location, 
+			$mdDialog, agendamentoFactory, configFactory, modalAgendamentoFactory, modalAgendamentoService,	prontuarioPacienteFactory, config) {
 	
-	var ctrl = this;
+	var ctrl = this;	
 	
 	ctrl.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();
 	ctrl.indexPacienteSelecionado = agendamentoFactory.getIndexPacienteSelecionado();
 	ctrl.agendamento = agendamentoFactory.getAgendamento();
 	ctrl.agendamentoCarregado = agendamentoFactory.getAgendamentoCarregado();	
 	ctrl.msgConfirmacao = modalAgendamentoFactory.getMsgConfirmacao();
-	ctrl.tipoConfirmacao = modalAgendamentoFactory.getTipoConfirmacao();
+	ctrl.tipoConfirmacao = modalAgendamentoFactory.getTipoConfirmacao();	
 	
 	/**
 	 * Trata eventuais excessoes que possam ocorrer
 	 */
-	var tratarExcecao = function(error) {
+	var tratarExcecao = function(error) {		
+		var msg;
 		try {
 			// captura de excecao enviada pela Controller (codigo java)
-			modalInstanceFactory.setMsgErro(error.data.message);
+			msg = error.data.message;
 		} catch(erro) {
 			// Erro nivel Javascript
-			modalInstanceFactory.setMsgErro(error);
+			msg = error.data.message;
 		}
 			
-		modalInstanceService.openErroModal();
+		$mdDialog.show(
+			$mdDialog.alert()
+				.clickOutsideToClose(true)
+				.title('Algo saiu errado ...')
+				.textContent(msg)
+				.ariaLabel('Alerta')
+				.ok('Ok')						
+		);		
 	}
 	
 	/**
@@ -132,7 +139,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 			var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento); 
 			agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
 					successCallback = function(response) {	  				   					
-						var event = angular.element('.calendar').fullCalendar('clientEvents',agendamento.id);												
+						var event = angular.element('.calendar').fullCalendar('clientEvents',agendamento.id);																								
 						if (event.length > 0) {
 							agendamento.title = updateTitle(agendamento);
 							
@@ -143,9 +150,16 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 								angular.element('.calendar').fullCalendar('renderEvent', response.data);
 							}
 																		
-						} else {
-							modalInstanceFactory.setMsgErro("Não foi possível encontrar o agendamento com o id informado!");
-							modalInstanceService.openErroModal();
+						} else {								
+							$mdDialog.show(
+								$mdDialog.alert()
+									.clickOutsideToClose(true)
+									.title('Algo saiu errado ...')
+									.textContent("Não foi possível encontrar o agendamento com o id informado!")
+									.ariaLabel('Alerta')
+									.ok('Ok')						
+							);
+							
 						}	
 						
 						if (agendamento.eventoPrincipal) {									  
@@ -245,8 +259,14 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 			$location.path('/prontuario');
 			
 		} else {
-			modalInstanceFactory.setMsgErro("Não foi possível localizar o paciente da consulta!");
-			modalInstanceService.openErroModal();
+			$mdDialog.show(
+				$mdDialog.alert()
+					.clickOutsideToClose(true)
+					.title('Algo saiu errado ...')
+					.textContent("Não foi possível localizar o paciente da consulta!")
+					.ariaLabel('Alerta')
+					.ok('Ok')						
+			);
 			$uibModalInstance.close();
 		}
 	}

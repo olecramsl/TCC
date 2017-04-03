@@ -5,7 +5,7 @@
 	<h3 class="modal-title" id="modal-title">Agendamento</h3>
 </div>
 
-<div class="modal-body" id="modal-body">			
+<div class="modal-body" id="modal-body"> 		
 	<form name="agendamentoForm">
 		<div class="form-group">
 			<div ng-class="agendamentoForm.selPacientes.$error.required ?
@@ -42,7 +42,7 @@
 		</div>
 	</form>			
 </div>
-<div class="modal-footer">
+<div class="modal-footer"> 
 	<div class="form-group">
 		<button id="btnSalvar" type="button" class="btn btn-primary" 
 			ng-click="ctrl.salvar(ctrl.agendamento, ctrl.agendamentoCarregado)" ng-disabled="agendamentoForm.$invalid || !ctrl.isDataChanged(ctrl.agendamento, ctrl.agendamentoCarregado)">Salvar</button>		
@@ -50,5 +50,5 @@
 		<button id="btnRemove" type="button" class="btn btn-danger"	
 			ng-click="ctrl.confirmarRemocaoEvento(ctrl.agendamento)" ng-if="ctrl.agendamento.id">Remover</button>
 		<button id="btnCancel" type="button" class="btn btn-default" ng-click="ctrl.cancelar()">Cancelar</button>
-	</div>
+	</div>	 	 
 </div>

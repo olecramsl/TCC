@@ -5,10 +5,9 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$uibModal', 'agendamentoFactory', 'pacienteFactory', 'configFactory', 
-	'modalAgendamentoFactory', 'modalInstanceFactory', 'modalAgendamentoService', 'modalInstanceService', 'config',  function ($scope, 
-			$uibModal, agendamentoFactory, pacienteFactory,	configFactory, modalAgendamentoFactory, modalInstanceFactory, 
-			modalAgendamentoService, modalInstanceService, config) {
+angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 'pacienteFactory', 'configFactory', 
+	'modalAgendamentoFactory', 'modalAgendamentoService', 'config', function ($scope, $mdDialog, agendamentoFactory, pacienteFactory, 
+			configFactory, modalAgendamentoFactory,	modalAgendamentoService, config) {
 	
   var ctrl = this;
   
@@ -40,19 +39,26 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$uibModal', 'agend
    * Trata eventuais excessoes que possam ocorrer
    */
   var tratarExcecao = function(error) {
+	  var msg;
 	  try {
 		  // captura de excecao enviada pela Controller (codigo java)
-		  modalInstanceFactory.setMsgErro(error.data.message);
+		  msg = error.data.message;
 	  } catch(erro) {
 		  // Erro nivel Javascript
-		  modalInstanceFactory.setMsgErro(error);
+		  msg = error.data.message;
 	  }
-		
-	  modalInstanceService.openErroModal();
+	  $mdDialog.show(
+		$mdDialog.alert()
+			.clickOutsideToClose(true)
+			.title('Algo saiu errado ...')
+			.textContent(msg)
+			.ariaLabel('Alerta')
+			.ok('Ok')						
+	  );	
   }    
   
-  var select = function(start, end) {	  
-	  limparDadosAgendamento();
+  var select = function(start, end) {
+	  limparDadosAgendamento();	  
 	  agendamentoFactory.setAgendamentoCarregado(null);	  
 
 	  // Verifica se existe um horario pre definido
@@ -68,9 +74,9 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$uibModal', 'agend
 		
 	  agendamentoFactory.setStart(new Date(dataInicialAgendamento));
 	  agendamentoFactory.setEnd(new Date(dataFinalAgendamento));
-	  agendamentoFactory.setFormatedStart(start.format('HH:mm'));
-		
-	  modalAgendamentoService.openEventModal();																			
+	  agendamentoFactory.setFormatedStart(start.format('HH:mm'));		
+	  
+	  modalAgendamentoService.openEventModal();
   };
 	
   var eventClick = function(event, jsEvent, view) {			
@@ -84,7 +90,8 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$uibModal', 'agend
 		
 	  event.formatedStart = event.start.format('HH:mm');							
 	  agendamentoFactory.setAgendamento(angular.copy(event));
-	  agendamentoFactory.setAgendamentoCarregado(angular.copy(event));	  
+	  agendamentoFactory.setAgendamentoCarregado(angular.copy(event));
+	  
 	  modalAgendamentoService.openEventModal();											
   };
 	
@@ -104,8 +111,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$uibModal', 'agend
 	  updateEventDroped(angular.copy(event), angular.copy(oldEvent));
   };
 	
-  var viewRender = function (view, element) {	
-	  angular.element('.calendar').fullCalendar('removeEvents');		
+  var viewRender = function (view, element) {		  	
 	  listarAgendamento(view.start, view.end);						
   };
 
@@ -178,6 +184,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$uibModal', 'agend
   var listarAgendamento = function(dataInicial, dataFinal) {
 	  agendamentoFactory.listarAgendamentos(dataInicial, dataFinal).then(
 			  successCallback = function (response) {
+				  angular.element('.calendar').fullCalendar('removeEvents');
 				  angular.element('.calendar').fullCalendar('renderEvents',response.data);
 			  },
 			  errorCallback = function (error) {	  			  		  

@@ -5,11 +5,10 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scope', '$http', '$location', 'configFactory', 'convenioFactory', 
-	'pacienteFactory', 'cadastroPacienteFactory', 'prontuarioPacienteFactory', 'agendamentoFactory', 'modalInstanceFactory', 
-	'modalInstanceService', function ($uibModal, 
-			$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, prontuarioPacienteFactory, 
-			agendamentoFactory,	modalInstanceFactory, modalInstanceService) {
+angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', 'configFactory', 
+	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'prontuarioPacienteFactory', 'agendamentoFactory',	function ($mdDialog, 
+			$uibModal,	$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
+			prontuarioPacienteFactory,	agendamentoFactory) {
 	
 	var ctrl = this;		
 	
@@ -32,14 +31,22 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scop
 	 * Trata eventuais excessoes que possam ocorrer
 	 */
 	var tratarExcecao = function(error) {
+		var msg;
 		try {
 			// captura de excecao enviada pela Controller (codigo java)
-			modalInstanceFactory.setMsgErro(error.data.message);
+			msg = error.data.message;
 		} catch(erro) {
 			// Erro nivel Javascript
-			modalInstanceFactory.setMsgErro(error.data.message);
-		}				
-		modalInstanceService.openErroModal();
+			msg = error.data.message;
+		}
+		$mdDialog.show(
+			$mdDialog.alert()
+				.clickOutsideToClose(true)
+				.title('Algo saiu errado ...')
+				.textContent(msg)
+				.ariaLabel('Alerta')
+				.ok('Ok')						
+		);		
 	};
 	
 	/**
@@ -133,15 +140,23 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scop
 		}
 		
 		cadastroPacienteFactory.salvarPaciente(paciente).then(
-				successCallback = function(response) {						
-					ctrl.paciente = {};
-					$scope.cadastroClienteForm.$setPristine();					
-					modalInstanceFactory.setMsgOk("Paciente cadastrado com sucesso!");
-					modalInstanceService.openOkModal();
-				},
-				errorCallback = function (error, status){					
-					tratarExcecao(error); 
-				}
+			successCallback = function(response) {						
+				ctrl.paciente = {};
+				$scope.cadastroClienteForm.$setPristine();
+				
+				$mdDialog.show(
+					$mdDialog.alert()
+						.clickOutsideToClose(true)
+						.title('Cadastro de Paciente')
+						.textContent('Paciente cadastrado com sucesso!')
+						.ariaLabel('Alerta')
+						.ok('Ok')						
+				);
+				
+			},
+			errorCallback = function (error, status){					
+				tratarExcecao(error); 
+			}
 		);		
 	};	
 	
@@ -198,41 +213,76 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$uibModal', '$scop
 	};
 		
 	ctrl.excluirPaciente = function(paciente) {
-		cadastroPacienteFactory.excluirPaciente(paciente).then(
-				successCallback = function(response) {														
-					ctrl.pacienteParaExcluir = {};					
+		var confirm = $mdDialog.confirm()
+			.title('Atenção')
+			.textContent('Todas as informações do paciente, incluindo os prontuários, serão perdidas. Tem certeza que deseja continuar?')				
+			.ok('Sim')
+			.cancel('Não');
+
+		$mdDialog.show(confirm).then(function() {  
+			cadastroPacienteFactory.excluirPaciente(paciente).then(
+				successCallback = function(response) {																							
 					ctrl.carregarPacientes();					
-					modalInstanceFactory.setMsgOk("Paciente excluído com sucesso!");
-					modalInstanceService.openOkModal();					
+					$mdDialog.show(
+						$mdDialog.alert()
+							.clickOutsideToClose(true)
+							.title('Exclusão de Paciente')
+							.textContent('Paciente excluído com sucesso!')
+							.ariaLabel('Alerta')
+							.ok('Ok')						
+					);	
 				},
 				errorCallback = function (error, status) { 	
 					tratarExcecao(error); 
 				}
-		);		
+			);
+		}, function() {});				
 	}
 	
-	ctrl.ativarDesativarPaciente = function(paciente) {
-		if (paciente.ativo) {
-			paciente.ativo = false;
-		} else {
-			paciente.ativo = true;
-		}
-		
-		cadastroPacienteFactory.atualizarPaciente(paciente).then(
-				successCallback = function(response) {														
-					ctrl.pacienteParaExcluir = {};					
-					ctrl.carregarPacientes();			
+	ctrl.ativarDesativarPaciente = function(paciente) {		
+		var atualizar = function() {
+			cadastroPacienteFactory.atualizarPaciente(paciente).then(		
+				successCallback = function(response) {									
+					ctrl.carregarPacientes();
+					var msg;
 					if (paciente.ativo) {
-						modalInstanceFactory.setMsgOk("Paciente ativado com sucesso!");
-					} else {
-						modalInstanceFactory.setMsgOk("Paciente desativado com sucesso!");
-					}					
-					modalInstanceService.openOkModal();					
+						msg = "Paciente ativado com sucesso!";
+					} else {						
+						msg = "Paciente desativado com sucesso!";						
+					}									
+					
+					$mdDialog.show(
+						$mdDialog.alert()
+							.clickOutsideToClose(true)
+							.title('Ativação de Paciente')
+							.textContent(msg)
+							.ariaLabel('Alerta')
+							.ok('Ok')						
+					);
+					
 				},
-				errorCallback = function (error, status) { 	
+				errorCallback = function (error, status) {
+					console.log("Erro: " + error);
 					tratarExcecao(error); 
 				}
-		);	
+			);
+		};
+		
+		if (paciente.ativo) {
+			var confirm = $mdDialog.confirm()
+				.title('Atenção')
+				.textContent('Tem certeza que deseja desativar este paciente?')				
+				.ok('Sim')
+				.cancel('Não');
+
+			$mdDialog.show(confirm).then(function() {  
+				paciente.ativo = false;
+				atualizar();
+			}, function() {});			
+		} else {
+			paciente.ativo = true;
+			atualizar();
+		}		
 	}
 	
 	carregarConfiguracoes();
