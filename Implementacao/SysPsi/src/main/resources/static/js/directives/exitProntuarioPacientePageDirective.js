@@ -38,9 +38,10 @@ angular.module("syspsi").directive('exitProntuarioPacientePage', ['$mdDialog', '
 	            	prontuarioPacienteFactory.setFim(null);
                 } 
                 */     
-            	
             	prontuarioPacienteFactory.setId(null);
             	prontuarioPacienteFactory.setPaciente(null);
+            	prontuarioPacienteFactory.setAgendamento(null);
+            	prontuarioPacienteFactory.setConteudo(null);
             	prontuarioPacienteFactory.setInicio(null);
             	prontuarioPacienteFactory.setFim(null);
             });            

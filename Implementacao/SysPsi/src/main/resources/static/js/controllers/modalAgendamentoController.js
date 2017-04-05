@@ -2,7 +2,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	'modalAgendamentoFactory', 'modalAgendamentoService', 'prontuarioPacienteFactory', 'config', function ($uibModalInstance, $location, 
 			$mdDialog, agendamentoFactory, configFactory, modalAgendamentoFactory, modalAgendamentoService,	prontuarioPacienteFactory, config) {
 	
-	var ctrl = this;	
+	var ctrl = this;		
 	
 	ctrl.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();
 	ctrl.indexPacienteSelecionado = agendamentoFactory.getIndexPacienteSelecionado();
@@ -32,7 +32,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 				.ariaLabel('Alerta')
 				.ok('Ok')						
 		);		
-	}
+	};
 	
 	/**
 	 * Configurações do sistema
@@ -249,27 +249,50 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 		}		
 	};
 	
-	ctrl.iniciarConsulta = function(agendamento) {		
-		if (agendamento.paciente) {
-			prontuarioPacienteFactory.setId(null);
-			prontuarioPacienteFactory.setPaciente(agendamento.paciente);
-			// seta inicio da consulta
-			prontuarioPacienteFactory.setInicio(new Date());
-			$uibModalInstance.close();			
-			$location.path('/prontuario');
-			
-		} else {
-			$mdDialog.show(
-				$mdDialog.alert()
-					.clickOutsideToClose(true)
-					.title('Algo saiu errado ...')
-					.textContent("Não foi possível localizar o paciente da consulta!")
-					.ariaLabel('Alerta')
-					.ok('Ok')						
-			);
-			$uibModalInstance.close();
-		}
-	}
+	ctrl.iniciarConsulta = function(agendamento) {
+		prontuarioPacienteFactory.getProntuarioByIdAgendamento(agendamento.id).then(
+				successCallback = function(response) {
+					if (response.data.id) {				
+						prontuarioPacienteFactory.setId(response.data.id);
+						prontuarioPacienteFactory.setPaciente(response.data.paciente);
+						prontuarioPacienteFactory.setAgendamento(response.data.agendamento);
+						prontuarioPacienteFactory.setConteudo(response.data.conteudo);
+						prontuarioPacienteFactory.setInicio(response.data.inicio);
+						prontuarioPacienteFactory.setFim(null);
+						$location.path('/prontuario');
+					} else {
+						if (agendamento.paciente) {
+							prontuarioPacienteFactory.setId(null);
+							prontuarioPacienteFactory.setPaciente(agendamento.paciente);
+							prontuarioPacienteFactory.setAgendamento(agendamento);
+							prontuarioPacienteFactory.setConteudo(null);
+							prontuarioPacienteFactory.setInicio(new Date());
+							prontuarioPacienteFactory.setFim(null);
+							$location.path('/prontuario');
+						} else {
+							$mdDialog.show(
+								$mdDialog.alert()
+									.clickOutsideToClose(true)
+									.title('Algo saiu errado ...')
+									.textContent("Não foi possível localizar o paciente da consulta!")
+									.ariaLabel('Alerta')
+									.ok('Ok')						
+							);							
+						}
+					}
+				},
+				errorCallback = function (error, status){					
+					tratarExcecao(error); 
+				}
+		);
+		console.log("Id: " + prontuarioPacienteFactory.getId());
+		console.log("Paciente: " + prontuarioPacienteFactory.getPaciente());		
+		console.log("Agendamento: " + prontuarioPacienteFactory.getAgendamento());
+		console.log("Conteudo: " + prontuarioPacienteFactory.getConteudo());
+		console.log("Inicio: " + prontuarioPacienteFactory.getInicio());
+		console.log("Fim: " + prontuarioPacienteFactory.getFim());		
+		$uibModalInstance.close();			
+	};
 	
 	/**
 	 * Direciona para função correta quando selecionado "Sim" na janela modal de confirmação
@@ -306,6 +329,6 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 		  	agendamentoCarregado.description !== agendamento.description ||
 		  	agendamentoCarregado.repetirSemanalmente !== agendamento.repetirSemanalmente;
 	}
-	
+		
 	carregarConfiguracoes();
 }]);

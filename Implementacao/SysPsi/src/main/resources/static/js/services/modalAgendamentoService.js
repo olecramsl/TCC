@@ -22,7 +22,7 @@ angular.module('syspsi').service('modalAgendamentoService', ['$uibModal', 'agend
 			animation: true,
 		    ariaLabelledBy: 'modal-title',
 		    ariaDescribedBy: 'modal-body',
-		    templateUrl: 'templates/evento_modal.html',
+		    templateUrl: 'templates/agendamento_modal.html',
 		    controller: 'ModalAgendamentoCtrl',
 		    controllerAs: 'ctrl',      
 		    size: size

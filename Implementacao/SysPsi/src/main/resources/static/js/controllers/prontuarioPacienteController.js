@@ -14,6 +14,8 @@ angular.module('syspsi').controller('ProntuarioPacienteCtrl', ['$scope', '$mdDia
 		ctrl.paciente = newValue;		
 	});
 	
+	ctrl.content = prontuarioPacienteFactory.getConteudo();
+	
 	/**
 	 * Trata eventuais excessoes que possam ocorrer
 	 */
@@ -49,21 +51,22 @@ angular.module('syspsi').controller('ProntuarioPacienteCtrl', ['$scope', '$mdDia
 		// ...
 	};
 	
-	ctrl.salvar = function(conteudoProntuario) {
+	ctrl.salvar = function(conteudo) {		
 		var prontuario = {
-				id: prontuarioPacienteFactory.getId(),
+				id: prontuarioPacienteFactory.getId(),	
 				paciente: prontuarioPacienteFactory.getPaciente(),
-				conteudo: conteudoProntuario,
+				agendamento: prontuarioPacienteFactory.getAgendamento(),
+				conteudo: conteudo,
 				inicio: prontuarioPacienteFactory.getInicio(),
 				fim: new Date()
-		}
+		};
+		
 		prontuarioPacienteFactory.salvarProntuarioPaciente(prontuario).then(
-				successCallback = function(response) {		
-					prontuarioPacienteFactory.setId(response.data.id)
+				successCallback = function(response) {								
 				},
 				errorCallback = function (error, status){					
 					tratarExcecao(error); 
 				}
-		);	
-	}
+		);
+	};	
 }]);

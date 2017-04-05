@@ -189,14 +189,12 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		
 		agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
 				successCallback = function(response) {
-					// seta paciente para prontuário
 					prontuarioPacienteFactory.setId(null);
-					
-					// seta paciente para prontuário
 					prontuarioPacienteFactory.setPaciente(paciente);
-					
-					// seta inicio da consulta
+					prontuarioPacienteFactory.setAgendamento(response.data);
+					prontuarioPacienteFactory.setConteudo(null);
 					prontuarioPacienteFactory.setInicio(new Date());
+					prontuarioPacienteFactory.setFim(null);
 					
 					$location.path("/prontuario");
 				},
