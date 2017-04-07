@@ -6,9 +6,9 @@ angular.forEach(lazyModules, function(dependency) {
 });
 
 angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', 'configFactory', 
-	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'prontuarioPacienteFactory', 'agendamentoFactory',	function ($mdDialog, 
+	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory',	function ($mdDialog, 
 			$uibModal,	$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
-			prontuarioPacienteFactory,	agendamentoFactory) {
+			consultaPacienteFactory, agendamentoFactory) {
 	
 	var ctrl = this;		
 	
@@ -189,14 +189,14 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		
 		agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
 				successCallback = function(response) {
-					prontuarioPacienteFactory.setId(null);
-					prontuarioPacienteFactory.setPaciente(paciente);
-					prontuarioPacienteFactory.setAgendamento(response.data);
-					prontuarioPacienteFactory.setConteudo(null);
-					prontuarioPacienteFactory.setInicio(new Date());
-					prontuarioPacienteFactory.setFim(null);
+					consultaPacienteFactory.setId(null);
+					consultaPacienteFactory.setPaciente(paciente);
+					consultaPacienteFactory.setAgendamento(response.data);
+					consultaPacienteFactory.setProntuario(null);
+					consultaPacienteFactory.setInicio(new Date());
+					consultaPacienteFactory.setFim(null);
 					
-					$location.path("/prontuario");
+					$location.path("/consulta");
 				},
 				errorCallback = function (error, status){					
 					tratarExcecao(error); 

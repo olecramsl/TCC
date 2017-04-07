@@ -1,0 +1,31 @@
+<head>
+	<meta charset="utf-8">
+</head>
+<div class="row">
+	<div class="col-lg-12">
+		<h1 class="page-header">{{ctrl.paciente.nomeExibicao}}</h1>
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel-body">
+			<div class="row">
+				<form name="consultaForm" role="form" exit-consulta-paciente-page>
+					<!-- 
+					<div class="alert alert-success" ng-show="ctrl.showMsg">				 				
+						<span>Alterações salvas</span>
+					</div>
+					-->										
+					<div id="ckeditor" name="ckeditor" ckeditor="ctrl.options" ng-model="ctrl.prontuario"></div>					
+					<br />									
+					<div class="form-group">
+   						<button id="btnSalvar" name="btnSalvar" type="button" class="btn btn-success" style="float: right;" 
+   							ng-click="ctrl.salvar(ctrl.prontuario)" ng-disabled="!ctrl.paciente || !ctrl.prontuario || ctrl.oldProntuario === ctrl.prontuario">Salvar</button>   						
+   					</div>		 
+				</form>				
+			</div>
+		</div>        						
+	</div>
+</div>

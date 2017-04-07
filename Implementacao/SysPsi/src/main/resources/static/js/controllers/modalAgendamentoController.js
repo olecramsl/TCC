@@ -1,6 +1,6 @@
 angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance', '$location', '$mdDialog', 'agendamentoFactory', 'configFactory', 
-	'modalAgendamentoFactory', 'modalAgendamentoService', 'prontuarioPacienteFactory', 'config', function ($uibModalInstance, $location, 
-			$mdDialog, agendamentoFactory, configFactory, modalAgendamentoFactory, modalAgendamentoService,	prontuarioPacienteFactory, config) {
+	'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'config', function ($uibModalInstance, $location, 
+			$mdDialog, agendamentoFactory, configFactory, modalAgendamentoFactory, modalAgendamentoService,	consultaPacienteFactory, config) {
 	
 	var ctrl = this;		
 	
@@ -221,7 +221,8 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	/**
 	 * Remove um evento
 	 */
-	var removerEvento = function(agendamento) {			
+	var removerEvento = function(agendamento) {	
+		console.log(agendamento);
 		agendamentoFactory.removerAgendamento(agendamento).then(
 				successCallback = function(response) {
 					if (agendamento.grupo > 0 && agendamento.eventoPrincipal) {
@@ -250,25 +251,23 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	};
 	
 	ctrl.iniciarConsulta = function(agendamento) {
-		prontuarioPacienteFactory.getProntuarioByIdAgendamento(agendamento.id).then(
+		consultaPacienteFactory.getConsultaByIdAgendamento(agendamento.id).then(
 				successCallback = function(response) {
+					consultaPacienteFactory.setPaciente(agendamento.paciente);
+					consultaPacienteFactory.setFim(null);
 					if (response.data.id) {				
-						prontuarioPacienteFactory.setId(response.data.id);
-						prontuarioPacienteFactory.setPaciente(response.data.paciente);
-						prontuarioPacienteFactory.setAgendamento(response.data.agendamento);
-						prontuarioPacienteFactory.setConteudo(response.data.conteudo);
-						prontuarioPacienteFactory.setInicio(response.data.inicio);
-						prontuarioPacienteFactory.setFim(null);
-						$location.path('/prontuario');
+						consultaPacienteFactory.setId(response.data.id);						
+						consultaPacienteFactory.setAgendamento(response.data.agendamento);
+						consultaPacienteFactory.setProntuario(response.data.prontuario);
+						consultaPacienteFactory.setInicio(response.data.inicio);						
+						$location.path('/consulta');
 					} else {
 						if (agendamento.paciente) {
-							prontuarioPacienteFactory.setId(null);
-							prontuarioPacienteFactory.setPaciente(agendamento.paciente);
-							prontuarioPacienteFactory.setAgendamento(agendamento);
-							prontuarioPacienteFactory.setConteudo(null);
-							prontuarioPacienteFactory.setInicio(new Date());
-							prontuarioPacienteFactory.setFim(null);
-							$location.path('/prontuario');
+							consultaPacienteFactory.setId(null);
+							consultaPacienteFactory.setAgendamento(agendamento);
+							consultaPacienteFactory.setProntuario(null);
+							consultaPacienteFactory.setInicio(new Date());							
+							$location.path('/consulta');
 						} else {
 							$mdDialog.show(
 								$mdDialog.alert()
@@ -285,12 +284,6 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 					tratarExcecao(error); 
 				}
 		);
-		console.log("Id: " + prontuarioPacienteFactory.getId());
-		console.log("Paciente: " + prontuarioPacienteFactory.getPaciente());		
-		console.log("Agendamento: " + prontuarioPacienteFactory.getAgendamento());
-		console.log("Conteudo: " + prontuarioPacienteFactory.getConteudo());
-		console.log("Inicio: " + prontuarioPacienteFactory.getInicio());
-		console.log("Fim: " + prontuarioPacienteFactory.getFim());		
 		$uibModalInstance.close();			
 	};
 	
@@ -323,11 +316,11 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	ctrl.isDataChanged = function(agendamento, agendamentoCarregado) {	  
 		if (agendamentoCarregado === null) {		  
 			return true;	  
-		}
+		}		
 		return agendamentoCarregado.paciente.id !== agendamento.paciente.id ||
 		 	agendamentoCarregado.formatedStart !== agendamento.formatedStart ||
 		  	agendamentoCarregado.description !== agendamento.description ||
-		  	agendamentoCarregado.repetirSemanalmente !== agendamento.repetirSemanalmente;
+		  	agendamentoCarregado.repetirSemanalmente !== agendamento.repetirSemanalmente;		
 	}
 		
 	carregarConfiguracoes();

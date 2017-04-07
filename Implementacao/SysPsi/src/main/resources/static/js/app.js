@@ -11,9 +11,9 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial'])
 				templateUrl: "templates/agenda.html",
 				controller: "AgendaCtrl",
 				controllerAs: "ctrl"
-			}).when('/prontuario', { 
-				templateUrl: "templates/prontuario.html",
-				controller: "ProntuarioPacienteCtrl",
+			}).when('/consulta', { 
+				templateUrl: "templates/consulta.html",
+				controller: "ConsultaPacienteCtrl",
 				controllerAs: "ctrl"
 			}).when('/cadastrarPaciente', { 
 				templateUrl: "templates/cadastrar_pacientes.html",

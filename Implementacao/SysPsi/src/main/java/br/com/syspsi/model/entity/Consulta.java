@@ -10,24 +10,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.apache.commons.codec.binary.Base64;
 
 @Entity
-public class Prontuario implements Serializable {
+public class Consulta implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
-	@ManyToOne
-    @JoinColumn(name="idpaciente")
-	private Paciente paciente;	
-	@ManyToOne
+	@OneToOne
     @JoinColumn(name="idagendamento")
 	private Agendamento agendamento;
-	private String conteudo;
+	private String prontuario;
 	private Calendar inicio;
 	private Calendar fim;		
 	
@@ -46,20 +43,6 @@ public class Prontuario implements Serializable {
 	}
 	
 	/**
-	 * @return the paciente
-	 */
-	public Paciente getPaciente() {
-		return paciente;
-	}
-	
-	/**
-	 * @param paciente the paciente to set
-	 */
-	public void setPaciente(Paciente paciente) {
-		this.paciente = paciente;
-	}
-	
-	/**
 	 * @return the agendamento
 	 */
 	public Agendamento getAgendamento() {
@@ -74,17 +57,17 @@ public class Prontuario implements Serializable {
 	}
 
 	/**
-	 * @return the conteudo
+	 * @return the prontuario
 	 */
-	public String getConteudo() {
-		return conteudo;
+	public String getProntuario() {
+		return prontuario;
 	}
 	
 	/**
-	 * @param conteudo the conteudo to set
+	 * @param conteudo the prontuario to set
 	 */
-	public void setConteudo(String conteudo) {
-		this.conteudo = conteudo;
+	public void setProntuario(String conteudo) {
+		this.prontuario = conteudo;
 	}
 	
 	/**
@@ -122,15 +105,14 @@ public class Prontuario implements Serializable {
 	 * @throws Exception caso ocorra algum erro durante a encriptação
 	 */
 	public String encrypt(String texto) throws Exception {
-		byte[] key = (this.paciente.getCpf() + "@tG7!").getBytes("UTF-8");		
+		byte[] key = (this.agendamento.getPaciente().getCpf() + "@tG7!").getBytes("UTF-8");
 		
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+        Cipher cipher = Cipher.getInstance("AES");        
         cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
 
-        byte[] encrypted = cipher.doFinal(texto.getBytes());
-        System.out.println("encrypted string: " + Base64.encodeBase64String(encrypted));
+        byte[] encrypted = cipher.doFinal(texto.getBytes());        
 
         return Base64.encodeBase64String(encrypted);
     }
@@ -142,14 +124,14 @@ public class Prontuario implements Serializable {
 	 * @throws Exception caso algum erro ocorra durante a descriptografia
 	 */
     public String decrypt(String encrypted) throws Exception {
-    	byte[] key = (this.paciente.getCpf() + "@tG7!").getBytes("UTF-8");    	
-    	
+    	byte[] key = (this.agendamento.getPaciente().getCpf() + "@tG7!").getBytes("UTF-8");
+    	    	    	    	
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-
-        byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));
+        Cipher cipher = Cipher.getInstance("AES");                
+    	cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+    	 
+        byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));        
 
         return new String(original);
     }
