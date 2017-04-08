@@ -36,7 +36,7 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', funct
 	/**
 	 * Retorna o DTO a ser enviado ao método salvar
 	 */
-	var _prepararAgendamentoDTO = function(ag) {
+	var _prepararAgendamentoDTO = function(ag) {		
 		var agendamento = angular.copy(ag);
 		
 		var view = angular.element('.calendar').fullCalendar('getView');
@@ -61,8 +61,6 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', funct
 		setGCalendarId: function(gCalendarId) { _agendamento.gCalendarId = gCalendarId; },
 		getPaciente: function() { return _agendamento.paciente; },
 		setPaciente: function(paciente) { _agendamento.paciente = paciente; },
-		getPsicologo: function() { return _agendamento.psicologo; },
-		setPsicologo: function(psicologo) { _agendamento.psicologo = psicologo; },
 		getTitle: function() { return _agendamento.title; },
 		setTitle: function(title) { _agendamento.title = title; },
 		getStart: function() { return _agendamento.start; },

@@ -2,13 +2,13 @@ angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http
 		$http, $location, loginFactory) {
 	var ctrl = this;
 	
-	var authenticate = function(credentials, callback) {
+	var authenticate = function(credentials, callback) {		
 		var headers = credentials ? {authorization : "Basic "
 			+ btoa(credentials.username + ":" + credentials.password)
 		} : {};
-
-		loginFactory.login(headers).then(function(response) {						
-			if (response.data.name) {
+		
+		loginFactory.login(headers).then(function(response) {
+			if (response.data.name) {				
 				$rootScope.authenticated = true;				
 				$location.path('/dashboard');
 			} else {											

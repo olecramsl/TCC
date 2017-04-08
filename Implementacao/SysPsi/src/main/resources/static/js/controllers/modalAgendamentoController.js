@@ -221,8 +221,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	/**
 	 * Remove um evento
 	 */
-	var removerEvento = function(agendamento) {	
-		console.log(agendamento);
+	var removerEvento = function(agendamento) {			
 		agendamentoFactory.removerAgendamento(agendamento).then(
 				successCallback = function(response) {
 					if (agendamento.grupo > 0 && agendamento.eventoPrincipal) {

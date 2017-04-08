@@ -24,9 +24,6 @@ public class Agendamento implements Serializable {
 	@ManyToOne
     @JoinColumn(name="idpaciente")
 	private Paciente paciente;	
-	@ManyToOne
-    @JoinColumn(name="idpsicologo")
-	private Psicologo psicologo;
 	@Column(name="gcalendarid") 
 	private Long gCalendarId;	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -46,11 +43,10 @@ public class Agendamento implements Serializable {
 		super();
 	}
 	
-	public Agendamento(Paciente paciente, Psicologo psicologo, Long gCalendarId, Calendar start, Calendar end,
+	public Agendamento(Paciente paciente, Long gCalendarId, Calendar start, Calendar end,
 			Long grupo, String description, boolean eventoPrincipal, boolean ativo) {
 		super();		
 		this.paciente = paciente;	
-		this.psicologo = psicologo;
 		this.gCalendarId = gCalendarId;
 		this.start = start;
 		this.end = end;
@@ -88,20 +84,6 @@ public class Agendamento implements Serializable {
 		this.paciente = paciente;
 	}	
 	
-	/**
-	 * @return the psicologo
-	 */
-	public Psicologo getPsicologo() {
-		return psicologo;
-	}
-
-	/**
-	 * @param psicologo the psicologo to set
-	 */
-	public void setPsicologo(Psicologo psicologo) {
-		this.psicologo = psicologo;
-	}
-
 	/**
 	 * @return the gCalendarId
 	 */

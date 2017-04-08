@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ import com.google.api.services.calendar.model.Events;
 
 import br.com.syspsi.model.dto.AgendamentoDTO;
 import br.com.syspsi.model.entity.Agendamento;
+import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.model.entity.TmpGCalendarEvent;
 import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.TmpGCalendarEventRepositorio;
@@ -151,15 +153,15 @@ public class AgendaController {
 	 * @param agendamento o objeto agendamento de referência
 	 * @return um lista de objetos Agendamento
 	 */
-	private List<Agendamento> getLstAgendamentosParaSalvar(Calendar di, Calendar df, Agendamento ag) {
+	private List<Agendamento> getLstAgendamentosParaSalvar(Calendar di, Calendar df, Agendamento ag) {		
 		List<Agendamento> lstAgendamento = new ArrayList<>();
-		Agendamento agendamento = new Agendamento(ag.getPaciente(), ag.getPsicologo(), ag.getgCalendarId(), 
+		Agendamento agendamento = new Agendamento(ag.getPaciente(), ag.getgCalendarId(), 
 				ag.getStart(), ag.getEnd(), ag.getGrupo(), ag.getDescription(), ag.isEventoPrincipal(), 
 				ag.isAtivo());
 					
 		// Dias já salvos no BD
 		List<String> lstDiasSalvos = this.agendamentoRepositorio.listarDatasAgendamentoPeriodoPorGrupo(di, df, 
-				agendamento.getGrupo(), agendamento.getPsicologo());
+				agendamento.getGrupo());
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");		
 		// percorre todos os dias constantes na view do calendário e repete o evento quando necessário		
@@ -175,7 +177,7 @@ public class AgendaController {
 
 					lstAgendamento.add(agendamento);
 					
-					agendamento = new Agendamento(agendamento.getPaciente(), agendamento.getPsicologo(), null,  
+					agendamento = new Agendamento(agendamento.getPaciente(), null, 
 							(Calendar)agendamento.getStart().clone(), (Calendar)agendamento.getEnd().clone(),
 							agendamento.getGrupo(),	null, false, true);
 				}
@@ -288,8 +290,8 @@ public class AgendaController {
 				lstAgendamentos.add(ag); // os eventos principais ativos devem ser adicionados para serem exibidos na view				
 				// Agendamento é criado com eventoPrincipal false, pois o evento principal já existe e está ativo,
 				// restando apenas criar os agendamentos futuros
-				Agendamento agendamento = new Agendamento(ag.getPaciente(), ag.getPsicologo(), null, 
-						ag.getStart(), ag.getEnd(), ag.getGrupo(), null, !ag.isEventoPrincipal(), true);
+				Agendamento agendamento = new Agendamento(ag.getPaciente(), null, ag.getStart(), 
+						ag.getEnd(), ag.getGrupo(), null, !ag.isEventoPrincipal(), true);
 				di.set(Calendar.HOUR_OF_DAY, agendamento.getStart().get(Calendar.HOUR_OF_DAY));
 				di.set(Calendar.MINUTE, agendamento.getStart().get(Calendar.MINUTE));
 				df.set(Calendar.HOUR_OF_DAY, agendamento.getEnd().get(Calendar.HOUR_OF_DAY));
@@ -327,13 +329,12 @@ public class AgendaController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public Agendamento salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {		
-		Agendamento agendamento = agendamentoDTO.getAgendamento();		
-				
-		agendamento.setPsicologo(LoginController.getPsicologoLogado());
+		Agendamento agendamento = agendamentoDTO.getAgendamento();								
 				
 		if ((agendamentoDTO.isRepetirSemanalmente() &&				
 		   (agendamento.getGrupo() == null || agendamento.getGrupo() == 0))) {
-			agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo()));
+			agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup());
+			System.out.println(agendamento.getGrupo());
 			agendamento.setEventoPrincipal(true);
 		} else {
 			agendamento.setEventoPrincipal(false);
@@ -353,11 +354,17 @@ public class AgendaController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public void removerAgendamento(@RequestBody Agendamento agendamento) throws Exception {
-		if (agendamento.getGrupo() > 0) {
+		try {
+			if (agendamento.getGrupo() > 0) {
+				agendamento.setAtivo(false);
+				this.agendamentoRepositorio.save(agendamento);
+			} else {
+				this.agendamentoRepositorio.delete(agendamento);
+			}
+		} catch(DataIntegrityViolationException ex) {
+			// O agendamento possui uma consulta associada. Apenas inativa o agendamento
 			agendamento.setAtivo(false);
 			this.agendamentoRepositorio.save(agendamento);
-		} else {
-			this.agendamentoRepositorio.delete(agendamento);
 		}
 	}			
 	
@@ -372,11 +379,20 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void removerAgendamentosFuturos(@RequestBody Agendamento agendamento) throws Exception {
+	public void removerAgendamentosFuturos(@RequestBody Agendamento agendamento) throws Exception {		
 		// Remove agendamentos futuros, caso existam
-		this.agendamentoRepositorio.removerAgendamentosFuturos(agendamento.getStart(), agendamento.getGrupo(), agendamento.getPsicologo());
+		//this.agendamentoRepositorio.removerAgendamentosFuturos(agendamento.getStart(), agendamento.getGrupo());
 		
-		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.findByGrupoAndPsicologo(agendamento.getGrupo(), agendamento.getPsicologo());
+		for (Agendamento ag : this.agendamentoRepositorio.findByGrupo(agendamento.getGrupo())) {
+			try {
+				this.agendamentoRepositorio.delete(ag);
+			} catch(DataIntegrityViolationException ex) {
+				// Agendamento associado a uma consulta
+				ag.setAtivo(false);
+				this.agendamentoRepositorio.save(ag);
+			}
+		}
+		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.findByGrupo(agendamento.getGrupo());
 		for (Agendamento ag : lstAgendamentos) {
 			ag.setGrupo(0L);
 			ag.setEventoPrincipal(false);
@@ -396,17 +412,18 @@ public class AgendaController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public void moverAgendamentosFuturos(@RequestBody Agendamento agendamento) throws Exception {
-		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), agendamento.getPsicologo());
+		Psicologo psicologo = LoginController.getPsicologoLogado();
+		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), psicologo);
 		
-		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndPsicologoAndEventoPrincipal(agendamento.getGrupo(), 
-				agendamento.getPsicologo(), true);
+		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndEventoPrincipal(agendamento.getGrupo(), 
+				true);
 				
 		if (ag != null) {
 			ag.setEventoPrincipal(false);		
 			this.agendamentoRepositorio.save(ag);
 		}
 		
-		Long novoGrupo = this.agendamentoRepositorio.getNextValueForGroup(agendamento.getPsicologo());		
+		Long novoGrupo = this.agendamentoRepositorio.getNextValueForGroup();		
 		agendamento.setEventoPrincipal(true);
 		agendamento.setGrupo(novoGrupo);
 		this.agendamentoRepositorio.save(agendamento);
@@ -439,22 +456,23 @@ public class AgendaController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public void atualizarAgendamentosFuturos(@RequestBody Agendamento agendamento) throws Exception {
-		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), agendamento.getPsicologo());
-		
-		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndPsicologoAndEventoPrincipal(agendamento.getGrupo(), 
-				agendamento.getPsicologo(), true);
-		
+		Psicologo psicologo = LoginController.getPsicologoLogado();		
+		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), psicologo);
+				
+		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndEventoPrincipal(agendamento.getGrupo(), 
+				true);
+				
 		if(ag != null) {
 			ag.setEventoPrincipal(false);		
 			this.agendamentoRepositorio.save(ag);
-		}
+		}		
 		
 		agendamento.setEventoPrincipal(true);
-		this.agendamentoRepositorio.save(agendamento);
+		this.agendamentoRepositorio.save(agendamento);		
 		
 		SimpleDateFormat format = new SimpleDateFormat("H:mm");
 		int hora = Integer.parseInt(format.format(agendamento.getStart().getTime()).split(":")[0]);
-		int minuto = Integer.parseInt(format.format(agendamento.getStart().getTime()).split(":")[1]);		
+		int minuto = Integer.parseInt(format.format(agendamento.getStart().getTime()).split(":")[1]);
 				
 		for (Agendamento a : lstAgendamentos) {
 			if (a.isAtivo()) {
@@ -466,7 +484,7 @@ public class AgendaController {
 			}
 		}
 
-		this.agendamentoRepositorio.save(lstAgendamentos);
+		this.agendamentoRepositorio.save(lstAgendamentos);		
 	}
 	
 	/**
@@ -480,9 +498,10 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void atribuirNovoEventoPrincipal(@RequestBody Agendamento agendamento) throws Exception {				
+	public void atribuirNovoEventoPrincipal(@RequestBody Agendamento agendamento) throws Exception {
+		Psicologo psicologo = LoginController.getPsicologoLogado();
 		// Remove agendamentos futuros, caso existam
-		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), agendamento.getPsicologo());
+		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), psicologo);
 		
 		SimpleDateFormat format = new SimpleDateFormat("H:mm");
 		boolean achou = false;

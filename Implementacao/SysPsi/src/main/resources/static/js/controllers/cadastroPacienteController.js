@@ -168,8 +168,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		agendamento = {
 				id: null,
 				gCalendarId: null,				
-				paciente: paciente,				
-				psicologo: paciente.psicologo,				
+				paciente: paciente,								
 				title: paciente.nomeExibicao,
 				start: start,
 				end: end,				
