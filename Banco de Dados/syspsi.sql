@@ -97,7 +97,6 @@ DEFAULT CHARACTER SET = utf8;
 CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPaciente` BIGINT(20) UNSIGNED NOT NULL,
-  `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
   `gCalendarId` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `end` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -107,16 +106,10 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   `ativo` TINYINT(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   INDEX `fk_Agendamento_Paciente_idx` (`idPaciente` ASC),
-  INDEX `fk_agendamento_psicologo1_idx` (`idPsicologo` ASC),
   CONSTRAINT `fk_Agendamento_Paciente`
     FOREIGN KEY (`idPaciente`)
     REFERENCES `syspsi`.`paciente` (`id`)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_agendamento_psicologo1`
-    FOREIGN KEY (`idPsicologo`)
-    REFERENCES `syspsi`.`psicologo` (`id`)
-    ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
@@ -206,23 +199,16 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `syspsi`.`prontuario`
+-- Table `syspsi`.`consulta`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`prontuario` (
+CREATE TABLE IF NOT EXISTS `syspsi`.`consulta` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `idPaciente` BIGINT(20) UNSIGNED NOT NULL,
   `idAgendamento` BIGINT(20) UNSIGNED NOT NULL,
-  `conteudo` TEXT NOT NULL,
+  `prontuario` TEXT NOT NULL,
   `inicio` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `fim` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  INDEX `fk_prontuario_paciente1_idx` (`idPaciente` ASC),
   INDEX `fk_prontuario_agendamento1_idx` (`idAgendamento` ASC),
-  CONSTRAINT `fk_prontuario_paciente1`
-    FOREIGN KEY (`idPaciente`)
-    REFERENCES `syspsi`.`paciente` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION,
   CONSTRAINT `fk_prontuario_agendamento1`
     FOREIGN KEY (`idAgendamento`)
     REFERENCES `syspsi`.`agendamento` (`id`)
