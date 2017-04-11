@@ -50,7 +50,7 @@ public class AgendaController {
 
     /** Directory to store user credentials for this application. */
     private static final java.io.File DATA_STORE_DIR = new java.io.File(
-        System.getProperty("user.home"), ".credentials/calendar-java-quickstart");
+        System.getProperty("user.home"), ".credentials/syspsi");
 
     /** Global instance of the {@link FileDataStoreFactory}. */
     private static FileDataStoreFactory DATA_STORE_FACTORY;
@@ -65,7 +65,7 @@ public class AgendaController {
     /** Global instance of the scopes required by this quickstart.
      *
      * If modifying these scopes, delete your previously saved credentials
-     * at ~/.credentials/calendar-java-quickstart
+     * at ~/.credentials/syspsi
      */
     private static final List<String> SCOPES =
         Arrays.asList(CalendarScopes.CALENDAR_READONLY);
@@ -104,8 +104,7 @@ public class AgendaController {
                         HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
                 .setDataStoreFactory(DATA_STORE_FACTORY)
                 .setAccessType("offline")
-                .build();        
-        
+                .build();
         Credential credential = new AuthorizationCodeInstalledApp(
             flow, new LocalServerReceiver()).authorize("user");
         System.out.println(
@@ -127,9 +126,9 @@ public class AgendaController {
                 .build();
     }
     
+    /*
     @RequestMapping(value="/callback", method=RequestMethod.GET, params="code" )
-    public ModelAndView oauth2Callback(@RequestParam(value="code") String code, ModelAndView mv) {
-    	/*
+    public ModelAndView oauth2Callback(@RequestParam(value="code") String code, ModelAndView mv) {    	
 	    try {
 		    TokenResponse response = flow.newTokenRequest(code).setRedirectUri(redirectURI).execute();
 		    credential=flow.createAndStoreCredential(response, "userID");
@@ -140,11 +139,22 @@ public class AgendaController {
 		    com.google.api.services.calendar.model.Events eventList=events.list("primary").execute();
 		    mv.addObject("events", eventList.getItems()); 
 	    } catch (Exception e) {
-	    }
-	    */
+	    }	    
 	    mv.setViewName("agenda");
-	    return mv;
-    }           	
+	    return mv;	   
+    }     
+    */   
+    @RequestMapping(value="/Callback", method=RequestMethod.GET, params="code" )
+    public void oauth2Callback(@RequestParam(value="code") String code, ModelAndView mv) {
+    	System.out.println("");
+    	System.out.println("");
+    	System.out.println("");
+    	System.out.println("Código: " + code);
+    	System.out.println("");
+    	System.out.println("");
+    	System.out.println("");
+    }
+    
 	
 	/**
 	 * Retorna uma lista de objetos Agendamento para serem gravados na view FullCalendar
@@ -282,7 +292,7 @@ public class AgendaController {
 		}																	
 		
 		// AGENDAMENTOS CALENDAR
-		//listarAgendamentosGCalendar(di, df);
+		listarAgendamentosGCalendar(di, df);		
 		
 		List<Agendamento> lstAgendamentos = new ArrayList<>();
 		for (Agendamento ag : this.agendamentoRepositorio.listarPorPeriodo(di, df, LoginController.getPsicologoLogado())) {

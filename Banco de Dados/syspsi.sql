@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
   `sobrenome` VARCHAR(90) NOT NULL,
   `login` VARCHAR(20) NOT NULL,
   `senha` VARCHAR(70) NOT NULL,
+  `chave` VARBINARY(16) NOT NULL,
   `ativo` TINYINT(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `login_UNIQUE` (`login` ASC))

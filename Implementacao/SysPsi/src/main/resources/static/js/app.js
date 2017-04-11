@@ -6,7 +6,7 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial'])
 				controller: "LoginCtrl",
 				controllerAs: "ctrl"
 			}).when('/dashboard', { 
-				templateUrl: "templates/dashboard.html"					
+				templateUrl: "templates/dashboard.html"
 			}).when('/agenda', { 
 				templateUrl: "templates/agenda.html",
 				controller: "AgendaCtrl",

@@ -78,13 +78,7 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 		        	.anyRequest().authenticated().and()
 		        .logout().and()
 		        .csrf()
-		        	.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-			
-			/*
-			http
-	        	.formLogin()
-	            	.loginPage("/login.html");
-	       */
+		        	.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());					
 		}	
 		
 		@Override

@@ -1,7 +1,10 @@
 package br.com.syspsi.model.entity;
 
 import java.io.Serializable;
+import java.util.Base64;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +21,7 @@ public class Psicologo implements Serializable {
 	private String sobrenome;
 	private String login;
 	private String senha;
+	private byte[] chave;
 	private boolean ativo;
 
 	/**
@@ -91,6 +95,20 @@ public class Psicologo implements Serializable {
 	}
 
 	/**
+	 * @return the chave
+	 */
+	public byte[] getChave() {
+		return chave;
+	}
+
+	/**
+	 * @param chave the chave to set
+	 */
+	public void setChave(byte[] chave) {
+		this.chave = chave;
+	}
+
+	/**
 	 * @return the ativo
 	 */
 	public boolean isAtivo() {
@@ -102,5 +120,17 @@ public class Psicologo implements Serializable {
 	 */
 	public void setAtivo(boolean ativo) {
 		this.ativo = ativo;
+	}
+	
+	/**
+	 * @return a chave de criptografia para criptografar os prontuários
+	 * @throws Exception caso algum problema ocorra
+	 */
+	public String gerarChave() throws Exception {
+		// create new key
+		SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();	
+		
+		// get base64 encoded version of the key
+		return Base64.getEncoder().encodeToString(secretKey.getEncoded()).substring(0, 16);
 	}
 }

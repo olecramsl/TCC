@@ -105,7 +105,8 @@ public class Consulta implements Serializable {
 	 * @throws Exception caso ocorra algum erro durante a encriptação
 	 */
 	public String encrypt(String texto) throws Exception {
-		byte[] key = (this.agendamento.getPaciente().getCpf() + "@tG7!").getBytes("UTF-8");
+		//byte[] key = (this.agendamento.getPaciente().getCpf() + "@tG7!").getBytes("UTF-8");
+		byte[] key = this.agendamento.getPaciente().getPsicologo().getChave();
 		
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 
@@ -124,7 +125,8 @@ public class Consulta implements Serializable {
 	 * @throws Exception caso algum erro ocorra durante a descriptografia
 	 */
     public String decrypt(String encrypted) throws Exception {
-    	byte[] key = (this.agendamento.getPaciente().getCpf() + "@tG7!").getBytes("UTF-8");
+    	//byte[] key = (this.agendamento.getPaciente().getCpf() + "@tG7!").getBytes("UTF-8");
+    	byte[] key = this.agendamento.getPaciente().getPsicologo().getChave();
     	    	    	    	
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 
