@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html ng-app="syspsi">
 <head>
-<meta charset="UTF-8">
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,7 +34,7 @@
 		}
 	</style>
 </head>
-<body ng-cloak class="ng-cloak" ng-controller="LoginCtrl as ctrl">
+<body ng-cloak class="ng-cloak">
 	<!-- 
 	<div ng-controller="navigation" class="container">
 		<ul class="nav nav-pills" role="tablist">
@@ -46,93 +45,94 @@
 	</div>
 	 -->
 	 
-	 <div ng-show="!authenticated"><a href="#!/login">login</a></div>
-	 <div ng-show="!authenticated" ng-view></div>
+	  
+	 	 
+	 
 	
-	<div id="wrapper" ng-show="authenticated">
-		<!-- Navigation -->
-		<nav class="navbar navbar-default navbar-static-top" role="navigation"
-			style="margin-bottom: 0">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse"
-					data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span> <span
-						class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="home.html">Syspsi</a>
-			</div>
-			<!-- /.navbar-header -->
-
-			<ul class="nav navbar-top-links navbar-right">
-				<!-- /.dropdown -->
-				<li class="dropdown"><a class="dropdown-toggle"
-					data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
-						<i class="fa fa-caret-down"></i>
-				</a>
-					<ul class="dropdown-menu dropdown-user">
-						<li><a href="#"><i class="fa fa-user fa-fw"></i> Meu
-								Perfil</a></li>
-						<li class="divider"></li>
-						<li><a href="" ng-click="ctrl.logout()"><i class="fa fa-sign-out fa-fw"></i>
-								Sair</a></li>
-					</ul> <!-- /.dropdown-user --></li>
-				<!-- /.dropdown -->
-			</ul>
-			<!-- /.navbar-top-links -->
-
-			<div class="navbar-default sidebar" role="navigation">
-				<div class="sidebar-nav navbar-collapse">
-					<ul class="nav" id="side-menu">
-						<li>							
-							<a href="#!/dashboard"><i class="fa fa-dashboard fa-fw"></i>Dashboard</a>
-						</li>
-						
-						<li>
-							<a href="#!/agenda"><i class="fa fa-table fa-fw"></i> Agenda</a>
-						</li>
-												
-						<li>
-                            <a href="#"><i class="fa fa-user-o fa-fw"></i> Pacientes<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="#!/cadastrarPaciente"><i class="fa fa-user-plus fa-fw"></i>Cadastrar</a>
-                                </li>
-                                <li>
-                                    <a href="#!/consultarPacientes"><i class="fa fa-search fa-fw"></i>Consultar</a>
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-						
-						<li>
-                            <a href="#"><i class="fa fa-handshake-o fa-fw"></i> Convênios<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="cadastro_convenios.html"><i class="fa fa-edit fa-fw"></i>Cadastro</a>
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-					</ul>
+	<div ng-controller="LoginCtrl as ctrl">
+		<div ng-show="!authenticated"><a href="#!/login">login</a></div>
+		<div id="wrapper" ng-show="authenticated">
+			<!-- Navigation -->
+			<nav class="navbar navbar-default navbar-static-top" role="navigation"
+				style="margin-bottom: 0">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse"
+						data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="home.html">Syspsi</a>
 				</div>
-				<!-- /.sidebar-collapse -->
-			</div>
-			<!-- /.navbar-static-side -->
-		</nav>
+				<!-- /.navbar-header -->
+	
+				<ul class="nav navbar-top-links navbar-right">
+					<!-- /.dropdown -->
+					<li class="dropdown"><a class="dropdown-toggle"
+						data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
+							<i class="fa fa-caret-down"></i>
+					</a>
+						<ul class="dropdown-menu dropdown-user">
+							<li><a href="#"><i class="fa fa-user fa-fw"></i> Meu
+									Perfil</a></li>
+							<li class="divider"></li>
+							<li><a href="" ng-click="ctrl.logout()"><i class="fa fa-sign-out fa-fw"></i>
+									Sair</a></li>
+						</ul> <!-- /.dropdown-user --></li>
+					<!-- /.dropdown -->
+				</ul>
+				<!-- /.navbar-top-links -->
+	
+				<div class="navbar-default sidebar" role="navigation">
+					<div class="sidebar-nav navbar-collapse">
+						<ul class="nav" id="side-menu">
+							<li>							
+								<a href="#!/dashboard"><i class="fa fa-dashboard fa-fw"></i>Dashboard</a>
+							</li>
+							
+							<li>
+								<a href="#!/agenda/"><i class="fa fa-table fa-fw"></i> Agenda</a>
+							</li>
+													
+							<li>
+	                            <a href="#!"><i class="fa fa-user-o fa-fw"></i> Pacientes<span class="fa arrow"></span></a>
+	                            <ul class="nav nav-second-level">
+	                                <li>
+	                                    <a href="#!/cadastrarPaciente"><i class="fa fa-user-plus fa-fw"></i>Cadastrar</a>
+	                                </li>
+	                                <li>
+	                                    <a href="#!/consultarPacientes"><i class="fa fa-search fa-fw"></i>Consultar</a>
+	                                </li>
+	                            </ul>
+	                            <!-- /.nav-second-level -->
+	                        </li>
+							
+							<li>
+	                            <a href="#!"><i class="fa fa-handshake-o fa-fw"></i> Convênios<span class="fa arrow"></span></a>
+	                            <ul class="nav nav-second-level">
+	                                <li>
+	                                    <a href="cadastro_convenios.html"><i class="fa fa-edit fa-fw"></i>Cadastro</a>
+	                                </li>
+	                            </ul>
+	                            <!-- /.nav-second-level -->
+	                        </li>
+						</ul>
+					</div>
+					<!-- /.sidebar-collapse -->
+				</div>
+				<!-- /.navbar-static-side -->
+			</nav>
+		</div>	
 	</div>
 	
-	<!-- /#wrapper -->	
-	<div id="page-wrapper" ng-show="authenticated">
-		<div ng-view></div>
-	</div>
+	<div ng-view></div>	 	
 	
 	<script type="text/javascript" src='lib/wro-js/angular-bootstrap.js'></script>		 	
 	<script type="text/javascript" src='lib/angular-material/angular-material-1.1.0.min.js'></script>  	   	
 	<script type="text/javascript" src='lib/moment/moment-2.17.1.min.js'></script>	
 	<script type="text/javascript" src='lib/fullcalendar/fullcalendar-3.1.0.min.js'></script>
 	<script type="text/javascript" src='lib/fullcalendar/calendar.js'></script>
-	<script type="text/javascript" src='lib/fullcalendar/locale-all.js'></script>	
+	<script type="text/javascript" src='lib/fullcalendar/locale-all.js'></script>		
 	<script type="text/javascript" src='lib/ui-bootstrap/ui-bootstrap-tpls-2.3.2.min.js'></script>
 	<script type="text/javascript" src="lib/clockpicker/bootstrap-clockpicker.min.js"></script>
 	<script type="text/javascript" src='lib/ckeditor/ckeditor.js'></script>		

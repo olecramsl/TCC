@@ -24,8 +24,10 @@ public class Agendamento implements Serializable {
 	@ManyToOne
     @JoinColumn(name="idpaciente")
 	private Paciente paciente;	
-	@Column(name="gcalendarid") 
-	private Long gCalendarId;	
+	@Column(name="idgcalendar") 
+	private String idGCalendar;
+	@Column(name="idrecurring")
+	private String idRecurring;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar start;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -43,11 +45,12 @@ public class Agendamento implements Serializable {
 		super();
 	}
 	
-	public Agendamento(Paciente paciente, Long gCalendarId, Calendar start, Calendar end,
-			Long grupo, String description, boolean eventoPrincipal, boolean ativo) {
+	public Agendamento(Paciente paciente, String idGCalendar, String idRecurring, Calendar start, 
+			Calendar end, Long grupo, String description, boolean eventoPrincipal, boolean ativo) {
 		super();		
 		this.paciente = paciente;	
-		this.gCalendarId = gCalendarId;
+		this.idGCalendar = idGCalendar;
+		this.idRecurring = idRecurring;
 		this.start = start;
 		this.end = end;
 		this.grupo = grupo;
@@ -85,19 +88,33 @@ public class Agendamento implements Serializable {
 	}	
 	
 	/**
-	 * @return the gCalendarId
+	 * @return the idGCalendar
 	 */
-	public Long getgCalendarId() {
-		return gCalendarId;
+	public String getIdGCalendar() {
+		return idGCalendar;
 	}
 
 	/**
-	 * @param gCalendarId the gCalendarId to set
+	 * @param idGCalendar the idGCalendar to set
 	 */
-	public void setgCalendarId(Long gCalendarId) {
-		this.gCalendarId = gCalendarId;
+	public void setIdGCalendar(String idGCalendar) {
+		this.idGCalendar = idGCalendar;
 	}
 	
+	/**
+	 * @return the idRecurring
+	 */
+	public String getIdRecurring() {
+		return idRecurring;
+	}
+
+	/**
+	 * @param idRecurring the idRecurring to set
+	 */
+	public void setIdRecurring(String idRecurring) {
+		this.idRecurring = idRecurring;
+	}
+
 	/**
 	 * @return the start
 	 */
@@ -180,6 +197,9 @@ public class Agendamento implements Serializable {
 	 * @return the title
 	 */
 	public String getTitle() {
+		if (this.paciente == null) {
+			return !this.description.isEmpty()?this.description:"";
+		}
 		return (this.description != null && !this.description.isEmpty()) ?
 				this.paciente.getNomeExibicao() + " (" + this.description + ")" : 
 				this.paciente.getNomeExibicao();

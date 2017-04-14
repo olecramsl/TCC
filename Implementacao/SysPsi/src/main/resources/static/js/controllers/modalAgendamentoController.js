@@ -129,8 +129,12 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	 * Salva/atualiza as informações de um agendamento
 	 */
 	ctrl.salvar = function (agendamento, agendamentoCarregado) {
-		// Edicao				
-		if (agendamento.id) {	
+		// Agendamento carregado do gCalendar
+		if (agendamentoCarregado && !agendamentoCarregado.paciente) {
+			var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento);
+			agendamentoFactory.salvarAgendamentoTemporarioGCalendar(agendamentoDTO).then();			
+		// Edicao	
+		} else if (agendamento.id) {	
 			var horas = agendamento.formatedStart.split(":")[0];
 			var minutos = agendamento.formatedStart.split(":")[1];
 			agendamento.start = moment(agendamento.start).hour(horas).minute(minutos);
@@ -313,7 +317,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	 * Verifica se algum campo da modal de novo evento foi alterado
 	 */
 	ctrl.isDataChanged = function(agendamento, agendamentoCarregado) {	  
-		if (agendamentoCarregado === null) {		  
+		if (agendamentoCarregado === null || !agendamentoCarregado.paciente) {		  
 			return true;	  
 		}		
 		return agendamentoCarregado.paciente.id !== agendamento.paciente.id ||

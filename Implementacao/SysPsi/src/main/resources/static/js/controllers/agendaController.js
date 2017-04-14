@@ -79,13 +79,15 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	  modalAgendamentoService.openEventModal();
   };
 	
-  var eventClick = function(event, jsEvent, view) {			
+  var eventClick = function(event, jsEvent, view) {
+	  if (event.paciente) {
 	  var tmpLst = agendamentoFactory.getLstPacientesAtivos();
-	  for (var i = 0; i < tmpLst.length; i++) {
+	  for (var i = 0; i < tmpLst.length; i++) {		  	 
 		  if (tmpLst[i].id == event.paciente.id) {					
 			  agendamentoFactory.setIndexPacienteSelecionado(i);					
 			  break;
 		  }				
+	  }
 	  }
 		
 	  event.formatedStart = event.start.format('HH:mm');							
@@ -111,9 +113,9 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	  updateEventDroped(angular.copy(event), angular.copy(oldEvent));
   };
 	
-  var viewRender = function (view, element) {		  	
-	  listarAgendamento(view.start, view.end);						
-  };
+  var viewRender = function (view, element) {
+	  listarAgendamento(view.start, view.end);
+  };    
 
   /* config object */
   ctrl.uiConfig = {
@@ -122,7 +124,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 				  left : 'prev,next today',
 				  center : 'title',
 				  right : 'month,agendaWeek,agendaDay'
-			  },
+			  },			  
 			  timezone: "local",
 			  allDaySlot: false,
 			  locale : 'pt-br',
@@ -183,7 +185,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
    */ 
   var listarAgendamento = function(dataInicial, dataFinal) {
 	  agendamentoFactory.listarAgendamentos(dataInicial, dataFinal).then(
-			  successCallback = function (response) {
+			  successCallback = function (response) {				  
 				  angular.element('.calendar').fullCalendar('removeEvents');
 				  angular.element('.calendar').fullCalendar('renderEvents',response.data);
 			  },

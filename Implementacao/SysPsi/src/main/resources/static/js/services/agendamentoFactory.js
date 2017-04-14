@@ -13,6 +13,10 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', funct
 		return $http.post(config.baseUrl + '/salvarAgendamento', angular.copy(agendamentoDTO));
 	};
 	
+	var _salvarAgendamentoTemporarioGCalendar = function(agendamentoDTO) {
+		return $http.post(config.baseUrl + '/salvarAgendamentoTemporarioGCalendar', angular.copy(agendamentoDTO));
+	};
+	
 	var _atribuirNovoEventoPrincipal = function(agendamento) {
 		return $http.post(config.baseUrl + '/atribuirNovoEventoPrincipal', angular.copy(agendamento));
 	}
@@ -87,6 +91,7 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', funct
 		setIndexPacienteSelecionado: function(indexPacienteSelecionado) { _indexPacienteSelecionado = indexPacienteSelecionado; },
 		listarAgendamentos: _listarAgendamentos,
 		salvarAgendamento: _salvarAgendamento,
+		salvarAgendamentoTemporarioGCalendar: _salvarAgendamentoTemporarioGCalendar,
 		atribuirNovoEventoPrincipal: _atribuirNovoEventoPrincipal,
 		removerAgendamento: _removerAgendamento,
 		removerAgendamentosFuturos: _removerAgendamentosFuturos,

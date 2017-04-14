@@ -8,7 +8,7 @@ angular.forEach(lazyModules, function(dependency) {
 angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', 'configFactory', 
 	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory',	function ($mdDialog, 
 			$uibModal,	$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
-			consultaPacienteFactory, agendamentoFactory) {
+			consultaPacienteFactory, agendamentoFactory) {	
 	
 	var ctrl = this;		
 	

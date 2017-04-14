@@ -1,5 +1,5 @@
 angular.module('syspsi', ['ngRoute', 'ngMaterial'])
-	.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
+	.config(['$routeProvider', '$httpProvider',  function($routeProvider, $httpProvider) {		
 		$routeProvider.
 			when('/login', { 
 				templateUrl: "templates/login.html",
@@ -7,7 +7,7 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial'])
 				controllerAs: "ctrl"
 			}).when('/dashboard', { 
 				templateUrl: "templates/dashboard.html"
-			}).when('/agenda', { 
+			}).when('/agenda/', { 
 				templateUrl: "templates/agenda.html",
 				controller: "AgendaCtrl",
 				controllerAs: "ctrl"

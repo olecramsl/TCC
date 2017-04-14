@@ -2,72 +2,74 @@
 	<meta charset="utf-8">
 </head>
 
-<div class="row">
-	<div class="col-lg-12">
-		<h1 class="page-header">Consultar Pacientes</h1>
+<div id="page-wrapper">
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header">Consultar Pacientes</h1>
+		</div>
+		<!-- /.col-lg-12 -->
 	</div>
-	<!-- /.col-lg-12 -->
-</div>
-<!-- /.row -->
-<div class="row">
-	<div class="col-lg-12">
-		<div class="panel panel-default">					
-			<div class="panel-body">
-				<div class="row">
-					<form name="pesquisarPacienteForm" ng-submit="" role="form">
-						<div class="col-lg-6">
-							<div class=" input-group">
-								<div class="input-group-addon"><i class="fa fa-search"></i></div>							
-								<input class="form-control" id="pesquisarNome" type="text" ng-model="ctrl.pesquisaNome.nomeCompleto" 
-									placeholder="Pesquisar">								
-							</div>							
-                    	</div>                
-                    	<div class="col-lg-6">                    		
-							<select name="tipoPesquisa" class="form-control"
-								ng-init="ctrl.pesquisa.tipoPesquisa='1'" 
-								ng-model="ctrl.pesquisa.tipoPesquisa"
-								ng-change="ctrl.carregarPacientes()">																											
-								<option value="1">Ativos</option>
-								<option value="2">Inativos</option>
-								<option value="3">Todos</option>
-							</select>							
-                    	</div>
-                   	</form>	                    	
-            	</div>
-            	<hr />
-                <div class="row">
-                 	<div id="list" class="row">
-					    <div class="table-responsive col-md-12">
-					        <table class="table table-striped" cellspacing="0" cellpadding="0">
-					            <thead>
-					                <tr>					                	
-					                    <th>Nome</th>
-					                    <th>CPF</th>
-					                    <th>Data de Nascimento</th>
-					                    <th>Telefone</th>
-					                    <th>Ações</th>
-					                 </tr>
-					            </thead>
-					            <tbody>								            			
-					                <tr ng-repeat="paciente in ctrl.lstPacientes | filter:ctrl.pesquisaNome">					                	
-					                    <td>{{paciente.nomeCompleto}}</td>
-					                    <td>{{paciente.cpf | cpfFormat}}</td>
-					                    <td>{{paciente.dataNascimento | date:'dd/MM/yyyy'}}</td>
-					                    <td>{{paciente.telefoneContato | telefoneFormat}}</td>
-					                    <td>
-					                        <a class="btn btn-success btn-xs" ng-click="ctrl.iniciarConsulta(paciente)" title="Iniciar Consulta"><i class="fa fa-calendar-check-o fa-fw"></i></a>
-					                        <a class="btn btn-warning btn-xs" ng-click="ctrl.editarPaciente(paciente)" title="Editar Paciente"><i class="fa fa-pencil fa-fw"></i></a>					                        
-					                        <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirPaciente(paciente)" title="Excluir Paciente"><i class="fa fa-user-times fa-fw"></i></a> 					                        
-					                        <a class="btn btn-info btn-xs" ng-if="paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Desativar Paciente"><i class="fa fa-minus fa-fw"></i></a>
-					                        <a class="btn btn-info btn-xs" ng-if="!paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Ativar Paciente"><i class="fa fa-refresh fa-fw"></i></a>
-					                    </td>
-					                </tr>					 
-					            </tbody>
-					         </table>					 
-					     </div>
-					 </div> <!-- /#list -->                             		                                 
+	<!-- /.row -->
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">					
+				<div class="panel-body">
+					<div class="row">
+						<form name="pesquisarPacienteForm" ng-submit="" role="form">
+							<div class="col-lg-6">
+								<div class=" input-group">
+									<div class="input-group-addon"><i class="fa fa-search"></i></div>							
+									<input class="form-control" id="pesquisarNome" type="text" ng-model="ctrl.pesquisaNome.nomeCompleto" 
+										placeholder="Pesquisar">								
+								</div>							
+	                    	</div>                
+	                    	<div class="col-lg-6">                    		
+								<select name="tipoPesquisa" class="form-control"
+									ng-init="ctrl.pesquisa.tipoPesquisa='1'" 
+									ng-model="ctrl.pesquisa.tipoPesquisa"
+									ng-change="ctrl.carregarPacientes()">																											
+									<option value="1">Ativos</option>
+									<option value="2">Inativos</option>
+									<option value="3">Todos</option>
+								</select>							
+	                    	</div>
+	                   	</form>	                    	
+	            	</div>
+	            	<hr />
+	                <div class="row">
+	                 	<div id="list" class="row">
+						    <div class="table-responsive col-md-12">
+						        <table class="table table-striped" cellspacing="0" cellpadding="0">
+						            <thead>
+						                <tr>					                	
+						                    <th>Nome</th>
+						                    <th>CPF</th>
+						                    <th>Data de Nascimento</th>
+						                    <th>Telefone</th>
+						                    <th>Ações</th>
+						                 </tr>
+						            </thead>
+						            <tbody>								            			
+						                <tr ng-repeat="paciente in ctrl.lstPacientes | filter:ctrl.pesquisaNome">					                	
+						                    <td>{{paciente.nomeCompleto}}</td>
+						                    <td>{{paciente.cpf | cpfFormat}}</td>
+						                    <td>{{paciente.dataNascimento | date:'dd/MM/yyyy'}}</td>
+						                    <td>{{paciente.telefoneContato | telefoneFormat}}</td>
+						                    <td>
+						                        <a class="btn btn-success btn-xs" ng-click="ctrl.iniciarConsulta(paciente)" title="Iniciar Consulta"><i class="fa fa-calendar-check-o fa-fw"></i></a>
+						                        <a class="btn btn-warning btn-xs" ng-click="ctrl.editarPaciente(paciente)" title="Editar Paciente"><i class="fa fa-pencil fa-fw"></i></a>					                        
+						                        <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirPaciente(paciente)" title="Excluir Paciente"><i class="fa fa-user-times fa-fw"></i></a> 					                        
+						                        <a class="btn btn-info btn-xs" ng-if="paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Desativar Paciente"><i class="fa fa-minus fa-fw"></i></a>
+						                        <a class="btn btn-info btn-xs" ng-if="!paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Ativar Paciente"><i class="fa fa-refresh fa-fw"></i></a>
+						                    </td>
+						                </tr>					 
+						            </tbody>
+						         </table>					 
+						     </div>
+						 </div> <!-- /#list -->                             		                                 
+					</div>
 				</div>
 			</div>
-		</div>
-	</div>		
+		</div>		
+	</div>
 </div>		

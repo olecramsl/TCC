@@ -10,8 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "tmpgcalendarevent")
 public class TmpGCalendarEvent implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -22,6 +24,8 @@ public class TmpGCalendarEvent implements Serializable {
 	private Psicologo psicologo;
 	@Column(name="idgcalendar")
 	private String idGCalendar;
+	@Column(name="idrecurring")
+	private String idRecurring;
 	private Calendar start;
 	private Calendar end;
 	private String summary;
@@ -32,11 +36,12 @@ public class TmpGCalendarEvent implements Serializable {
 		super();
 	}
 	
-	public TmpGCalendarEvent(Psicologo psicologo, String idGCalendar, Calendar start, Calendar end,
+	public TmpGCalendarEvent(Psicologo psicologo, String idGCalendar, String idRecurring, Calendar start, Calendar end,
 			String summary, String description) {
 		super();		
 		this.psicologo = psicologo;
 		this.idGCalendar = idGCalendar;
+		this.idRecurring = idRecurring;
 		this.start = start;
 		this.end = end;
 		this.summary = summary;
@@ -85,6 +90,20 @@ public class TmpGCalendarEvent implements Serializable {
 		this.idGCalendar = idGCalendar;
 	}
 	
+	/**
+	 * @return the idRecurring
+	 */
+	public String getIdRecurring() {
+		return idRecurring;
+	}
+
+	/**
+	 * @param idRecurring the idRecurring to set
+	 */
+	public void setIdRecurring(String idRecurring) {
+		this.idRecurring = idRecurring;
+	}
+
 	/**
 	 * @return the start
 	 */
