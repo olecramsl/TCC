@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
@@ -37,6 +38,15 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 	@PostConstruct
 	void started() {
 		TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
+	}
+	
+	@Bean
+	public DataSource dataSource() {
+	    DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+	        dataSourceBuilder.url("jdbc:mysql://localhost:3306/syspsi");
+	        dataSourceBuilder.username("USERSYSPSIAPP");
+	        dataSourceBuilder.password("@Rtu3v!xK0l#");
+	        return dataSourceBuilder.build();   
 	}
 	
 	@Override
@@ -82,7 +92,7 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 		}	
 		
 		@Override
-		public void configure(AuthenticationManagerBuilder builder) throws Exception {
+		public void configure(AuthenticationManagerBuilder builder) throws Exception {			
 			builder
 	        	.jdbcAuthentication()
 	        		.dataSource(dataSource)

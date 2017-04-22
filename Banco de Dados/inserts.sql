@@ -2,8 +2,8 @@ USE syspsi;
 INSERT INTO `syspsi`.`permissao`(`id`, `nome`, `descricao`) VALUES (1, "PSICOLOGO", "Permissão para usuário psicólogo");
 INSERT INTO `syspsi`.`permissao`(`id`, `nome`, `descricao`) VALUES (2, "ADM", "Permissão para usuário administrador");
 # senha 123
-INSERT INTO `syspsi`.`psicologo` (`id`, `nome`, `sobrenome`, `login`, `senha`, `chave`, `ativo`) VALUES (1, 'Magda Beatriz', ' Vaz Cunha', 'magda', '$2a$10$NHNM3ciz3QIIGNIxdZnvC.vSnlMGU7ALrFairJgWgek91z6QUZN8K', 'bRLIvpOvZTyKAjXv', true);
-INSERT INTO `syspsi`.`psicologo` (`id`, `nome`, `sobrenome`, `login`, `senha`, `chave`, `ativo`) VALUES (2, 'Jose', 'Silva', 'jose', '$2a$10$NHNM3ciz3QIIGNIxdZnvC.vSnlMGU7ALrFairJgWgek91z6QUZN8K', 'GhBOmPXNhgJ3+Coo', true);
+INSERT INTO `syspsi`.`psicologo` (`id`, `nome`, `sobrenome`, `login`, `senha`, `chave`, `ativo`) VALUES (1, 'Magda Beatriz', ' Vaz Cunha', 'magda@email.com', '$2a$10$NHNM3ciz3QIIGNIxdZnvC.vSnlMGU7ALrFairJgWgek91z6QUZN8K', 'bRLIvpOvZTyKAjXv', true);
+INSERT INTO `syspsi`.`psicologo` (`id`, `nome`, `sobrenome`, `login`, `senha`, `chave`, `ativo`) VALUES (2, 'Jose', 'Silva', 'jose@email.com', '$2a$10$NHNM3ciz3QIIGNIxdZnvC.vSnlMGU7ALrFairJgWgek91z6QUZN8K', 'GhBOmPXNhgJ3+Coo', true);
 INSERT INTO `syspsi`.`psicologo_tem_permissao`(`idPsicologo`, `idPermissao`, `dataCriacao`) VALUE (1, 1, now());
 INSERT INTO `syspsi`.`psicologo_tem_permissao`(`idPsicologo`, `idPermissao`, `dataCriacao`) VALUE (2, 1, now());
 INSERT INTO `syspsi`.`config` (`idPsicologo`, `tempoSessao`, `intervaloTempoCalendario`) VALUES (1, 60, 30);

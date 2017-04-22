@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
   `id` BIGINT(20) UNSIGNED NOT NULL,
   `nome` VARCHAR(45) NOT NULL,
   `sobrenome` VARCHAR(90) NOT NULL,
-  `login` VARCHAR(20) NOT NULL,
+  `login` VARCHAR(90) NOT NULL,
   `senha` VARCHAR(70) NOT NULL,
   `chave` VARBINARY(16) NOT NULL,
   `ativo` TINYINT(1) NOT NULL DEFAULT '1',

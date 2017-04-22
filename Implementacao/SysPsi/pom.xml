@@ -6,7 +6,8 @@
 	<groupId>br.com.syspsi</groupId>
 	<artifactId>syspsi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
+	
 
 	<name>SysPsi</name>
 	<description>SysPsi</description>
