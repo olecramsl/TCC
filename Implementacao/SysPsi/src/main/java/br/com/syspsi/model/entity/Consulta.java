@@ -25,6 +25,8 @@ public class Consulta implements Serializable {
     @JoinColumn(name="idagendamento")
 	private Agendamento agendamento;
 	private String prontuario;
+	private double valor;
+	private boolean recibo;
 	private Calendar inicio;
 	private Calendar fim;		
 	
@@ -70,6 +72,34 @@ public class Consulta implements Serializable {
 		this.prontuario = conteudo;
 	}
 	
+	/**
+	 * @return the valor
+	 */
+	public double getValor() {
+		return valor;
+	}
+
+	/**
+	 * @param valor the valor to set
+	 */
+	public void setValor(double valor) {
+		this.valor = valor;
+	}
+
+	/**
+	 * @return the recibo
+	 */
+	public boolean isRecibo() {
+		return recibo;
+	}
+
+	/**
+	 * @param recibo the recibo to set
+	 */
+	public void setRecibo(boolean recibo) {
+		this.recibo = recibo;
+	}
+
 	/**
 	 * @return the inicio
 	 */

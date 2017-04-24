@@ -12,14 +12,22 @@
 				'form-group has-error has-feedback' : ''">					
 				<label for="selPacientes">Nome do Paciente:</label> 
 				<select
-					id="selPacientes" name="selPacientes" class="form-control"
-					ng-init="ctrl.agendamento.paciente=ctrl.lstPacientesAtivos[ctrl.indexPacienteSelecionado]"
+					id="selPacientes" name="selPacientes" class="form-control"					
 					ng-model="ctrl.agendamento.paciente"
-					ng-options="paciente.nomeExibicao for paciente in ctrl.lstPacientesAtivos"
+					ng-options="paciente.nomeExibicao for paciente in ctrl.lstPacientesAtivos track by paciente.id"
 					ng-required = "true">
 					<option value="">Selecione o paciente</option>
 				</select>																							
 			</div>								
+			<div>					
+				<label for="selConvenios">Convênio:</label> 
+				<select
+					id="selConvenios" name="selConvenios" class="form-control"					
+					ng-model="ctrl.agendamento.convenio"
+					ng-options="convenio.nome for convenio in ctrl.lstConveniosAtivos track by convenio.id">
+					<option value="">Selecione o convênio</option>
+				</select>																										
+			</div>
 			<div class="clockpicker" ng-class="agendamentoForm.inicio.$error.pattern || 
 				agendamentoForm.inicio.$error.required ? 
 				'form-group has-error has-feedback' : ''">

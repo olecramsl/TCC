@@ -138,8 +138,8 @@ public class AgendaController {
 	 */
 	private List<Agendamento> getLstAgendamentosParaSalvar(Calendar di, Calendar df, Agendamento ag) {		
 		List<Agendamento> lstAgendamento = new ArrayList<>();		
-		Agendamento agendamento = new Agendamento(ag.getPaciente(), ag.getIdGCalendar(), ag.getIdRecurring(), 
-				ag.getStart(), ag.getEnd(), ag.getGrupo(), ag.getDescription(), ag.isEventoPrincipal(), 
+		Agendamento agendamento = new Agendamento(ag.getPaciente(), ag.getConvenio(), ag.getIdGCalendar(), ag.getIdRecurring(), 
+				ag.getStart(), ag.getEnd(), ag.getGrupo(), ag.getDescription(), ag.getColor(), ag.isEventoPrincipal(), 
 				ag.isAtivo());		
 					
 		// Dias já salvos no BD
@@ -160,9 +160,9 @@ public class AgendaController {
 
 					lstAgendamento.add(agendamento);
 										
-					agendamento = new Agendamento(agendamento.getPaciente(), agendamento.getIdGCalendar(), 
+					agendamento = new Agendamento(agendamento.getPaciente(), agendamento.getConvenio(), agendamento.getIdGCalendar(), 
 							agendamento.getIdRecurring(), (Calendar)agendamento.getStart().clone(), 
-							(Calendar)agendamento.getEnd().clone(),	agendamento.getGrupo(),	null, false, true);					
+							(Calendar)agendamento.getEnd().clone(),	agendamento.getGrupo(),	null, agendamento.getColor(), false, true);					
 				}
 			}
 		}			
@@ -384,8 +384,8 @@ public class AgendaController {
 				lstAgendamentos.add(ag); // os eventos principais ativos devem ser adicionados para serem exibidos na view				
 				// Agendamento é criado com eventoPrincipal false, pois o evento principal já existe e está ativo,
 				// restando apenas criar os agendamentos futuros				
-				Agendamento agendamento = new Agendamento(ag.getPaciente(), ag.getIdGCalendar(),
-						ag.getIdRecurring(), ag.getStart(), ag.getEnd(), ag.getGrupo(), null, 
+				Agendamento agendamento = new Agendamento(ag.getPaciente(), ag.getConvenio(), ag.getIdGCalendar(),
+						ag.getIdRecurring(), ag.getStart(), ag.getEnd(), ag.getGrupo(), null,  ag.getColor(),
 						!ag.isEventoPrincipal(), true);
 				
 				di.set(Calendar.HOUR_OF_DAY, agendamento.getStart().get(Calendar.HOUR_OF_DAY));
@@ -414,7 +414,7 @@ public class AgendaController {
 		if (usingGcal) {
 			for (TmpGCalendarEvent gcal : listarAgendamentosGCalendar(di, df)) {
 				lstAgendamentos.add(new Agendamento(null, gcal.getIdGCalendar(), gcal.getIdRecurring(), 
-						gcal.getStart(), gcal.getEnd(), 0L, gcal.getSummary(), false, true));			
+						gcal.getStart(), gcal.getEnd(), 0L, gcal.getSummary(), "#E70046", false, true));			
 			}
 		}
 				

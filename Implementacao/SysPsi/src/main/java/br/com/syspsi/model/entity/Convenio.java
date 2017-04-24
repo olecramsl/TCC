@@ -26,14 +26,14 @@ public class Convenio implements Serializable {
 	private String localidade;
 	private String uf;
 	private String cep;
+	@Column(name="valorconsultaindividual")
+	private double valorConsultaIndividual;
+	@Column(name="valorconsultacasal")
+	private double valorConsultaCasal;
+	@Column(name="valorconsultafamilia")
+	private double valorConsultaFamilia;
 	private boolean ativo;
-	
-	// JPA only
-	/*
-	protected Convenio() {		
-	}
-	*/
-	
+		
 	/**
 	 * @return the id
 	 */
@@ -186,6 +186,48 @@ public class Convenio implements Serializable {
 	 */
 	public void setCep(String cep) {
 		this.cep = cep;
+	}
+
+	/**
+	 * @return the valorConsultaIndividual
+	 */
+	public double getValorConsultaIndividual() {
+		return valorConsultaIndividual;
+	}
+
+	/**
+	 * @param valorConsultaIndividual the valorConsultaIndividual to set
+	 */
+	public void setValorConsultaIndividual(double valorConsultaIndividual) {
+		this.valorConsultaIndividual = valorConsultaIndividual;
+	}
+
+	/**
+	 * @return the valorConsultaCasal
+	 */
+	public double getValorConsultaCasal() {
+		return valorConsultaCasal;
+	}
+
+	/**
+	 * @param valorConsultaCasal the valorConsultaCasal to set
+	 */
+	public void setValorConsultaCasal(double valorConsultaCasal) {
+		this.valorConsultaCasal = valorConsultaCasal;
+	}
+
+	/**
+	 * @return the valorConsultaFamilia
+	 */
+	public double getValorConsultaFamilia() {
+		return valorConsultaFamilia;
+	}
+
+	/**
+	 * @param valorConsultaFamilia the valorConsultaFamilia to set
+	 */
+	public void setValorConsultaFamilia(double valorConsultaFamilia) {
+		this.valorConsultaFamilia = valorConsultaFamilia;
 	}
 
 	/**

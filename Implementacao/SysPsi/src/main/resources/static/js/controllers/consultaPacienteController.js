@@ -136,19 +136,16 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 			]
 	};
 	
-	ctrl.salvar = function(prontuario) {
-		var fim = consultaPacienteFactory.getFim();
-		console.log(fim);
-		if (!fim) {
-			fim = new Date();
+	ctrl.salvarProntuario = function(prontuario) {
+		var valor = 0;
+		var recibo = false;
+		
+		if (consultaPacienteFactory.getValor() > 0) {
+			valor = consultaPacienteFactory.getValor();
+			recibo = consultaPacienteFactory.getRecibo();
 		}
-		var consulta = {
-				id: consultaPacienteFactory.getId(),					
-				agendamento: consultaPacienteFactory.getAgendamento(),
-				prontuario: prontuario,
-				inicio: consultaPacienteFactory.getInicio(),
-				fim: fim
-		};
+			
+		var consulta = prepararConsulta(valor, recibo);
 		
 		consultaPacienteFactory.salvarConsultaPaciente(consulta).then(
 				successCallback = function(response) {
@@ -166,4 +163,50 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 				}
 		);
 	};	
+	
+	ctrl.finalizarConsulta  = function(prontuario, event) {
+		$mdDialog.show({
+			controller: 'DialogCtrl',			
+		    templateUrl: 'templates/finalizar_consulta_modal.html',
+		    parent: angular.element(document.body),		    
+		    clickOutsideToClose: true		    
+		}).then(function(answer) {
+			//$scope.status = 'You said the information was "' + answer + '".';
+			console.log("1");
+		}, function() {
+			console.log("2");
+			//$scope.status = 'You cancelled the dialog.';
+		});
+
+		/*
+		var consulta = prepararConsulta(consultaPacienteFactory.getValor(), consultaPacienteFactory.getRecibo());
+		
+		consultaPacienteFactory.salvarConsultaPaciente(consulta).then(
+				successCallback = function(response) {					
+					ctrl.oldProntuario = ctrl.prontuario;
+					consultaPacienteFactory.setConteudoProntuarioMudou(false);
+				},
+				errorCallback = function (error, status){					
+					tratarExcecao(error); 
+				}
+		);
+		*/
+	};
+	
+	var prepararConsulta = function(valor, recibo) {
+		var fim = consultaPacienteFactory.getFim();		
+		if (!fim) {
+			fim = new Date();
+		}
+		
+		return consulta = {
+				id: consultaPacienteFactory.getId(),					
+				agendamento: consultaPacienteFactory.getAgendamento(),
+				prontuario: prontuario,
+				valor: valor,
+				recibo: recibo,
+				inicio: consultaPacienteFactory.getInicio(),
+				fim: fim
+		};
+	};
 }]);

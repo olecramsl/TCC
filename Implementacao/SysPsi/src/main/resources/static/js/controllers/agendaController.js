@@ -5,9 +5,9 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 'pacienteFactory', 'configFactory', 
-	'modalAgendamentoFactory', 'modalAgendamentoService', 'config', function ($scope, $mdDialog, agendamentoFactory, pacienteFactory, 
-			configFactory, modalAgendamentoFactory,	modalAgendamentoService, config) {
+angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 'pacienteFactory', 'configFactory',  
+	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'config', function ($scope, $mdDialog, agendamentoFactory, 
+			pacienteFactory, configFactory, convenioFactory, modalAgendamentoFactory,	modalAgendamentoService, config) {
 	
   var ctrl = this;
   
@@ -26,14 +26,6 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   $scope.$watch(function () { return agendamentoFactory.getAgendamentoCarregado(); }, function (newValue, oldValue) {
    	  ctrl.agendamentoCarregado = newValue;
   });
-  
-  $scope.$watch(function () { return agendamentoFactory.getLstPacientesAtivos(); }, function (newValue, oldValue) {
-   	  ctrl.lstPacientesAtivos = newValue;
-  });
-  
-  $scope.$watch(function () { return agendamentoFactory.getIndexPacienteSelecionado(); }, function (newValue, oldValue) {
-   	  ctrl.indexPacienteSelecionado = newValue;
-  });    
   
   /**
    * Trata eventuais excessoes que possam ocorrer
@@ -66,7 +58,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 		  var time = moment();
 		  start = moment(start).hour(time.hour()).minute(time.minute()).second(0).millisecond(0);
 		  end = moment(start); // a consulta deve terminar no mesmo dia
-		  end.add(configSys.tempoSessao, 'm');
+		  end.add(configFactory.getTempoSessao(), 'm');
 	  }
 		
 	  var dataInicialAgendamento = start.local();
@@ -80,16 +72,6 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   };
 	
   var eventClick = function(event, jsEvent, view) {
-	  if (event.paciente) {
-	  var tmpLst = agendamentoFactory.getLstPacientesAtivos();
-	  for (var i = 0; i < tmpLst.length; i++) {		  	 
-		  if (tmpLst[i].id == event.paciente.id) {					
-			  agendamentoFactory.setIndexPacienteSelecionado(i);					
-			  break;
-		  }				
-	  }
-	  }
-		
 	  event.formatedStart = event.start.format('HH:mm');							
 	  agendamentoFactory.setAgendamento(angular.copy(event));
 	  agendamentoFactory.setAgendamentoCarregado(angular.copy(event));
@@ -155,7 +137,18 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	  		tratarExcecao(error); 
 	  	  }
 	  );
-  }
+  };   
+  
+  var carregarConveniosAtivos = function() {
+	  convenioFactory.listarConveniosAtivos().then(
+		      successCallback = function(response) {		    	  
+		    	  convenioFactory.setLstConveniosAtivos(response.data);		    	  		    	  		    	 
+		  	  },
+		  	  errorCallback = function (error, status){
+		  		tratarExcecao(error); 
+		  	  }
+		  );
+  };
   
   /**
    * Configurações do sistema
@@ -163,7 +156,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   var carregarConfiguracoes = function() {
 	  configFactory.loadConfig().then(
 	      successCallback = function(response) {	
-	    	  configSys = response.data;	    	  
+	    	  configFactory.setConfigSys(response.data);
 	  	  },
 	  	  errorCallback = function (error, status){
 	  		tratarExcecao(error); 
@@ -176,7 +169,6 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
    */
   var limparDadosAgendamento = function() {
 	  agendamentoFactory.setAgendamento({});
-	  agendamentoFactory.setIndexPacienteSelecionado(null);
   };
   
   /**
@@ -247,5 +239,6 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   };                
   
   carregarPacientesAtivos();
+  carregarConveniosAtivos();
   carregarConfiguracoes();
 }]);

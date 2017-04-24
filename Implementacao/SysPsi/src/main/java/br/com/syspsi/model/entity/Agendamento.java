@@ -22,12 +22,15 @@ public class Agendamento implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;	
 	@ManyToOne
-    @JoinColumn(name="idpaciente")
+    @JoinColumn(name="idpaciente")	
 	private Paciente paciente;	
+	@ManyToOne
+    @JoinColumn(name="idconvenio")
+	private Convenio convenio;
 	@Column(name="idgcalendar") 
 	private String idGCalendar;
 	@Column(name="idrecurring")
-	private String idRecurring;
+	private String idRecurring;	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar start;
 	@Temporal(TemporalType.TIMESTAMP)
@@ -36,6 +39,7 @@ public class Agendamento implements Serializable {
 	private String description;
 	@Column(name="eventoprincipal")
 	private boolean eventoPrincipal;
+	private String color;
 	private boolean ativo;
 	@Transient
 	private String title;
@@ -45,10 +49,11 @@ public class Agendamento implements Serializable {
 		super();
 	}
 	
-	public Agendamento(Paciente paciente, String idGCalendar, String idRecurring, Calendar start, 
-			Calendar end, Long grupo, String description, boolean eventoPrincipal, boolean ativo) {
+	public Agendamento(Paciente paciente, Convenio convenio, String idGCalendar, String idRecurring, Calendar start, 
+			Calendar end, Long grupo, String description, String color, boolean eventoPrincipal, boolean ativo) {
 		super();		
-		this.paciente = paciente;	
+		this.paciente = paciente;
+		this.convenio = convenio;
 		this.idGCalendar = idGCalendar;
 		this.idRecurring = idRecurring;
 		this.start = start;
@@ -56,6 +61,22 @@ public class Agendamento implements Serializable {
 		this.grupo = grupo;
 		this.description = description;
 		this.eventoPrincipal = eventoPrincipal;
+		this.color = color;
+		this.ativo = ativo;
+	}
+	
+	public Agendamento(Paciente paciente, String idGCalendar, String idRecurring, Calendar start, 
+			Calendar end, Long grupo, String description, String color, boolean eventoPrincipal, boolean ativo) {
+		super();		
+		this.paciente = paciente;		
+		this.idGCalendar = idGCalendar;
+		this.idRecurring = idRecurring;
+		this.start = start;
+		this.end = end;
+		this.grupo = grupo;
+		this.description = description;		
+		this.eventoPrincipal = eventoPrincipal;
+		this.color = color;
 		this.ativo = ativo;
 	}
 
@@ -87,6 +108,20 @@ public class Agendamento implements Serializable {
 		this.paciente = paciente;
 	}	
 	
+	/**
+	 * @return the convenio
+	 */
+	public Convenio getConvenio() {
+		return convenio;
+	}
+
+	/**
+	 * @param convenio the convenio to set
+	 */
+	public void setConvenio(Convenio convenio) {
+		this.convenio = convenio;
+	}
+
 	/**
 	 * @return the idGCalendar
 	 */
@@ -177,6 +212,20 @@ public class Agendamento implements Serializable {
 	 */
 	public void setEventoPrincipal(boolean eventoPrincipal) {
 		this.eventoPrincipal = eventoPrincipal;
+	}
+
+	/**
+	 * @return the color
+	 */
+	public String getColor() {
+		return color;
+	}
+
+	/**
+	 * @param color the color to set
+	 */
+	public void setColor(String color) {
+		this.color = color;
 	}
 
 	/**

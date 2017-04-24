@@ -1,15 +1,17 @@
 angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance', '$location', '$mdDialog', 'agendamentoFactory', 'configFactory', 
-	'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'config', function ($uibModalInstance, $location, 
-			$mdDialog, agendamentoFactory, configFactory, modalAgendamentoFactory, modalAgendamentoService,	consultaPacienteFactory, config) {
+	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'config', function ($uibModalInstance, 
+			$location, $mdDialog, agendamentoFactory, configFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService,	
+			consultaPacienteFactory, config) {
 	
 	var ctrl = this;		
 	
-	ctrl.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();
-	ctrl.indexPacienteSelecionado = agendamentoFactory.getIndexPacienteSelecionado();
+	ctrl.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();	
 	ctrl.agendamento = agendamentoFactory.getAgendamento();
 	ctrl.agendamentoCarregado = agendamentoFactory.getAgendamentoCarregado();	
 	ctrl.msgConfirmacao = modalAgendamentoFactory.getMsgConfirmacao();
-	ctrl.tipoConfirmacao = modalAgendamentoFactory.getTipoConfirmacao();	
+	ctrl.tipoConfirmacao = modalAgendamentoFactory.getTipoConfirmacao();
+	ctrl.lstConveniosAtivos = convenioFactory.getLstConveniosAtivos();
+	ctrl.tempoSessao = configFactory.getTempoSessao();
 	
 	/**
 	 * Trata eventuais excessoes que possam ocorrer
@@ -32,21 +34,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 				.ariaLabel('Alerta')
 				.ok('Ok')						
 		);		
-	};
-	
-	/**
-	 * Configurações do sistema
-	 */  
-	var carregarConfiguracoes = function() {
-		configFactory.loadConfig().then(
-				successCallback = function(response) {	
-					configSys = response.data;	    	  
-				},
-		  	  	errorCallback = function (error, status){
-					tratarExcecao(error); 
-		  	  	}
-		  	);     
-	 };
+	};		
 	 
 	 /**
 	  * Atualiza o campo description do agendamento
@@ -138,7 +126,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 			var horas = agendamento.formatedStart.split(":")[0];
 			var minutos = agendamento.formatedStart.split(":")[1];
 			agendamento.start = moment(agendamento.start).hour(horas).minute(minutos);
-			agendamento.end = moment(agendamento.start).add(configSys.tempoSessao, 'm');			
+			agendamento.end = moment(agendamento.start).add(ctrl.tempoSessao, 'm');			
 
 			var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento); 
 			agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
@@ -191,7 +179,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 			agendamento.title = updateTitle(agendamento);
 			var horarioConsulta = agendamento.formatedStart.split(":");
 			agendamento.start = moment(agendamento.start).hour(horarioConsulta[0]).minute(horarioConsulta[1]).second(0).millisecond(0);
-			agendamento.end = moment(agendamento.start).add(configSys.tempoSessao, 'm');
+			agendamento.end = moment(agendamento.start).add(ctrl.tempoSessao, 'm');
 			agendamento.ativo = true;
 			agendamento.grupo = 0;
 					
@@ -262,6 +250,8 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 						consultaPacienteFactory.setId(response.data.id);						
 						consultaPacienteFactory.setAgendamento(response.data.agendamento);
 						consultaPacienteFactory.setProntuario(response.data.prontuario);
+						consultaPacienteFactory.setValor(response.data.valor);
+						consultaPacienteFactory.setRecibo(response.data.recibo);
 						consultaPacienteFactory.setInicio(response.data.inicio);						
 						$location.path('/consulta');
 					} else {
@@ -269,6 +259,8 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 							consultaPacienteFactory.setId(null);
 							consultaPacienteFactory.setAgendamento(agendamento);
 							consultaPacienteFactory.setProntuario(null);
+							consultaPacienteFactory.setValor(0);
+							consultaPacienteFactory.setRecibo(false);
 							consultaPacienteFactory.setInicio(new Date());							
 							$location.path('/consulta');
 						} else {
@@ -321,10 +313,9 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 			return true;	  
 		}		
 		return agendamentoCarregado.paciente.id !== agendamento.paciente.id ||
+			agendamentoCarregado.convenio !== agendamento.convenio ||
 		 	agendamentoCarregado.formatedStart !== agendamento.formatedStart ||
 		  	agendamentoCarregado.description !== agendamento.description ||
 		  	agendamentoCarregado.repetirSemanalmente !== agendamento.repetirSemanalmente;		
-	}
-		
-	carregarConfiguracoes();
+	}		
 }]);

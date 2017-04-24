@@ -2,6 +2,8 @@ angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'config', 
 	var _id;
 	var _agendamento;
 	var _prontuario;
+	var _valor;
+	var _recibo;
 	var _inicio;
 	var _fim;
 	var _conteudoProntuarioMudou;
@@ -23,6 +25,10 @@ angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'config', 
 		setAgendamento: function(agendamento) { _agendamento = agendamento; },
 		getProntuario: function() { return _prontuario; },
 		setProntuario: function(prontuario) { _prontuario = prontuario; },
+		getValor: function() { return _valor; },
+		setValor: function(valor) { _valor = valor; },
+		getRecibo: function() { return _recibo; },
+		setRecibo: function(recibo) { _recibo = recibo; },
 		getInicio: function() { return _inicio; },
 		setInicio: function(inicio) { _inicio = inicio; },
 		getFim: function() { return _fim; },
