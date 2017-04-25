@@ -7,7 +7,7 @@
 	<artifactId>syspsi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	
+
 
 	<name>SysPsi</name>
 	<description>SysPsi</description>
@@ -83,7 +83,7 @@
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-calendar</artifactId>
 			<version>v3-rev232-1.22.0</version>
-		</dependency>
+		</dependency>	
 	</dependencies>
 
 	<build>
@@ -131,10 +131,10 @@
 					</dependency>
 					<!-- https://mvnrepository.com/artifact/org.webjars.bower/angular-route -->
 					<dependency>
-					    <groupId>org.webjars.bower</groupId>
-					    <artifactId>angular-route</artifactId>
-					    <version>1.6.0</version>
-					</dependency>					
+						<groupId>org.webjars.bower</groupId>
+						<artifactId>angular-route</artifactId>
+						<version>1.6.0</version>
+					</dependency>
 				</dependencies>
 			</plugin>
 		</plugins>

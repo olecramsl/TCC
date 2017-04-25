@@ -1,5 +1,12 @@
-angular.module('syspsi', ['ngRoute', 'ngMaterial'])
-	.config(['$routeProvider', '$httpProvider',  function($routeProvider, $httpProvider) {		
+angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle'])
+	.config(['$routeProvider', '$httpProvider', 'IdleProvider', 'KeepaliveProvider', function($routeProvider, $httpProvider, IdleProvider, 
+			KeepaliveProvider) {
+		
+		// configure Idle settings
+		IdleProvider.idle(1800); // in seconds - 30min
+		IdleProvider.timeout(120); // in seconds - 2min
+		KeepaliveProvider.interval(10); // in seconds
+		
 		$routeProvider.
 			when('/login', { 
 				templateUrl: "templates/login.html",
@@ -30,4 +37,17 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial'])
 			}).otherwise({redirectTo: '/'});
 	
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+	}]).run(['$rootScope', '$location', 'loginFactory', 'Idle', 'idleService', function($rootScope,$location,loginFactory,Idle,idleService){
+		// start watching when the app runs. also starts the Keepalive service by default.
+		Idle.watch();			
+		
+		$rootScope.$on('IdleStart', function() { 
+			idleService.openWarning();
+		});				
+		
+		$rootScope.$on('IdleTimeout', function() {			
+			loginFactory.logout();			
+			$rootScope.authenticated = false;
+			$location.path("/");			
+		});
 	}]);

@@ -10,7 +10,7 @@
 			<div class="md-dialog-content">
 				<md-input-container class="md-block">
   					<label>Valor</label>
-  					<input type="number" ng-model="valor" type="number" required>
+  					<input type="number" ng-model="valor" required>
 				</md-input-container>
 								
 				<md-checkbox ng-model="recibo" aria-label="Recibo emitido para o paciente">
@@ -21,7 +21,7 @@
 		</md-dialog-content>
 	
 		<md-dialog-actions layout="row"> 
-			<md-button ng-click="answer('not useful')"> Finalizar </md-button> 
+			<md-button ng-click="finalizar()"> Finalizar </md-button> 
 			<md-button ng-click="cancel()"> Cancelar </md-button> 
 		</md-dialog-actions>
 	</form>

@@ -246,16 +246,11 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 				successCallback = function(response) {
 					consultaPacienteFactory.setPaciente(agendamento.paciente);
 					consultaPacienteFactory.setFim(null);
-					if (response.data.id) {				
-						consultaPacienteFactory.setId(response.data.id);						
-						consultaPacienteFactory.setAgendamento(response.data.agendamento);
-						consultaPacienteFactory.setProntuario(response.data.prontuario);
-						consultaPacienteFactory.setValor(response.data.valor);
-						consultaPacienteFactory.setRecibo(response.data.recibo);
-						consultaPacienteFactory.setInicio(response.data.inicio);						
+					if (response.data.id) {	
+						consultaPacienteFactory.setConsulta(response.data);						
 						$location.path('/consulta');
 					} else {
-						if (agendamento.paciente) {
+						if (agendamento.paciente) {							
 							consultaPacienteFactory.setId(null);
 							consultaPacienteFactory.setAgendamento(agendamento);
 							consultaPacienteFactory.setProntuario(null);

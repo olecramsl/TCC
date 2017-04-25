@@ -5,7 +5,14 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 		$mdDialog.cancel();
 	};
 	
-	$scope.answer = function(answer) {		
-		$mdDialog.hide(answer);		
+	$scope.finalizar = function(valor) {		
+		if ($scope.valor && $scope.valor > 0) {
+			consultaPacienteFactory.setValor($scope.valor);
+			consultaPacienteFactory.setRecibo(!!$scope.recibo);
+		} else {
+			consultaPacienteFactory.setValor(null);
+			consultaPacienteFactory.setRecibo(null);
+		}
+		$mdDialog.hide();		
 	};
 }]);

@@ -1,4 +1,5 @@
-angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'config', function($http, config) {	
+angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'config', function($http, config) {
+	var _consulta = {};
 	var _id;
 	var _agendamento;
 	var _prontuario;
@@ -19,20 +20,22 @@ angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'config', 
 	}; 
 	
 	return {
-		getId: function() { return _id; },
-		setId: function(id) { _id = id; },			
-		getAgendamento: function() { return _agendamento; },
-		setAgendamento: function(agendamento) { _agendamento = agendamento; },
-		getProntuario: function() { return _prontuario; },
-		setProntuario: function(prontuario) { _prontuario = prontuario; },
-		getValor: function() { return _valor; },
-		setValor: function(valor) { _valor = valor; },
-		getRecibo: function() { return _recibo; },
-		setRecibo: function(recibo) { _recibo = recibo; },
-		getInicio: function() { return _inicio; },
-		setInicio: function(inicio) { _inicio = inicio; },
-		getFim: function() { return _fim; },
-		setFim: function(fim) { _fim = fim; },
+		getConsulta: function() { return _consulta; },
+		setConsulta: function(consulta) { _consulta = consulta; },
+		getId: function() { return _consulta.id; },
+		setId: function(id) { _consulta.id = id; },			
+		getAgendamento: function() { return _consulta.agendamento; },
+		setAgendamento: function(agendamento) { _consulta.agendamento = agendamento; },
+		getProntuario: function() { return _consulta.prontuario; },
+		setProntuario: function(prontuario) { _consulta.prontuario = prontuario; },
+		getValor: function() { return _consulta.valor; },
+		setValor: function(valor) { _consulta.valor = valor; },
+		getRecibo: function() { return _consulta.recibo; },
+		setRecibo: function(recibo) { _consulta.recibo = recibo; },
+		getInicio: function() { return _consulta.inicio; },
+		setInicio: function(inicio) { _consulta.inicio = inicio; },
+		getFim: function() { return _consulta.fim; },
+		setFim: function(fim) { _consulta.fim = fim; },
 		salvarConsultaPaciente: _salvarConsultaPaciente,
 		getConsultaByIdAgendamento: _getConsultaByIdAgendamento,
 		getConteudoProntuarioMudou: function() { return _conteudoProntuarioMudou; },

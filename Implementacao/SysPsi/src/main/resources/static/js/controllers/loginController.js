@@ -14,8 +14,7 @@ angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http
 			} else {											
 				$rootScope.authenticated = false;
 				$location.path('/login');
-			}
-			//$scope.$apply();
+			}			
 			callback && callback();
 		}, function() {
 			$rootScope.authenticated = false;
@@ -39,13 +38,5 @@ angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http
 		loginFactory.logout();
 		$rootScope.authenticated = false;
 	    $location.path("/");
-		/*
-		$http.post('logout', {}).success(function() {
-			$rootScope.authenticated = false;
-		    $location.path("/");
-		}).error(function(data) {
-		    $rootScope.authenticated = false;
-		});
-		*/
 	};
 }]);

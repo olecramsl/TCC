@@ -23,8 +23,8 @@
 						<br />									
 						<div class="form-group">
 							<button id="btnFinalizar" name="btnFinalizar" type="button" class="btn btn-primary" 
-								style="float: right; margin-left: 5px;" ng-click="ctrl.finalizarConsulta(ctrl.prontuario)" ng-disabled="false">
-								Finalizar Consulta</button>							
+								style="float: right; margin-left: 5px;" ng-click="ctrl.finalizarConsulta(ctrl.prontuario)" 
+								ng-disabled="ctrl.valor || !ctrl.paciente || !ctrl.prontuario">Finalizar Consulta</button>							
 	   						<button id="btnSalvar" name="btnSalvar" type="button" class="btn btn-success" style="float: right;" 
 	   							ng-click="ctrl.salvarProntuario(ctrl.prontuario)" 
 	   							ng-disabled="!ctrl.paciente || !ctrl.prontuario || ctrl.oldProntuario === ctrl.prontuario">

@@ -25,6 +25,10 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 		}
 	});
 	
+	$scope.$watch(function () { return consultaPacienteFactory.getValor(); }, function (newValue, oldValue) {		
+		ctrl.valor = newValue;		
+	});
+	
 	ctrl.oldProntuario = consultaPacienteFactory.getProntuario();
 	
 	/**
@@ -137,6 +141,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 	};
 	
 	ctrl.salvarProntuario = function(prontuario) {
+		/*
 		var valor = 0;
 		var recibo = false;
 		
@@ -144,8 +149,9 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 			valor = consultaPacienteFactory.getValor();
 			recibo = consultaPacienteFactory.getRecibo();
 		}
+		*/
 			
-		var consulta = prepararConsulta(valor, recibo);
+		var consulta = prepararConsulta(prontuario);
 		
 		consultaPacienteFactory.salvarConsultaPaciente(consulta).then(
 				successCallback = function(response) {
@@ -154,7 +160,9 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 				       $timeout(function(){
 				          ctrl.showMsg = false;
 				       }, 5000);
-				    */	
+				    */		
+					consultaPacienteFactory.setConsulta(response.data);
+					consultaPacienteFactory.setProntuario(prontuario);					
 					ctrl.oldProntuario = ctrl.prontuario;
 					consultaPacienteFactory.setConteudoProntuarioMudou(false);
 				},
@@ -164,49 +172,53 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 		);
 	};	
 	
-	ctrl.finalizarConsulta  = function(prontuario, event) {
+	ctrl.finalizarConsulta  = function(prontuario) {
 		$mdDialog.show({
 			controller: 'DialogCtrl',			
 		    templateUrl: 'templates/finalizar_consulta_modal.html',
 		    parent: angular.element(document.body),		    
 		    clickOutsideToClose: true		    
-		}).then(function(answer) {
-			//$scope.status = 'You said the information was "' + answer + '".';
-			console.log("1");
-		}, function() {
-			console.log("2");
-			//$scope.status = 'You cancelled the dialog.';
-		});
-
-		/*
-		var consulta = prepararConsulta(consultaPacienteFactory.getValor(), consultaPacienteFactory.getRecibo());
-		
-		consultaPacienteFactory.salvarConsultaPaciente(consulta).then(
-				successCallback = function(response) {					
-					ctrl.oldProntuario = ctrl.prontuario;
-					consultaPacienteFactory.setConteudoProntuarioMudou(false);
-				},
-				errorCallback = function (error, status){					
-					tratarExcecao(error); 
-				}
-		);
-		*/
+		}).then(function() {
+			if (consultaPacienteFactory.getValor()) {
+				var consulta = prepararConsulta(prontuario);
+				
+				consultaPacienteFactory.salvarConsultaPaciente(consulta).then(
+						successCallback = function(response) {
+							consultaPacienteFactory.setConsulta(response.data);
+							consultaPacienteFactory.setProntuario(prontuario);
+							ctrl.oldProntuario = ctrl.prontuario;
+							consultaPacienteFactory.setConteudoProntuarioMudou(false);
+						},
+						errorCallback = function (error, status){					
+							tratarExcecao(error); 
+						}
+				);
+			} else {
+				$mdDialog.show(
+					$mdDialog.alert()
+						.clickOutsideToClose(true)
+						.title('Algo saiu errado ...')
+						.textContent("O valor informado é inválido!")
+						.ariaLabel('Alerta')
+						.ok('Ok')						
+				);
+			}
+		}, function() {});
 	};
 	
-	var prepararConsulta = function(valor, recibo) {
-		var fim = consultaPacienteFactory.getFim();		
-		if (!fim) {
-			fim = new Date();
+	var prepararConsulta = function(prontuario) {
+		if (!consultaPacienteFactory.getFim()) {
+			consultaPacienteFactory.setFim(new Date());
 		}
-		
+				
 		return consulta = {
 				id: consultaPacienteFactory.getId(),					
 				agendamento: consultaPacienteFactory.getAgendamento(),
 				prontuario: prontuario,
-				valor: valor,
-				recibo: recibo,
+				valor: consultaPacienteFactory.getValor(),
+				recibo: consultaPacienteFactory.getRecibo(),
 				inicio: consultaPacienteFactory.getInicio(),
-				fim: fim
+				fim: consultaPacienteFactory.getFim()
 		};
 	};
 }]);

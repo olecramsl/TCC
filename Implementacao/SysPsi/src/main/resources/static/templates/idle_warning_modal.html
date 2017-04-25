@@ -1,0 +1,10 @@
+<head>		
+	<meta charset="UTF-8" />		
+</head>	
+<div class="modal-header">
+	<h3 class="modal-title" id="modal-title">Você está inativo!</h3>
+</div>
+<div idle-countdown="countdown" ng-init="countdown=120" class="modal-body">
+	<p>Você será desconectado do sistema em {{countdown}} segundo(s).</p>
+	<uib-progressbar type="warning" value="countdown" max="120" value="120" animate="false" class="progress-striped active"></uib-progressbar>	
+</div>
