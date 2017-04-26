@@ -107,7 +107,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 				  center : 'title',
 				  right : 'month,agendaWeek,agendaDay'
 			  },		
-			  height: 500,
+			  height: 450,
 			  timezone: "local",
 			  allDaySlot: false,
 			  locale : 'pt-br',
