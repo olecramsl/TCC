@@ -74,7 +74,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   var eventClick = function(event, jsEvent, view) {
 	  event.formatedStart = event.start.format('HH:mm');							
 	  agendamentoFactory.setAgendamento(angular.copy(event));
-	  agendamentoFactory.setAgendamentoCarregado(angular.copy(event));
+	  agendamentoFactory.setAgendamentoCarregado(angular.copy(event));	  	  
 	  
 	  modalAgendamentoService.openEventModal();											
   };
@@ -106,7 +106,8 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 				  left : 'prev,next today',
 				  center : 'title',
 				  right : 'month,agendaWeek,agendaDay'
-			  },			  
+			  },		
+			  height: 500,
 			  timezone: "local",
 			  allDaySlot: false,
 			  locale : 'pt-br',
@@ -236,7 +237,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 			  tratarExcecao(error);			  						
 		  }
 	  );		  	 	 
-  };                
+  };           
   
   carregarPacientesAtivos();
   carregarConveniosAtivos();

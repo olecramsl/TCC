@@ -1,7 +1,7 @@
 angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', function($http, config) {
 	var _agendamento = {};
-	var _agendamentoCarregado = {};
-	var _lstPacientesAtivos = null;	
+	var _agendamentoCarregado = {};	
+	var _lstPacientesAtivos = null;		
 	
 	var _listarAgendamentos = function(dataInicial, dataFinal) {
 		var params = {dataInicial: dataInicial.format(), dataFinal: dataFinal.format()};
@@ -47,15 +47,9 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', funct
 		var dataInicialView =view.start.local();
 		var dataFinalView = view.end.local();
 		
-		if (agendamento.convenio) {
-			agendamento.color = "#00BE4D";
-		} else {
-			agendamento.color = "#0A6CAC";			
-		}
-		
 		return agendamentoDTO = {
 				agendamento        : agendamento,
-				repetirSemanalmente: agendamento.repetirSemanalmente, 
+				repetirSemanalmente: agendamento.repetirSemanalmente,				
 				dataInicialViewFC  : new Date(dataInicialView), 
 				dataFinalViewFC    : new Date(dataFinalView)
 		};

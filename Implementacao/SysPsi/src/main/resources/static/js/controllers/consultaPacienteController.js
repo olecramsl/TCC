@@ -77,7 +77,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 			customConfig: '',
 			
 			// Make the editing area bigger than default.
-			height: 400,
+			height: 300,
 			
 			// An array of stylesheets to style the WYSIWYG area.
 			// Note: it is recommended to keep your own styles in a separate file in order to make future updates painless.
@@ -140,17 +140,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 			]
 	};
 	
-	ctrl.salvarProntuario = function(prontuario) {
-		/*
-		var valor = 0;
-		var recibo = false;
-		
-		if (consultaPacienteFactory.getValor() > 0) {
-			valor = consultaPacienteFactory.getValor();
-			recibo = consultaPacienteFactory.getRecibo();
-		}
-		*/
-			
+	ctrl.salvarProntuario = function(prontuario) {		
 		var consulta = prepararConsulta(prontuario);
 		
 		consultaPacienteFactory.salvarConsultaPaciente(consulta).then(

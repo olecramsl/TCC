@@ -78,7 +78,12 @@ public class AgendaController {
             t.printStackTrace();
             System.exit(1);
         }
-    }
+    }       
+    
+    public static String COR_AGENDAMENTO_DEFAULT = "#0A6CAC";
+    public static String COR_AGENDAMENTO_CONVENIO = "#00BE4D";
+    public static String COR_AGENDAMENTO_NAO_COMPARECEU = "#FF5900";
+    public static String COR_AGENDAMENTO_GOOGLE_CALENDAR = "#E70046";
     
     @Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
@@ -380,6 +385,9 @@ public class AgendaController {
 		List<Agendamento> lstAgendamentos = new ArrayList<>();
 		for (Agendamento ag : this.agendamentoRepositorio.listarPorPeriodo(di, df, LoginController.getPsicologoLogado())) {
 			
+			if (ag.getColor().equals(COR_AGENDAMENTO_NAO_COMPARECEU)) {
+				ag.setNaoCompareceu(true);
+			}
 			if (ag.isEventoPrincipal() && ag.isAtivo()) {
 				lstAgendamentos.add(ag); // os eventos principais ativos devem ser adicionados para serem exibidos na view				
 				// Agendamento é criado com eventoPrincipal false, pois o evento principal já existe e está ativo,
@@ -414,7 +422,7 @@ public class AgendaController {
 		if (usingGcal) {
 			for (TmpGCalendarEvent gcal : listarAgendamentosGCalendar(di, df)) {
 				lstAgendamentos.add(new Agendamento(null, gcal.getIdGCalendar(), gcal.getIdRecurring(), 
-						gcal.getStart(), gcal.getEnd(), 0L, gcal.getSummary(), "#E70046", false, true));			
+						gcal.getStart(), gcal.getEnd(), 0L, gcal.getSummary(), COR_AGENDAMENTO_GOOGLE_CALENDAR, false, true));			
 			}
 		}
 				
@@ -434,7 +442,15 @@ public class AgendaController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public Agendamento salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {		
-		Agendamento agendamento = agendamentoDTO.getAgendamento();								
+		Agendamento agendamento = agendamentoDTO.getAgendamento();	
+		
+		agendamento.setColor(COR_AGENDAMENTO_DEFAULT);
+		if (agendamento.getConvenio() != null) {
+			agendamento.setColor(COR_AGENDAMENTO_CONVENIO);
+		}
+		if (agendamento.isNaoCompareceu()) {
+			agendamento.setColor(COR_AGENDAMENTO_NAO_COMPARECEU);
+		}
 				
 		if ((agendamentoDTO.isRepetirSemanalmente() &&				
 		   (agendamento.getGrupo() == null || agendamento.getGrupo() == 0))) {
@@ -443,7 +459,12 @@ public class AgendaController {
 		} else {
 			agendamento.setEventoPrincipal(false);
 		}
-		return this.agendamentoRepositorio.save(agendamento);		
+		
+		agendamento = this.agendamentoRepositorio.save(agendamento);
+		if (agendamento.getColor().equals(COR_AGENDAMENTO_NAO_COMPARECEU)) {
+			agendamento.setNaoCompareceu(true);
+		}
+		return agendamento;
 	}
 	
 	/**
@@ -473,6 +494,7 @@ public class AgendaController {
 			System.out.println("Deleted IdGCalendar: " + agendamento.getIdGCalendar());
 		}
 		
+		agendamento.setColor(COR_AGENDAMENTO_DEFAULT);
 		return this.agendamentoRepositorio.save(agendamento);		
 	}
 	

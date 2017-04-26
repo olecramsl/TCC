@@ -6,7 +6,7 @@ import br.com.syspsi.model.entity.Agendamento;
 
 public class AgendamentoDTO {
 	private Agendamento agendamento;
-	private boolean repetirSemanalmente;
+	private boolean repetirSemanalmente;	
 	private Calendar dataInicialViewFC;
 	private Calendar dataFinalViewFC;	
 	

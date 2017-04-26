@@ -43,6 +43,8 @@ public class Agendamento implements Serializable {
 	private boolean ativo;
 	@Transient
 	private String title;
+	@Transient
+	private boolean naoCompareceu;
 	
 	// Apenas para JPA
 	protected Agendamento() {
@@ -63,6 +65,7 @@ public class Agendamento implements Serializable {
 		this.eventoPrincipal = eventoPrincipal;
 		this.color = color;
 		this.ativo = ativo;
+		this.naoCompareceu = false;
 	}
 	
 	public Agendamento(Paciente paciente, String idGCalendar, String idRecurring, Calendar start, 
@@ -78,6 +81,7 @@ public class Agendamento implements Serializable {
 		this.eventoPrincipal = eventoPrincipal;
 		this.color = color;
 		this.ativo = ativo;
+		this.naoCompareceu = false;
 	}
 
 	/**
@@ -259,6 +263,20 @@ public class Agendamento implements Serializable {
 	 */
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	/**
+	 * @return the naoCompareceu
+	 */
+	public boolean isNaoCompareceu() {
+		return naoCompareceu;
+	}
+
+	/**
+	 * @param naoCompareceu the naoCompareceu to set
+	 */
+	public void setNaoCompareceu(boolean naoCompareceu) {
+		this.naoCompareceu = naoCompareceu;
 	}
 
 	/**

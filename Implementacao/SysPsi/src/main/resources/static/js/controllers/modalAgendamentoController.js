@@ -1,9 +1,9 @@
-angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance', '$location', '$mdDialog', 'agendamentoFactory', 'configFactory', 
-	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'config', function ($uibModalInstance, 
-			$location, $mdDialog, agendamentoFactory, configFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService,	
-			consultaPacienteFactory, config) {
+angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModalInstance', '$location', '$mdDialog', 'agendamentoFactory', 
+	'configFactory', 'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'config', 
+	function ($scope, $uibModalInstance, $location, $mdDialog, agendamentoFactory, configFactory, convenioFactory, modalAgendamentoFactory, 
+		modalAgendamentoService, consultaPacienteFactory, config) {
 	
-	var ctrl = this;		
+	var ctrl = this;	
 	
 	ctrl.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();	
 	ctrl.agendamento = agendamentoFactory.getAgendamento();
@@ -186,7 +186,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 			
 			var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento);
 			agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
-					successCallback = function(response) {				
+					successCallback = function(response) {							
 						atualizarViewFC();
 					},
 					errorCallBack = function(error) {
@@ -306,11 +306,22 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$uibModalInstance'
 	ctrl.isDataChanged = function(agendamento, agendamentoCarregado) {	  
 		if (agendamentoCarregado === null || !agendamentoCarregado.paciente) {		  
 			return true;	  
-		}		
+		}	
+
+		var convenioId = null;
+		var convenioCarregadoId = null;
+		if (agendamento.convenio) {
+			convenioId = agendamento.convenio.id;
+		}
+		if (agendamentoCarregado.convenio) {
+			convenioCarregadoId = agendamentoCarregado.convenio.id;
+		}
+		
 		return agendamentoCarregado.paciente.id !== agendamento.paciente.id ||
-			agendamentoCarregado.convenio !== agendamento.convenio ||
+			convenioId !== convenioCarregadoId ||
 		 	agendamentoCarregado.formatedStart !== agendamento.formatedStart ||
 		  	agendamentoCarregado.description !== agendamento.description ||
-		  	agendamentoCarregado.repetirSemanalmente !== agendamento.repetirSemanalmente;		
+		  	agendamentoCarregado.repetirSemanalmente !== agendamento.repetirSemanalmente ||
+		  	agendamentoCarregado.naoCompareceu !== agendamento.naoCompareceu;
 	}		
 }]);
