@@ -1,4 +1,4 @@
-// Modulos desta controller
+// Modulos desta controller	
 var lazyModules = ['ui.bootstrap'];
   
 angular.forEach(lazyModules, function(dependency) {
@@ -10,7 +10,15 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 			$uibModal,	$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
 			consultaPacienteFactory, agendamentoFactory) {	
 	
-	var ctrl = this;		
+	var ctrl = this;
+		
+	$scope.$watch(function () { return ctrl.paciente.grupo; }, function (newValue, oldValue) {
+	   	  if (newValue && newValue.maiorIdade) {
+	   		  ctrl.maiorIdade = true;	   		  
+	   	  } else {	   		  
+	   		  ctrl.maiorIdade = false;	   		  
+	   	  }
+	});	
 	
 	/*
 	 Ativos = 1
@@ -62,6 +70,17 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 				}
 		);     
 	}
+	
+	var carregarGruposPacientes = function() {
+		cadastroPacienteFactory.listarGruposPacientes().then(
+				successCallback = function(response) {	  
+					ctrl.lstGruposPacientes = response.data;					
+				},
+				errorCallback = function (error, status){					
+					tratarExcecao(error); 
+				}
+		);
+	}
 		
 		  
 	// Busca CEP
@@ -78,7 +97,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		);
 	};
 	
-	ctrl.carregarPacientes = function() {	
+	var carregarPacientes = function() {	
 		if (ctrl.pesquisa.tipoPesquisa === "1") {			
 			pacienteFactory.listarPacientesAtivosInativos(true).then(
 					successCallback = function(response) {	  
@@ -134,15 +153,14 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	};
 	
 	ctrl.salvarPaciente = function(paciente) {		
-		if (cadastroPacienteFactory.isEditandoPaciente()) {			
+		if (cadastroPacienteFactory.isEditandoPaciente() && paciente.dataNascimento) {			
 			var dataFormatada = new Date(paciente.dataNascimento);
 			paciente.dataNascimento = dataFormatada.getDate() + "/" + (dataFormatada.getMonth()+1) + "/" + dataFormatada.getFullYear();
 		}
 		
 		cadastroPacienteFactory.salvarPaciente(paciente).then(
 			successCallback = function(response) {						
-				ctrl.paciente = {};
-				$scope.cadastroClienteForm.$setPristine();
+				ctrl.paciente = {};				
 				
 				$mdDialog.show(
 					$mdDialog.alert()
@@ -152,6 +170,11 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 						.ariaLabel('Alerta')
 						.ok('Ok')						
 				);
+				
+				$location.path('/cadastrarPaciente');
+				$scope.cadastroClientePrincipaisForm.$setPristine();
+				$scope.cadastroClienteMaiorForm.$setPristine();
+				$scope.cadastroClienteMenorForm.$setPristine();
 				
 			},
 			errorCallback = function (error, status){					
@@ -219,7 +242,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		$mdDialog.show(confirm).then(function() {  
 			cadastroPacienteFactory.excluirPaciente(paciente).then(
 				successCallback = function(response) {																							
-					ctrl.carregarPacientes();					
+					carregarPacientes();					
 					$mdDialog.show(
 						$mdDialog.alert()
 							.clickOutsideToClose(true)
@@ -240,7 +263,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		var atualizar = function() {
 			cadastroPacienteFactory.atualizarPaciente(paciente).then(		
 				successCallback = function(response) {									
-					ctrl.carregarPacientes();
+					carregarPacientes();
 					var msg;
 					if (paciente.ativo) {
 						msg = "Paciente ativado com sucesso!";
@@ -284,5 +307,6 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	
 	carregarConfiguracoes();
 	carregarConveniosAtivos();
-	ctrl.carregarPacientes();	
+	carregarPacientes();
+	carregarGruposPacientes();
 }]);

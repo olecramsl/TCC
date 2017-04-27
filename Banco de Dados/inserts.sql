@@ -1,4 +1,9 @@
 USE syspsi;
+INSERT INTO `syspsi`.`grupopaciente` (`id`, `descricao`, `maiorIdade`) VALUES (1, 'Adolescente', 0);
+INSERT INTO `syspsi`.`grupopaciente` (`id`, `descricao`, `maiorIdade`) VALUES (2, 'Adulto', 1);
+INSERT INTO `syspsi`.`grupopaciente` (`id`, `descricao`, `maiorIdade`) VALUES (3, 'Criança', 0);
+INSERT INTO `syspsi`.`grupopaciente` (`id`, `descricao`, `maiorIdade`) VALUES (4, 'Idoso', 1);
+
 INSERT INTO `syspsi`.`permissao`(`id`, `nome`, `descricao`) VALUES (1, "PSICOLOGO", "Permissão para usuário psicólogo");
 INSERT INTO `syspsi`.`permissao`(`id`, `nome`, `descricao`) VALUES (2, "ADM", "Permissão para usuário administrador");
 # senha 123

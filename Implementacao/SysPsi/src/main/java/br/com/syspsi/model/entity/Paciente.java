@@ -23,6 +23,9 @@ public class Paciente implements Serializable {
 	@ManyToOne
     @JoinColumn(name="idpsicologo")
 	private Psicologo psicologo;	
+	@ManyToOne
+    @JoinColumn(name="idgrupo")
+	private GrupoPaciente grupo;
 	@Column(name="nomecompleto")
 	private String nomeCompleto;
 	@Column(name="datanascimento")
@@ -39,6 +42,12 @@ public class Paciente implements Serializable {
 	private String localidade;
 	private String uf;
 	private String cep;
+	@Column(name="nomecompletoresponsavel")
+	private String nomeCompletoResponsavel;
+	@Column(name="cpfresponsavel")
+	private String cpfResponsavel;
+	@Column(name="telefonecontatoresponsavel")
+	private String telefoneContatoResponsavel;
 	private boolean ativo;
 	@Transient
 	private String nomeExibicao;
@@ -81,6 +90,20 @@ public class Paciente implements Serializable {
 	 */
 	public void setPsicologo(Psicologo psicologo) {
 		this.psicologo = psicologo;
+	}
+
+	/**
+	 * @return the grupoPaciente
+	 */
+	public GrupoPaciente getGrupo() {
+		return grupo;
+	}
+
+	/**
+	 * @param grupoPaciente the grupoPaciente to set
+	 */
+	public void setGrupo(GrupoPaciente grupoPaciente) {
+		this.grupo = grupoPaciente;
 	}
 
 	/**
@@ -282,6 +305,48 @@ public class Paciente implements Serializable {
 	}
 
 	/**
+	 * @return the nomeCompletoResponsavel
+	 */
+	public String getNomeCompletoResponsavel() {
+		return nomeCompletoResponsavel;
+	}
+
+	/**
+	 * @param nomeCompletoResponsavel the nomeCompletoResponsavel to set
+	 */
+	public void setNomeCompletoResponsavel(String nomeCompletoResponsavel) {
+		this.nomeCompletoResponsavel = nomeCompletoResponsavel;
+	}
+
+	/**
+	 * @return the cpfResponsavel
+	 */
+	public String getCpfResponsavel() {
+		return cpfResponsavel;
+	}
+
+	/**
+	 * @param cpfResponsavel the cpfResponsavel to set
+	 */
+	public void setCpfResponsavel(String cpfResponsavel) {
+		this.cpfResponsavel = cpfResponsavel;
+	}
+
+	/**
+	 * @return the telefoneContatoResponsavel
+	 */
+	public String getTelefoneContatoResponsavel() {
+		return telefoneContatoResponsavel;
+	}
+
+	/**
+	 * @param telefoneContatoResponsavel the telefoneContatoResponsavel to set
+	 */
+	public void setTelefoneContatoResponsavel(String telefoneContatoResponsavel) {
+		this.telefoneContatoResponsavel = telefoneContatoResponsavel;
+	}
+
+	/**
 	 * @param nomeExibicao the nomeExibicao to set
 	 */
 	public void setNomeExibicao(String nomeExibicao) {
@@ -304,15 +369,21 @@ public class Paciente implements Serializable {
 	 * Valida o cpf informado
 	 * @throws Exception caso o cpf informado seja inválido
 	 */
-	public void validarCPF() throws Exception {		
+	public void validarCPF(String cpf) throws Exception {
+		String msgErro;
+		if (cpf == this.cpf) {
+			msgErro = "O CPF do paciente é inválido!";
+		} else {
+			msgErro = "O CPF do responsável é inválido!";
+		}
 		// considera-se erro CPF's formados por uma sequencia de numeros iguais
-	    if (this.cpf.equals("00000000000") || this.cpf.equals("11111111111") ||
-	    	this.cpf.equals("22222222222") || this.cpf.equals("33333333333") ||
-	    	this.cpf.equals("44444444444") || this.cpf.equals("55555555555") ||
-	    	this.cpf.equals("66666666666") || this.cpf.equals("77777777777") ||
-	    	this.cpf.equals("88888888888") || this.cpf.equals("99999999999") ||
-	       (this.cpf.length() != 11)) {	    	
-	       throw new Exception("O CPF informado é inválido!");
+	    if (cpf.equals("00000000000") || cpf.equals("11111111111") ||
+	    	cpf.equals("22222222222") || cpf.equals("33333333333") ||
+	    	cpf.equals("44444444444") || cpf.equals("55555555555") ||
+	    	cpf.equals("66666666666") || cpf.equals("77777777777") ||
+	    	cpf.equals("88888888888") || cpf.equals("99999999999") ||
+	       (cpf.length() != 11)) {	    	
+	       throw new Exception(msgErro);
 	    }
 
 	    char dig10, dig11;
@@ -327,7 +398,7 @@ public class Paciente implements Serializable {
 	    		// converte o i-esimo caractere do CPF em um numero:
 	    		// por exemplo, transforma o caractere '0' no inteiro 0         
 	    		// (48 eh a posicao de '0' na tabela ASCII)         
-	    		num = (int)(this.cpf.charAt(i) - 48); 
+	    		num = (int)(cpf.charAt(i) - 48); 
 	    		sm = sm + (num * peso);
 	    		peso = peso - 1;
 	    	}
@@ -341,7 +412,7 @@ public class Paciente implements Serializable {
 	    	sm = 0;
 	    	peso = 11;
 	    	for(i=0; i<10; i++) {
-	    		num = (int)(this.cpf.charAt(i) - 48);
+	    		num = (int)(cpf.charAt(i) - 48);
 	    		sm = sm + (num * peso);
 	    		peso = peso - 1;
 	    	}
@@ -352,11 +423,11 @@ public class Paciente implements Serializable {
 	    	else dig11 = (char)(r + 48);
 
 	    	// Verifica se os digitos calculados conferem com os digitos informados.
-	    	if ((dig10 != this.cpf.charAt(9)) || (dig11 != this.cpf.charAt(10))) {	    		
-	    		throw new Exception("O CPF informado é inválido!");
+	    	if ((dig10 != cpf.charAt(9)) || (dig11 != cpf.charAt(10))) {	    		
+	    		throw new Exception(msgErro);
 	    	}
 	    } catch (InputMismatchException erro) {	    	
-	    	throw new Exception("O CPF informado é inválido!");
+	    	throw new Exception(msgErro);
 	    }
 	}
 }

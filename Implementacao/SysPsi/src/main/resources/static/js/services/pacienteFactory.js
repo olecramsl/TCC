@@ -10,6 +10,6 @@ angular.module('syspsi').factory('pacienteFactory', ['$http', 'config', function
 	
 	return {
 		listarPacientesAtivosInativos: _listarPacientesAtivosInativos,
-		listarPacientes: _listarPacientes		
+		listarPacientes: _listarPacientes
 	};
 }]);

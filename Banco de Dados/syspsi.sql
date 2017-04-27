@@ -15,6 +15,19 @@ CREATE SCHEMA IF NOT EXISTS `syspsi` DEFAULT CHARACTER SET utf8 ;
 USE `syspsi` ;
 
 -- -----------------------------------------------------
+-- Table `syspsi`.`grupopaciente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`grupopaciente` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `descricao` VARCHAR(45) NOT NULL,
+  `maiorIdade` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
 -- Table `syspsi`.`psicologo`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
@@ -37,30 +50,40 @@ DEFAULT CHARACTER SET = utf8;
 CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
+  `idGrupo` INT(11) NOT NULL DEFAULT '2',
   `nomeCompleto` VARCHAR(130) NOT NULL,
-  `dataNascimento` DATE NOT NULL,
-  `cpf` VARCHAR(11) NOT NULL,
-  `sexo` CHAR NOT NULL,
-  `telefoneContato` VARCHAR(11) NOT NULL,
-  `email` VARCHAR(90) NULL,
-  `logradouro` VARCHAR(150) NOT NULL,
-  `numero` VARCHAR(10) NOT NULL,
-  `complemento` VARCHAR(45) NULL,
-  `bairro` VARCHAR(60) NOT NULL,
-  `localidade` VARCHAR(50) NOT NULL,
-  `uf` VARCHAR(2) NOT NULL,
-  `cep` VARCHAR(8) NOT NULL,
-  `ativo` TINYINT(1) NOT NULL DEFAULT 1,
+  `dataNascimento` DATE NULL DEFAULT NULL,
+  `cpf` VARCHAR(11) NULL DEFAULT NULL,
+  `sexo` CHAR(1) NULL DEFAULT NULL,
+  `telefoneContato` VARCHAR(11) NULL DEFAULT NULL,
+  `email` VARCHAR(90) NULL DEFAULT NULL,
+  `logradouro` VARCHAR(150) NULL DEFAULT NULL,
+  `numero` VARCHAR(10) NULL DEFAULT NULL,
+  `complemento` VARCHAR(45) NULL DEFAULT NULL,
+  `bairro` VARCHAR(60) NULL DEFAULT NULL,
+  `localidade` VARCHAR(50) NULL DEFAULT NULL,
+  `uf` VARCHAR(2) NULL DEFAULT NULL,
+  `cep` VARCHAR(8) NULL DEFAULT NULL,
+  `ativo` TINYINT(1) NOT NULL DEFAULT '1',
+  `cpfResponsavel` VARCHAR(11) NULL DEFAULT NULL,
+  `nomeCompletoResponsavel` VARCHAR(130) NULL DEFAULT NULL,
+  `telefoneContatoResponsavel` VARCHAR(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_paciente_psicologo1_idx` (`idPsicologo` ASC),
   UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC),
+  INDEX `fk_paciente_psicologo1_idx` (`idPsicologo` ASC),
+  INDEX `fk_paciente_grupopaciente1_idx` (`idGrupo` ASC),
+  CONSTRAINT `fk_paciente_grupopaciente1`
+    FOREIGN KEY (`idGrupo`)
+    REFERENCES `syspsi`.`grupopaciente` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
   CONSTRAINT `fk_paciente_psicologo1`
     FOREIGN KEY (`idPsicologo`)
     REFERENCES `syspsi`.`psicologo` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 14
+AUTO_INCREMENT = 18
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -68,24 +91,26 @@ DEFAULT CHARACTER SET = utf8;
 -- Table `syspsi`.`convenio`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `syspsi`.`convenio` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(255) NOT NULL,
   `cnpj` VARCHAR(13) NOT NULL,
   `email` VARCHAR(90) NOT NULL,
   `telefoneContato` VARCHAR(11) NOT NULL,
   `logradouro` VARCHAR(150) NOT NULL,
-  `complemento` VARCHAR(45) NULL,
+  `complemento` VARCHAR(45) NULL DEFAULT NULL,
   `bairro` VARCHAR(60) NOT NULL,
   `localidade` VARCHAR(50) NOT NULL,
   `uf` VARCHAR(2) NOT NULL,
   `cep` VARCHAR(8) NOT NULL,
-  `valorConsultaIndividual` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-  `valorConsultaCasal` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-  `valorConsultaFamilia` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-  `ativo` TINYINT(1) NOT NULL DEFAULT 1,
+  `valorConsultaIndividual` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+  `valorConsultaCasal` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+  `valorConsultaFamilia` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+  `ativo` TINYINT(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `cnpj_UNIQUE` (`cnpj` ASC))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+AUTO_INCREMENT = 2
+DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
@@ -94,7 +119,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPaciente` BIGINT(20) UNSIGNED NOT NULL,
-  `idConvenio` INT UNSIGNED NULL DEFAULT NULL,
+  `idConvenio` INT(10) UNSIGNED NULL DEFAULT NULL,
   `idGCalendar` VARCHAR(1024) NULL DEFAULT NULL,
   `idRecurring` VARCHAR(1024) NULL DEFAULT NULL,
   `start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -138,7 +163,29 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`config` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `syspsi`.`consulta`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`consulta` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idAgendamento` BIGINT(20) UNSIGNED NOT NULL,
+  `prontuario` TEXT NOT NULL,
+  `valor` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+  `recibo` TINYINT(1) NOT NULL DEFAULT '0',
+  `inicio` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `fim` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `fk_prontuario_agendamento1_idx` (`idAgendamento` ASC),
+  CONSTRAINT `fk_prontuario_agendamento1`
+    FOREIGN KEY (`idAgendamento`)
+    REFERENCES `syspsi`.`agendamento` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -178,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo_tem_permissao` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
+AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -203,27 +250,6 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`tmpgcalendarevent` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
-
-
--- -----------------------------------------------------
--- Table `syspsi`.`consulta`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`consulta` (
-  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `idAgendamento` BIGINT(20) UNSIGNED NOT NULL,
-  `prontuario` TEXT NOT NULL,
-  `valor` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-  `recibo` TINYINT(1) NOT NULL DEFAULT 0,
-  `inicio` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `fim` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  INDEX `fk_prontuario_agendamento1_idx` (`idAgendamento` ASC),
-  CONSTRAINT `fk_prontuario_agendamento1`
-    FOREIGN KEY (`idAgendamento`)
-    REFERENCES `syspsi`.`agendamento` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;

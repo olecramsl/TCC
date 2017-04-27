@@ -2,13 +2,38 @@ angular.module('syspsi').factory('cadastroPacienteFactory', ['$http', 'config', 
 	var _paciente;
 	var _editandoPaciente;
 	
+	var _listarGruposPacientes = function() {
+		return $http.get(config.baseUrl + '/listarGruposPacientes');
+	};
+	
 	var _salvarPaciente = function(paciente) {	
 		var novoPaciente = angular.copy(paciente);
-		var arrDataNascimento = novoPaciente.dataNascimento.split("/");
-		novoPaciente.dataNascimento = new Date(arrDataNascimento[2], arrDataNascimento[1], arrDataNascimento[0]);		
-		novoPaciente.cpf = novoPaciente.cpf.replace(/[^0-9]/g,'');
-		novoPaciente.telefoneContato = novoPaciente.telefoneContato.replace(/[^0-9]/g,'');
-		novoPaciente.cep = novoPaciente.cep.replace(/[^0-9]/g,'');
+		
+		if (novoPaciente.dataNascimento) {
+			var arrDataNascimento = novoPaciente.dataNascimento.split("/");
+			novoPaciente.dataNascimento = new Date(arrDataNascimento[2], arrDataNascimento[1], arrDataNascimento[0]);
+		}
+		
+		if (novoPaciente.cpf) {
+			novoPaciente.cpf = novoPaciente.cpf.replace(/[^0-9]/g,'');
+		}
+		
+		if (novoPaciente.telefoneContato) {
+			novoPaciente.telefoneContato = novoPaciente.telefoneContato.replace(/[^0-9]/g,'');
+		}
+		
+		if (novoPaciente.cep) { 
+			novoPaciente.cep = novoPaciente.cep.replace(/[^0-9]/g,'');
+		}
+		
+		if (novoPaciente.cpfResponsavel) {
+			novoPaciente.cpfResponsavel = novoPaciente.cpfResponsavel.replace(/[^0-9]/g,'');
+		}
+		
+		if (novoPaciente.telefoneContatoResponsavel) {
+			novoPaciente.telefoneContatoResponsavel = novoPaciente.telefoneContatoResponsavel.replace(/[^0-9]/g,'');
+		}
+		
 		novoPaciente.ativo = true;
 		return $http.post(config.baseUrl + '/salvarPaciente', novoPaciente);
 	};
@@ -26,6 +51,7 @@ angular.module('syspsi').factory('cadastroPacienteFactory', ['$http', 'config', 
 		setPaciente: function(paciente) { _paciente = paciente; },
 		isEditandoPaciente: function() { return _editandoPaciente; },
 		setEditandoPaciente: function(editandoPaciente) { _editandoPaciente = editandoPaciente; },
+		listarGruposPacientes: _listarGruposPacientes,
 		salvarPaciente: _salvarPaciente,
 		excluirPaciente: _excluirPaciente,
 		atualizarPaciente: _atualizarPaciente

@@ -4,7 +4,7 @@ angular.module("syspsi").directive('exitCadastroPacientePage', ['cadastroPacient
 			window.onbeforeunload = function(){				
             }
             $scope.$on('$locationChangeStart', function(event, next, current) {            	
-            	cadastroPacienteFactory.setEditandoPaciente(false);
+            	cadastroPacienteFactory.setEditandoPaciente(false);            	
             });
         }
     };

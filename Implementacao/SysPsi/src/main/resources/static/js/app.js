@@ -25,7 +25,7 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle'])
 			}).when('/cadastrarPaciente', { 
 				templateUrl: "templates/cadastrar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
-				controllerAs: "ctrl"
+				controllerAs: "ctrl"			
 			}).when('/editarPaciente', { 
 				templateUrl: "templates/cadastrar_pacientes.html",
 				controller: "CadastroPacienteCtrl",

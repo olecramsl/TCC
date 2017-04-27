@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.syspsi.model.entity.Convenio;
+import br.com.syspsi.model.entity.GrupoPaciente;
 import br.com.syspsi.model.entity.Paciente;
 import br.com.syspsi.repository.ConvenioRepositorio;
+import br.com.syspsi.repository.GrupoPacienteRepositorio;
 import br.com.syspsi.repository.PacienteRepositorio;
 
 @RestController
@@ -22,6 +24,9 @@ public class CadastroController {
 	
 	@Autowired
 	private PacienteRepositorio pacienteRepositorio;
+	
+	@Autowired
+	private GrupoPacienteRepositorio grupoPacienteRepositorio;
 	
 	/**
 	 * @return uma lista de convênios ativos cadastrados no BD
@@ -34,6 +39,19 @@ public class CadastroController {
 			)		
 	public List<Convenio> listarConveniosAtivos() throws Exception {
 		return this.convenioRepositorio.findByAtivo(true);
+	}
+	
+	/**
+	 * @return uma lista de convênios ativos cadastrados no BD
+	 * @throws Exception caso algum problema ocorra
+	 */
+	@RequestMapping(
+			value = "/listarGruposPacientes", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE					
+			)		
+	public List<GrupoPaciente> listarGruposPacientes() throws Exception {
+		return (List<GrupoPaciente>) this.grupoPacienteRepositorio.findAll();
 	}
 	
 	/**
@@ -51,7 +69,13 @@ public class CadastroController {
 		paciente.setPsicologo(LoginController.getPsicologoLogado());
 		if (paciente.getPsicologo() != null) {
 			try {
-				paciente.validarCPF();				
+				if (paciente.getCpf() != null) {
+					paciente.validarCPF(paciente.getCpf());
+				}
+				
+				if (paciente.getCpfResponsavel() != null) {
+					paciente.validarCPF(paciente.getCpfResponsavel());
+				}
 				this.pacienteRepositorio.save(paciente);
 			} catch (DataIntegrityViolationException e) {
 				if (e.getMessage().toLowerCase().contains("cpf")) {
