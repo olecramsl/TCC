@@ -29,5 +29,9 @@ public class LoginController {
 	public Principal user(Principal user) {		
 		psicologoLogado = psicologoRepositorio.findByLogin(user.getName());		
 		return user;
-	}	
+	}
+	
+	@RequestMapping("/keepAlive")
+	public void keepAlive() {				
+	}
 }

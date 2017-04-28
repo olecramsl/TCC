@@ -1,7 +1,7 @@
 package br.com.syspsi.model.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.InputMismatchException;
 
 import javax.persistence.Column;
@@ -29,7 +29,7 @@ public class Paciente implements Serializable {
 	@Column(name="nomecompleto")
 	private String nomeCompleto;
 	@Column(name="datanascimento")
-	private Date dataNascimento;
+	private Calendar dataNascimento;
 	private String cpf;
 	private char sexo;
 	@Column(name="telefonecontato")
@@ -139,14 +139,14 @@ public class Paciente implements Serializable {
 	/**
 	 * @return the dataNascimento
 	 */
-	public Date getDataNascimento() {
+	public Calendar getDataNascimento() {
 		return dataNascimento;
 	}	
 
 	/**
 	 * @param dataNascimento the dataNascimento to set
 	 */
-	public void setDataNascimento(Date dataNascimento) {
+	public void setDataNascimento(Calendar dataNascimento) {
 		this.dataNascimento = dataNascimento;
 	}
 
@@ -360,7 +360,11 @@ public class Paciente implements Serializable {
 		// nome de exibicao
 		if (!this.nomeCompleto.isEmpty()) {
 			int index = this.nomeCompleto.split(" ").length - 1;
-			return this.nomeCompleto.split(" ")[0] + " " + this.nomeCompleto.split(" ")[index];
+			if (index > 0) {
+				return this.nomeCompleto.split(" ")[0] + " " + this.nomeCompleto.split(" ")[index];
+			} else {
+				return this.nomeCompleto.split(" ")[0];
+			}
 		}
 		return null;
 	}

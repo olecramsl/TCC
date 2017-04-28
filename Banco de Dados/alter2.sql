@@ -37,3 +37,15 @@ ADD CONSTRAINT `fk_paciente_grupopaciente1`
   REFERENCES `syspsi`.`grupopaciente` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+ALTER TABLE `syspsi`.`consulta` 
+DROP FOREIGN KEY `fk_prontuario_agendamento1`;
+ALTER TABLE `syspsi`.`consulta` 
+ADD CONSTRAINT `fk_prontuario_agendamento1`
+  FOREIGN KEY (`idAgendamento`)
+  REFERENCES `syspsi`.`agendamento` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION;
+  
+ALTER TABLE `syspsi`.`paciente` 
+ADD UNIQUE INDEX `cpfResponsavel_UNIQUE` (`cpfResponsavel` ASC);

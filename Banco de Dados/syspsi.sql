@@ -183,7 +183,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`consulta` (
   CONSTRAINT `fk_prontuario_agendamento1`
     FOREIGN KEY (`idAgendamento`)
     REFERENCES `syspsi`.`agendamento` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;

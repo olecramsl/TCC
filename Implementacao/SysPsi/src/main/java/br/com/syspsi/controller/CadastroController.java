@@ -65,7 +65,7 @@ public class CadastroController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void salvarPaciente(@RequestBody Paciente paciente) throws Exception {		
+	public Paciente salvarPaciente(@RequestBody Paciente paciente) throws Exception {		
 		paciente.setPsicologo(LoginController.getPsicologoLogado());
 		if (paciente.getPsicologo() != null) {
 			try {
@@ -76,12 +76,17 @@ public class CadastroController {
 				if (paciente.getCpfResponsavel() != null) {
 					paciente.validarCPF(paciente.getCpfResponsavel());
 				}
-				this.pacienteRepositorio.save(paciente);
+				
+				return (Paciente) this.pacienteRepositorio.save(paciente);
 			} catch (DataIntegrityViolationException e) {
 				if (e.getMessage().toLowerCase().contains("cpf")) {
-					throw new Exception("O CPF informado já está cadastrado");
+					throw new Exception("O CPF informado já está cadastrado.");
+				} else {
+					throw new Exception("Erro ao salvar o paciente.");
 				}
 			} 
+		} else {
+			throw new Exception("Erro ao salvar o paciente: psicólogo não informado.");
 		}
 	}
 }

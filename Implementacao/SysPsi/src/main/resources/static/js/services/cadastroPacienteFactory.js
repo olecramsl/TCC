@@ -9,11 +9,6 @@ angular.module('syspsi').factory('cadastroPacienteFactory', ['$http', 'config', 
 	var _salvarPaciente = function(paciente) {	
 		var novoPaciente = angular.copy(paciente);
 		
-		if (novoPaciente.dataNascimento) {
-			var arrDataNascimento = novoPaciente.dataNascimento.split("/");
-			novoPaciente.dataNascimento = new Date(arrDataNascimento[2], arrDataNascimento[1], arrDataNascimento[0]);
-		}
-		
 		if (novoPaciente.cpf) {
 			novoPaciente.cpf = novoPaciente.cpf.replace(/[^0-9]/g,'');
 		}

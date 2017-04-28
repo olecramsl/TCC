@@ -1,11 +1,12 @@
-angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle'])
-	.config(['$routeProvider', '$httpProvider', 'IdleProvider', 'KeepaliveProvider', function($routeProvider, $httpProvider, IdleProvider, 
-			KeepaliveProvider) {
+angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).value("config", {
+	baseUrl: "http://localhost:8080"
+}).config(['$routeProvider', '$httpProvider', 'IdleProvider', 'KeepaliveProvider', 
+		function($routeProvider, $httpProvider, IdleProvider, KeepaliveProvider) {
 		
 		// configure Idle settings
 		IdleProvider.idle(1800); // in seconds - 30min
-		IdleProvider.timeout(120); // in seconds - 2min
-		KeepaliveProvider.interval(10); // in seconds
+		IdleProvider.timeout(120); // in seconds - 2min		
+		KeepaliveProvider.http('http://localhost:8080/keepAlive');
 		
 		$routeProvider.
 			when('/login', { 
@@ -37,7 +38,8 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle'])
 			}).otherwise({redirectTo: '/'});
 	
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
-	}]).run(['$rootScope', '$location', 'loginFactory', 'Idle', 'idleService', function($rootScope,$location,loginFactory,Idle,idleService){
+	}]).run(['$rootScope', '$location', 'loginFactory', 'Idle', 'idleService', function($rootScope, 
+			$location, loginFactory, Idle, idleService){
 		// start watching when the app runs. also starts the Keepalive service by default.
 		Idle.watch();			
 		

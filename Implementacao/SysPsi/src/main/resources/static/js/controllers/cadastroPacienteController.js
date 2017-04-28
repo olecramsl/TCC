@@ -5,10 +5,11 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', 'configFactory', 
-	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory',	function ($mdDialog, 
-			$uibModal,	$scope,	$http, $location, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
-			consultaPacienteFactory, agendamentoFactory) {	
+angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', 
+	'$location', '$route', 'configFactory',	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 
+	'consultaPacienteFactory', 'agendamentoFactory', '$route',	function ($mdDialog, $uibModal,	$scope,	
+		$http, $location, $route, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
+		consultaPacienteFactory, agendamentoFactory) {	
 	
 	var ctrl = this;
 		
@@ -97,7 +98,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		);
 	};
 	
-	var carregarPacientes = function() {	
+	ctrl.carregarPacientes = function() {	
 		if (ctrl.pesquisa.tipoPesquisa === "1") {			
 			pacienteFactory.listarPacientesAtivosInativos(true).then(
 					successCallback = function(response) {	  
@@ -152,16 +153,37 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		);						
 	};
 	
-	ctrl.salvarPaciente = function(paciente) {		
-		if (cadastroPacienteFactory.isEditandoPaciente() && paciente.dataNascimento) {			
-			var dataFormatada = new Date(paciente.dataNascimento);
-			paciente.dataNascimento = dataFormatada.getDate() + "/" + (dataFormatada.getMonth()+1) + "/" + dataFormatada.getFullYear();
+	ctrl.salvarPaciente = function(paciente) {
+		if (paciente.dataNascimento) {
+			var dataSplit = paciente.dataNascimento.split("/");			
+			var dia = dataSplit[0];
+			var mes = dataSplit[1]-1;
+			var ano = dataSplit[2];
+			var data = moment();
+			data = moment(data).date(dia).month(mes).year(ano);
+			paciente.dataNascimento = data.local();
+		}
+		
+		var nomeSplit = paciente.nomeCompleto.split(" ");
+		paciente.nomeCompleto = "";
+		for (i=0; i<nomeSplit.length; i++) {				
+			paciente.nomeCompleto = paciente.nomeCompleto + nomeSplit[i].substring(0,1).toUpperCase() +
+				nomeSplit[i].substring(1).toLowerCase() + " ";			
+		}		
+		paciente.nomeCompleto = paciente.nomeCompleto.substring(0, paciente.nomeCompleto.length-1);
+		
+		if (paciente.nomeCompletoResponsavel) {
+			nomeSplit = paciente.nomeCompletoResponsavel.split(" ");
+			paciente.nomeCompletoResponsavel = "";
+			for (i=0; i<nomeSplit.length; i++) {				
+				paciente.nomeCompletoResponsavel = paciente.nomeCompletoResponsavel + nomeSplit[i].substring(0,1).toUpperCase() +
+					nomeSplit[i].substring(1).toLowerCase() + " ";			
+			}		
+			paciente.nomeCompletoResponsavel = paciente.nomeCompletoResponsavel.substring(0, paciente.nomeCompletoResponsavel.length-1);			
 		}
 		
 		cadastroPacienteFactory.salvarPaciente(paciente).then(
-			successCallback = function(response) {						
-				ctrl.paciente = {};				
-				
+			successCallback = function(response) {																									
 				$mdDialog.show(
 					$mdDialog.alert()
 						.clickOutsideToClose(true)
@@ -169,12 +191,11 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 						.textContent('Paciente cadastrado com sucesso!')
 						.ariaLabel('Alerta')
 						.ok('Ok')						
-				);
+				);												
 				
-				$location.path('/cadastrarPaciente');
-				$scope.cadastroClientePrincipaisForm.$setPristine();
-				$scope.cadastroClienteMaiorForm.$setPristine();
-				$scope.cadastroClienteMenorForm.$setPristine();
+					
+				ctrl.paciente = {};				
+				$scope.cadastroPacienteForm.$setPristine();									
 				
 			},
 			errorCallback = function (error, status){					
@@ -226,7 +247,14 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		);				
 	};		
 	
-	ctrl.editarPaciente = function(paciente) {		
+	ctrl.editarPaciente = function(paciente) {
+		if (paciente.dataNascimento) {
+			var dataFormatada = new Date(paciente.dataNascimento);			
+			var dia = dataFormatada.getDate() < 10?"0"+dataFormatada.getDate():dataFormatada.getDate();
+			var mes = (dataFormatada.getMonth()+1) < 10?"0"+(dataFormatada.getMonth()+1):(dataFormatada.getMonth()+1);
+			var ano = dataFormatada.getFullYear();			
+			paciente.dataNascimento = dia + "/" + mes + "/" + ano;
+		}
 		cadastroPacienteFactory.setPaciente(paciente);
 		cadastroPacienteFactory.setEditandoPaciente(true);
 		$location.path("/editarPaciente");
@@ -242,7 +270,8 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		$mdDialog.show(confirm).then(function() {  
 			cadastroPacienteFactory.excluirPaciente(paciente).then(
 				successCallback = function(response) {																							
-					carregarPacientes();					
+					ctrl.carregarPacientes();	
+					/*
 					$mdDialog.show(
 						$mdDialog.alert()
 							.clickOutsideToClose(true)
@@ -250,7 +279,8 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 							.textContent('Paciente excluído com sucesso!')
 							.ariaLabel('Alerta')
 							.ok('Ok')						
-					);	
+					);
+					*/	
 				},
 				errorCallback = function (error, status) { 	
 					tratarExcecao(error); 
@@ -263,7 +293,8 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		var atualizar = function() {
 			cadastroPacienteFactory.atualizarPaciente(paciente).then(		
 				successCallback = function(response) {									
-					carregarPacientes();
+					ctrl.carregarPacientes();
+					/*
 					var msg;
 					if (paciente.ativo) {
 						msg = "Paciente ativado com sucesso!";
@@ -279,10 +310,10 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 							.ariaLabel('Alerta')
 							.ok('Ok')						
 					);
+					*/
 					
 				},
-				errorCallback = function (error, status) {
-					console.log("Erro: " + error);
+				errorCallback = function (error, status) {					
 					tratarExcecao(error); 
 				}
 			);
@@ -307,6 +338,6 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	
 	carregarConfiguracoes();
 	carregarConveniosAtivos();
-	carregarPacientes();
+	ctrl.carregarPacientes();
 	carregarGruposPacientes();
 }]);
