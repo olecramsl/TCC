@@ -69,11 +69,11 @@ public class CadastroController {
 		paciente.setPsicologo(LoginController.getPsicologoLogado());
 		if (paciente.getPsicologo() != null) {
 			try {
-				if (paciente.getCpf() != null) {
+				if (paciente.getCpf() != null && !paciente.getCpf().trim().isEmpty()) {
 					paciente.validarCPF(paciente.getCpf());
 				}
 				
-				if (paciente.getCpfResponsavel() != null) {
+				if (paciente.getCpfResponsavel() != null && !paciente.getCpfResponsavel().trim().isEmpty()) {
 					paciente.validarCPF(paciente.getCpfResponsavel());
 				}
 				

@@ -154,6 +154,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	};
 	
 	ctrl.salvarPaciente = function(paciente) {
+		var dataNascimentoPaciente = paciente.dataNascimento;
 		if (paciente.dataNascimento) {
 			var dataSplit = paciente.dataNascimento.split("/");			
 			var dia = dataSplit[0];
@@ -198,7 +199,8 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 				$scope.cadastroPacienteForm.$setPristine();									
 				
 			},
-			errorCallback = function (error, status){					
+			errorCallback = function (error, status){		
+				paciente.dataNascimento = dataNascimentoPaciente; 
 				tratarExcecao(error); 
 			}
 		);		

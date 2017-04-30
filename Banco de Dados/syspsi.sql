@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
   `localidade` VARCHAR(50) NULL DEFAULT NULL,
   `uf` VARCHAR(2) NULL DEFAULT NULL,
   `cep` VARCHAR(8) NULL DEFAULT NULL,
+  `observacoes` TEXT NULL,
   `ativo` TINYINT(1) NOT NULL DEFAULT '1',
   `cpfResponsavel` VARCHAR(11) NULL DEFAULT NULL,
   `nomeCompletoResponsavel` VARCHAR(130) NULL DEFAULT NULL,

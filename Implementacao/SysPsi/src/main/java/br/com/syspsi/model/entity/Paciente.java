@@ -48,6 +48,7 @@ public class Paciente implements Serializable {
 	private String cpfResponsavel;
 	@Column(name="telefonecontatoresponsavel")
 	private String telefoneContatoResponsavel;
+	private String observacoes;
 	private boolean ativo;
 	@Transient
 	private String nomeExibicao;
@@ -302,6 +303,20 @@ public class Paciente implements Serializable {
 	 */
 	public void setCep(String cep) {
 		this.cep = cep;
+	}
+
+	/**
+	 * @return the observacoes
+	 */
+	public String getObservacoes() {
+		return observacoes;
+	}
+
+	/**
+	 * @param observacoes the observacoes to set
+	 */
+	public void setObservacoes(String observacoes) {
+		this.observacoes = observacoes;
 	}
 
 	/**
