@@ -2,6 +2,7 @@ package br.com.syspsi.controller;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,19 @@ import br.com.syspsi.repository.PacienteRepositorio;
 public class PacienteController {
 	@Autowired
 	private PacienteRepositorio pacienteRepositorio;
+	
+	private final static Logger logger = Logger.getLogger(CadastroController.class);
+	
+	private static void logMessage(String msg, boolean error) {
+    	if(!error && logger.isDebugEnabled()){
+    	    logger.debug(msg);
+    	}
+
+    	//logs an error message with parameter
+    	if (error) {
+    		logger.error(msg);
+    	}
+    }
 	
 	@RequestMapping(
 			value = "/listarPacientesAtivosInativos", 
@@ -44,8 +58,14 @@ public class PacienteController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void excluirPaciente(@RequestBody Paciente paciente) throws Exception {		
-		this.pacienteRepositorio.delete(paciente);			
+	public void excluirPaciente(@RequestBody Paciente paciente) throws Exception {
+		if (paciente != null) {
+			this.pacienteRepositorio.delete(paciente);			
+			logMessage("Paciente id " + paciente.getId() + " e nome exibição " + paciente.getNomeExibicao() + " removido com sucesso", false);
+		} else {
+			logMessage("Paciente nulo", true);
+			throw new Exception("Não foi possível remover o paciente");
+		}
 	}
 	
 	@RequestMapping(

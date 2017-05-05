@@ -5,31 +5,27 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialog', 'consultaPacienteFactory', function ($scope, $mdDialog, 
-		consultaPacienteFactory) {	
+angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialog', 'consultaPacienteFactory', 'agendamentoFactory', 
+	function ($scope, $mdDialog, consultaPacienteFactory, agendamentoFactory) {	
 	var ctrl = this;
-	
-	$scope.$watch(function () { return consultaPacienteFactory.getPaciente(); }, function (newValue, oldValue) {
-		ctrl.paciente = newValue;		
-	});
-	
-	$scope.$watch(function () { return consultaPacienteFactory.getProntuario(); }, function (newValue, oldValue) {		
-		ctrl.prontuario = newValue;		
-	});
-	
-	$scope.$watch(function () { return ctrl.prontuario; }, function (newValue, oldValue) {
-		if (ctrl.prontuario !== ctrl.oldProntuario) {
+		
+	ctrl.salvando = false;
+			
+	// A consulta está sendo realizada pelo botão iniciar consulta da modal do agendamento
+	$scope.$watch(function () { return (ctrl.agendamento.consulta)?ctrl.agendamento.consulta.prontuario:null; }, function (newValue, oldValue) {		
+		if (consultaPacienteFactory.getConsulta() && consultaPacienteFactory.getProntuario() !== ctrl.oldProntuario) {			
 			consultaPacienteFactory.setConteudoProntuarioMudou(true);
-		} else {
-			consultaPacienteFactory.setConteudoProntuarioMudou(false);
-		}
+		} else {			
+			consultaPacienteFactory.setConteudoProntuarioMudou(false);					
+		}		
+	});		
+	
+	$scope.$watch(function () { return consultaPacienteFactory.getLstAgendamentosComConsulta(); }, function (newValue, oldValue) {
+		ctrl.lstAgendamentosComConsulta = newValue;
 	});
 	
-	$scope.$watch(function () { return consultaPacienteFactory.getValor(); }, function (newValue, oldValue) {		
-		ctrl.valor = newValue;		
-	});
-	
-	ctrl.oldProntuario = consultaPacienteFactory.getProntuario();
+	ctrl.agendamento = consultaPacienteFactory.getAgendamento();
+	ctrl.oldProntuario = consultaPacienteFactory.getProntuario();					
 	
 	/**
 	 * Trata eventuais excessoes que possam ocorrer
@@ -69,8 +65,8 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 				{ name: 'insert', items: [ 'Image', 'EmbedSemantic', 'Table' ] },
 				{ name: 'tools', items: [ 'Maximize' ] },
 				{ name: 'editing', items: [ 'Scayt' ] }
-			],
-	
+			],									
+			
 			// Since we define all configuration options here, let's instruct CKEditor to not load config.js which it does by default.
 			// One HTTP request less will result in a faster startup time.
 			// For more information check http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-customConfig
@@ -140,29 +136,31 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 			]
 	};
 	
-	ctrl.salvarProntuario = function(prontuario) {		
-		var consulta = prepararConsulta(prontuario);
-		
-		consultaPacienteFactory.salvarConsultaPaciente(consulta).then(
+	ctrl.salvar = function(agendamento) {
+		ctrl.salvando = true;
+		consultaPacienteFactory.setAgendamento(agendamento);
+		agendamento.consulta = prepararConsulta(agendamento.consulta.prontuario);		
+		consultaPacienteFactory.salvarConsultaPaciente(agendamento).then(
 				successCallback = function(response) {
 					/*
 					ctrl.showMsg = true;
 				       $timeout(function(){
 				          ctrl.showMsg = false;
 				       }, 5000);
-				    */		
-					consultaPacienteFactory.setConsulta(response.data);
-					consultaPacienteFactory.setProntuario(prontuario);					
-					ctrl.oldProntuario = ctrl.prontuario;
+				    */
+					ctrl.salvando = false;
+					consultaPacienteFactory.setAgendamento(response.data);
+					ctrl.oldProntuario = ctrl.agendamento.consulta.prontuario;
 					consultaPacienteFactory.setConteudoProntuarioMudou(false);
 				},
-				errorCallback = function (error, status){					
+				errorCallback = function (error, status){
+					ctrl.salvando = false;
 					tratarExcecao(error); 
 				}
 		);
 	};	
 	
-	ctrl.finalizarConsulta  = function(prontuario) {
+	ctrl.finalizarConsulta  = function(agendamento) {
 		$mdDialog.show({
 			controller: 'DialogCtrl',			
 		    templateUrl: 'templates/finalizar_consulta_modal.html',
@@ -170,13 +168,12 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 		    clickOutsideToClose: true		    
 		}).then(function() {
 			if (consultaPacienteFactory.getValor()) {
-				var consulta = prepararConsulta(prontuario);
+				agendamento.consulta = prepararConsulta(agendamento.consulta.prontuario);
 				
-				consultaPacienteFactory.salvarConsultaPaciente(consulta).then(
+				consultaPacienteFactory.salvarConsultaPaciente(agendamento).then(
 						successCallback = function(response) {
-							consultaPacienteFactory.setConsulta(response.data);
-							consultaPacienteFactory.setProntuario(prontuario);
-							ctrl.oldProntuario = ctrl.prontuario;
+							consultaPacienteFactory.setAgendamento(response.data);
+							ctrl.oldProntuario = ctrl.agendamento.consulta.prontuario;
 							consultaPacienteFactory.setConteudoProntuarioMudou(false);
 						},
 						errorCallback = function (error, status){					
@@ -194,7 +191,19 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 				);
 			}
 		}, function() {});
-	};
+	};		
+	
+	ctrl.isDisabled = function (agendamento) {
+		if (ctrl.salvando === true) {
+			return true;
+		}
+		
+		if (!agendamento || !agendamento.paciente || !agendamento.consulta || !agendamento.consulta.prontuario || 
+			ctrl.oldProntuario === agendamento.consulta.prontuario) {		
+			return true;
+		}		
+		return false;
+	}
 	
 	var prepararConsulta = function(prontuario) {
 		if (!consultaPacienteFactory.getFim()) {
@@ -203,12 +212,11 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 				
 		return consulta = {
 				id: consultaPacienteFactory.getId(),					
-				agendamento: consultaPacienteFactory.getAgendamento(),
 				prontuario: prontuario,
 				valor: consultaPacienteFactory.getValor(),
 				recibo: consultaPacienteFactory.getRecibo(),
 				inicio: consultaPacienteFactory.getInicio(),
 				fim: consultaPacienteFactory.getFim()
 		};
-	};
+	};			
 }]);

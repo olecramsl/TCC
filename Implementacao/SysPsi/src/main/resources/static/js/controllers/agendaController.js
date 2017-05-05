@@ -191,7 +191,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   /**
    * Atualiza na base de dados um evento que foi movido na agenda
    */
-  var updateEventDroped = function(event, oldEvent) {
+  var updateEventDroped = function(event, oldEvent) {	  
 	  event.repetirSemanalmente = false;
 	  event.grupo = 0;
 	  var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(event);	 
@@ -221,7 +221,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 							  if (agendamentoFactory.getStart().format("WW") === oldEvent.start.format("WW")) {								  							  
 								  var diasDiferenca = oldEvent.start.dayOfYear() - event.start.dayOfYear();
 								  if ((diasDiferenca < 7) && (event.start.day() !== oldEvent.start.day())) {
-									  modalAgendamentoFactory.setTipoConfirmacao(config.tiposConfirmacoes.MOVER_EVENTOS);
+									  modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.MOVER_EVENTOS);
 									  modalAgendamentoFactory.setMsgConfirmacao("Você moveu um agendamento configurado para repetir semanalmente. Deseja mover também os eventos futuros associados a este agendamento?");
 									  modalAgendamentoService.openConfirmModal();	
 								  }

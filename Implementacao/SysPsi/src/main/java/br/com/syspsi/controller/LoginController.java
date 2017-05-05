@@ -32,6 +32,6 @@ public class LoginController {
 	}
 	
 	@RequestMapping("/keepAlive")
-	public void keepAlive() {				
+	public void keepAlive() {			
 	}
 }

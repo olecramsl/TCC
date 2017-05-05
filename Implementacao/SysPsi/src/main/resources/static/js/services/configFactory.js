@@ -2,7 +2,7 @@ angular.module('syspsi').factory('configFactory', ['$http', 'config', function($
 	var _configSys = null;
 	
 	var _loadConfig = function() {
-		return $http.get(config.baseUrl + '/loadConfig');
+		return $http.get(config.BASE_URL + '/loadConfig');
 	};
 
 	return {		

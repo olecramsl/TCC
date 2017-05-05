@@ -115,12 +115,28 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
+-- Table `syspsi`.`consulta`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`consulta` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `prontuario` TEXT NULL,
+  `valor` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+  `recibo` TINYINT(1) NOT NULL DEFAULT '0',
+  `inicio` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `fim` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
 -- Table `syspsi`.`agendamento`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPaciente` BIGINT(20) UNSIGNED NOT NULL,
   `idConvenio` INT(10) UNSIGNED NULL DEFAULT NULL,
+  `idConsulta` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `idGCalendar` VARCHAR(1024) NULL DEFAULT NULL,
   `idRecurring` VARCHAR(1024) NULL DEFAULT NULL,
   `start` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -133,6 +149,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   PRIMARY KEY (`id`),
   INDEX `fk_Agendamento_Paciente_idx` (`idPaciente` ASC),
   INDEX `fk_agendamento_convenio1_idx` (`idConvenio` ASC),
+  INDEX `fk_agendamento_consulta1_idx` (`idConsulta` ASC),
   CONSTRAINT `fk_Agendamento_Paciente`
     FOREIGN KEY (`idPaciente`)
     REFERENCES `syspsi`.`paciente` (`id`)
@@ -141,6 +158,11 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   CONSTRAINT `fk_agendamento_convenio1`
     FOREIGN KEY (`idConvenio`)
     REFERENCES `syspsi`.`convenio` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_agendamento_consulta1`
+    FOREIGN KEY (`idConsulta`)
+    REFERENCES `syspsi`.`consulta` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -165,28 +187,6 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`config` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 5
-DEFAULT CHARACTER SET = utf8;
-
-
--- -----------------------------------------------------
--- Table `syspsi`.`consulta`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`consulta` (
-  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `idAgendamento` BIGINT(20) UNSIGNED NOT NULL,
-  `prontuario` TEXT NOT NULL,
-  `valor` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-  `recibo` TINYINT(1) NOT NULL DEFAULT '0',
-  `inicio` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `fim` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  INDEX `fk_prontuario_agendamento1_idx` (`idAgendamento` ASC),
-  CONSTRAINT `fk_prontuario_agendamento1`
-    FOREIGN KEY (`idAgendamento`)
-    REFERENCES `syspsi`.`agendamento` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 

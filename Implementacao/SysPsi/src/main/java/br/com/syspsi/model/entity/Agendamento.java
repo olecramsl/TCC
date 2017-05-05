@@ -3,6 +3,7 @@ package br.com.syspsi.model.entity;
 import java.io.Serializable;
 import java.util.Calendar;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -27,6 +29,9 @@ public class Agendamento implements Serializable {
 	@ManyToOne
     @JoinColumn(name="idconvenio")
 	private Convenio convenio;
+	@OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name="idconsulta")
+	private Consulta consulta;	
 	@Column(name="idgcalendar") 
 	private String idGCalendar;
 	@Column(name="idrecurring")
@@ -40,7 +45,7 @@ public class Agendamento implements Serializable {
 	@Column(name="eventoprincipal")
 	private boolean eventoPrincipal;
 	private String color;
-	private boolean ativo;
+	private boolean ativo;	
 	@Transient
 	private String title;
 	@Transient
@@ -56,6 +61,7 @@ public class Agendamento implements Serializable {
 		super();		
 		this.paciente = paciente;
 		this.convenio = convenio;
+		this.consulta = null;
 		this.idGCalendar = idGCalendar;
 		this.idRecurring = idRecurring;
 		this.start = start;
@@ -72,8 +78,9 @@ public class Agendamento implements Serializable {
 			Calendar end, Long grupo, String description, String color, boolean eventoPrincipal, boolean ativo) {
 		super();		
 		this.paciente = paciente;		
+		this.consulta = null;
 		this.idGCalendar = idGCalendar;
-		this.idRecurring = idRecurring;
+		this.idRecurring = idRecurring;		
 		this.start = start;
 		this.end = end;
 		this.grupo = grupo;
@@ -124,6 +131,20 @@ public class Agendamento implements Serializable {
 	 */
 	public void setConvenio(Convenio convenio) {
 		this.convenio = convenio;
+	}
+
+	/**
+	 * @return the consulta
+	 */
+	public Consulta getConsulta() {
+		return consulta;
+	}
+
+	/**
+	 * @param consulta the consulta to set
+	 */
+	public void setConsulta(Consulta consulta) {
+		this.consulta = consulta;
 	}
 
 	/**

@@ -1,12 +1,20 @@
-angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).value("config", {
-	baseUrl: "http://localhost:8080"
-}).config(['$routeProvider', '$httpProvider', 'IdleProvider', 'KeepaliveProvider', 
-		function($routeProvider, $httpProvider, IdleProvider, KeepaliveProvider) {
+angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("config", {
+	BASE_URL: "http://localhost:8080",
+	TIPOS_CONFIRMACOES: {
+		'REMOVER_EVENTOS_FUTUROS': 1,
+		'MOVER_EVENTOS': 2,
+		'ALTERAR_DADOS_FUTUROS': 3,
+		'REMOVER_EVENTO': 4,
+		'REMOVER_EVENTOS_GRUPO': 5
+	}
+}).config(['$routeProvider', '$httpProvider', 'IdleProvider', 'KeepaliveProvider', 'config',
+		function($routeProvider, $httpProvider, IdleProvider, KeepaliveProvider, config) {
 		
 		// configure Idle settings
 		IdleProvider.idle(1800); // in seconds - 30min
 		IdleProvider.timeout(120); // in seconds - 2min		
-		KeepaliveProvider.http('http://localhost:8080/keepAlive');
+		KeepaliveProvider.interval(1500); // in seconds - 25min			
+		KeepaliveProvider.http(config.BASE_URL + '/keepAlive');
 		
 		$routeProvider.
 			when('/login', { 
@@ -21,6 +29,10 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).value("config", {
 				controllerAs: "ctrl"
 			}).when('/consulta', { 
 				templateUrl: "templates/consulta.html",
+				controller: "ConsultaPacienteCtrl",
+				controllerAs: "ctrl"
+			}).when('/prontuarios', { 
+				templateUrl: "templates/prontuarios.html",
 				controller: "ConsultaPacienteCtrl",
 				controllerAs: "ctrl"
 			}).when('/cadastrarPaciente', { 

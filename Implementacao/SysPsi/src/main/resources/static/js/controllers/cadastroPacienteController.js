@@ -36,6 +36,8 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		ctrl.paciente = {};
 	}
 	
+	ctrl.lstAgendamentosComConsulta = {};
+	
 	/**
 	 * Trata eventuais excessoes que possam ocorrer
 	 */
@@ -206,15 +208,25 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		);		
 	};	
 	
-	ctrl.iniciarConsulta = function(paciente) {		
+	ctrl.iniciarConsulta = function(paciente) {
 		var start = new Date();								
-		var end = new Date();		
+		var end = new Date();
+		
+		consulta = {
+				id: null,
+				prontuario: "",
+				valor: 0,
+				recibo: false,
+				inicio: start,
+				fim: end
+		};
 		
 		// cria agendamento
 		agendamento = {
 				id: null,
 				gCalendarId: null,				
-				paciente: paciente,								
+				paciente: paciente,
+				consulta: consulta,
 				title: paciente.nomeExibicao,
 				start: start,
 				end: end,				
@@ -234,13 +246,9 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		
 		agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
 				successCallback = function(response) {
-					consultaPacienteFactory.setId(null);
-					consultaPacienteFactory.setPaciente(paciente);
 					consultaPacienteFactory.setAgendamento(response.data);
-					consultaPacienteFactory.setProntuario(null);
-					consultaPacienteFactory.setInicio(new Date());
-					consultaPacienteFactory.setFim(null);
-					
+					consultaPacienteFactory.setInicioAgendamento(new Date());
+					consultaPacienteFactory.setFimAgendamento(null);
 					$location.path("/consulta");
 				},
 				errorCallback = function (error, status){					
@@ -273,16 +281,6 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 			cadastroPacienteFactory.excluirPaciente(paciente).then(
 				successCallback = function(response) {																							
 					ctrl.carregarPacientes();	
-					/*
-					$mdDialog.show(
-						$mdDialog.alert()
-							.clickOutsideToClose(true)
-							.title('Exclusão de Paciente')
-							.textContent('Paciente excluído com sucesso!')
-							.ariaLabel('Alerta')
-							.ok('Ok')						
-					);
-					*/	
 				},
 				errorCallback = function (error, status) { 	
 					tratarExcecao(error); 
@@ -296,24 +294,6 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 			cadastroPacienteFactory.atualizarPaciente(paciente).then(		
 				successCallback = function(response) {									
 					ctrl.carregarPacientes();
-					/*
-					var msg;
-					if (paciente.ativo) {
-						msg = "Paciente ativado com sucesso!";
-					} else {						
-						msg = "Paciente desativado com sucesso!";						
-					}									
-					
-					$mdDialog.show(
-						$mdDialog.alert()
-							.clickOutsideToClose(true)
-							.title('Ativação de Paciente')
-							.textContent(msg)
-							.ariaLabel('Alerta')
-							.ok('Ok')						
-					);
-					*/
-					
 				},
 				errorCallback = function (error, status) {					
 					tratarExcecao(error); 
@@ -338,6 +318,30 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		}		
 	}
 	
+	ctrl.verProntuarios = function(paciente) {			
+		agendamentoFactory.listarAgendamentosComConsulta(paciente).then(
+				successCallback = function(response) {					
+					consultaPacienteFactory.setLstAgendamentosComConsulta(response.data);
+					if (response.data.length > 0) {
+						consultaPacienteFactory.setAgendamento(response.data[0]);
+						$location.path('/prontuarios');
+					} else {
+						$mdDialog.show(
+							$mdDialog.alert()
+								.clickOutsideToClose(true)
+								.title('Prontuários')
+								.textContent('Paciente não possui prontuários!')
+								.ariaLabel('Alerta')
+								.ok('Ok')						
+						);
+					}					
+				},
+				errorCallback = function (error, status){					
+					tratarExcecao(error); 
+				}
+		);
+	};
+			
 	carregarConfiguracoes();
 	carregarConveniosAtivos();
 	ctrl.carregarPacientes();

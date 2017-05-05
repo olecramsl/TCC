@@ -9,8 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -21,9 +19,6 @@ public class Consulta implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
-	@OneToOne
-    @JoinColumn(name="idagendamento")
-	private Agendamento agendamento;
 	private String prontuario;
 	private double valor;
 	private boolean recibo;
@@ -44,20 +39,6 @@ public class Consulta implements Serializable {
 		this.id = id;
 	}
 	
-	/**
-	 * @return the agendamento
-	 */
-	public Agendamento getAgendamento() {
-		return agendamento;
-	}
-
-	/**
-	 * @param agendamento the agendamento to set
-	 */
-	public void setAgendamento(Agendamento agendamento) {
-		this.agendamento = agendamento;
-	}
-
 	/**
 	 * @return the prontuario
 	 */
@@ -134,9 +115,9 @@ public class Consulta implements Serializable {
 	 * @return o texto criptografado
 	 * @throws Exception caso ocorra algum erro durante a encriptação
 	 */
-	public String encrypt(String texto) throws Exception {
+	public String encrypt(String texto, Psicologo psicologo) throws Exception {
 		//byte[] key = (this.agendamento.getPaciente().getCpf() + "@tG7!").getBytes("UTF-8");
-		byte[] key = this.agendamento.getPaciente().getPsicologo().getChave();
+		byte[] key = psicologo.getChave();		
 		
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 
@@ -154,9 +135,9 @@ public class Consulta implements Serializable {
 	 * @return o texto descriptografado
 	 * @throws Exception caso algum erro ocorra durante a descriptografia
 	 */
-    public String decrypt(String encrypted) throws Exception {
+    public String decrypt(String encrypted, Psicologo psicologo) throws Exception {
     	//byte[] key = (this.agendamento.getPaciente().getCpf() + "@tG7!").getBytes("UTF-8");
-    	byte[] key = this.agendamento.getPaciente().getPsicologo().getChave();
+    	byte[] key = psicologo.getChave();    	
     	    	    	    	
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 

@@ -1,0 +1,37 @@
+<head>
+	<meta charset="utf-8">
+</head>
+<div id="page-wrapper" exit-consulta-paciente-page>
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header">Prontuários de {{ctrl.agendamento.paciente.nomeExibicao}}</h1>
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<!-- /.row -->
+	<div class="row">									    	    	    	   		
+		<div class="col-lg-12">
+			<label for="dataAgendamento">Data da Consulta</label>
+			<select name="dataAgendamento" class="form-control" ng-model="ctrl.agendamento" 
+				ng-change="ctrl.oldProntuario = ctrl.agendamento.consulta.prontuario" 
+				ng-options="item as item.consulta.inicio | date:'dd/MM/yyyy HH:mm' for item in ctrl.lstAgendamentosComConsulta">																											
+			</select>
+		</div>
+	</div>
+	<br />
+	<div class="row">									    	    	    	   		
+		<div class="col-lg-12">
+			<form name="prontuarioForm" role="form">
+				<div class="form-group">
+					<div id="ckeditor" name="ckeditor" ckeditor="ctrl.options" ng-model="ctrl.agendamento.consulta.prontuario"></div>
+					<br />									
+					<div class="form-group">
+	  						<button id="btnSalvar" name="btnSalvar" type="button" class="btn btn-success" style="float: right;" 
+	  							ng-click="ctrl.salvar(ctrl.agendamento)" 
+	  							ng-disabled="ctrl.isDisabled(ctrl.agendamento)">Salvar Prontuário</button>   						
+	 				</div>																		
+				</div>
+			</form>	
+		</div>							
+	</div>
+</div>

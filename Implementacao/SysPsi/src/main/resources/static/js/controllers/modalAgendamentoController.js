@@ -117,7 +117,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 * Salva/atualiza as informações de um agendamento
 	 */
 	ctrl.salvar = function (agendamento, agendamentoCarregado) {
-		// Agendamento carregado do gCalendar
+		// Agendamento carregado da tebela temporária gCalendar
 		if (agendamentoCarregado && !agendamentoCarregado.paciente) {
 			var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento);
 			agendamentoFactory.salvarAgendamentoTemporarioGCalendar(agendamentoDTO).then();			
@@ -160,12 +160,12 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 						
 						if ((agendamento.grupo > 0) && (!agendamento.repetirSemanalmente) && 
 							(agendamento.formatedStart === agendamentoCarregado.formatedStart)) {
-							modalAgendamentoFactory.setTipoConfirmacao(config.tiposConfirmacoes.REMOVER_EVENTOS_FUTUROS);
+							modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS);
 							modalAgendamentoFactory.setMsgConfirmacao("Você optou por não repetir este evento semanalmente. Deseja excluir os eventos futuros associados a este agendamento?");				
 							modalAgendamentoService.openConfirmModal();
 						} else if ((agendamento.grupo > 0) && ((agendamento.formatedStart !== agendamentoCarregado.formatedStart) || 
 								  (agendamentoCarregado.paciente.id !== agendamento.paciente.id))) {
-							modalAgendamentoFactory.setTipoConfirmacao(config.tiposConfirmacoes.ALTERAR_DADOS_FUTUROS);							
+							modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.ALTERAR_DADOS_FUTUROS);							
 							modalAgendamentoFactory.setMsgConfirmacao("Replicar alterações nos eventos futuros?");							
 							modalAgendamentoService.openConfirmModal();
 						}
@@ -203,7 +203,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 * Confirma com o usuário a remoção do evento
 	 */
 	ctrl.confirmarRemocaoEvento = function (agendamento) {		
-		modalAgendamentoFactory.setTipoConfirmacao(config.tiposConfirmacoes.REMOVER_EVENTO);
+		modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.REMOVER_EVENTO);
 		modalAgendamentoFactory.setMsgConfirmacao("Tem certeza que deseja excluir o agendamento?");
 		modalAgendamentoService.openConfirmModal();
 		
@@ -235,45 +235,37 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 		$uibModalInstance.close();
 		
 		if (agendamento.grupo > 0) {
-			modalAgendamentoFactory.setTipoConfirmacao(config.tiposConfirmacoes.REMOVER_EVENTOS_FUTUROS);
+			modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS);
 			modalAgendamentoFactory.setMsgConfirmacao("Remover também os eventos futuros?");
 			modalAgendamentoService.openConfirmModal();
 		}		
 	};
 	
-	ctrl.iniciarConsulta = function(agendamento) {
-		consultaPacienteFactory.getConsultaByIdAgendamento(agendamento.id).then(
-				successCallback = function(response) {
-					consultaPacienteFactory.setPaciente(agendamento.paciente);
-					consultaPacienteFactory.setFim(null);
-					if (response.data.id) {	
-						consultaPacienteFactory.setConsulta(response.data);						
-						$location.path('/consulta');
-					} else {
-						if (agendamento.paciente) {							
-							consultaPacienteFactory.setId(null);
-							consultaPacienteFactory.setAgendamento(agendamento);
-							consultaPacienteFactory.setProntuario(null);
-							consultaPacienteFactory.setValor(0);
-							consultaPacienteFactory.setRecibo(false);
-							consultaPacienteFactory.setInicio(new Date());							
-							$location.path('/consulta');
-						} else {
-							$mdDialog.show(
-								$mdDialog.alert()
-									.clickOutsideToClose(true)
-									.title('Algo saiu errado ...')
-									.textContent("Não foi possível localizar o paciente da consulta!")
-									.ariaLabel('Alerta')
-									.ok('Ok')						
-							);							
-						}
-					}
-				},
-				errorCallback = function (error, status){					
-					tratarExcecao(error); 
-				}
-		);
+	ctrl.iniciarConsulta = function(agendamento) {		
+		consultaPacienteFactory.setAgendamento(agendamento);
+		if (agendamento.consulta) {						
+			$location.path('/consulta');
+		} else {
+			if (agendamento.paciente) {								
+				consultaPacienteFactory.setConsulta({});
+				consultaPacienteFactory.setId(null);				
+				consultaPacienteFactory.setProntuario(null);
+				consultaPacienteFactory.setValor(0);
+				consultaPacienteFactory.setRecibo(false);
+				consultaPacienteFactory.setInicio(new Date());
+				consultaPacienteFactory.setFim(null);
+				$location.path('/consulta');
+			} else {
+				$mdDialog.show(
+					$mdDialog.alert()
+						.clickOutsideToClose(true)
+						.title('Algo saiu errado ...')
+						.textContent("Não foi possível localizar o paciente da consulta!")
+						.ariaLabel('Alerta')
+						.ok('Ok')						
+				);							
+			}
+		}
 		$uibModalInstance.close();			
 	};
 	
@@ -281,13 +273,13 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 * Direciona para função correta quando selecionado "Sim" na janela modal de confirmação
 	 */
 	ctrl.confirmar = function(agendamento, tipoConfirmacao) {	
-		if (tipoConfirmacao === config.tiposConfirmacoes.REMOVER_EVENTOS_FUTUROS) {
+		if (tipoConfirmacao === config.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS) {
 			removerEventosFuturos(agendamento);			
-		} else if (tipoConfirmacao === config.tiposConfirmacoes.MOVER_EVENTOS) {
+		} else if (tipoConfirmacao === config.TIPOS_CONFIRMACOES.MOVER_EVENTOS) {
 			moverEventosFuturos(agendamento);
-		} else if (tipoConfirmacao === config.tiposConfirmacoes.ALTERAR_DADOS_FUTUROS) {
+		} else if (tipoConfirmacao === config.TIPOS_CONFIRMACOES.ALTERAR_DADOS_FUTUROS) {
 			atualizarEventosFuturos(agendamento);
-		} else if (tipoConfirmacao === config.tiposConfirmacoes.REMOVER_EVENTO) {
+		} else if (tipoConfirmacao === config.TIPOS_CONFIRMACOES.REMOVER_EVENTO) {
 			removerEvento(agendamento);
 		}
 		$uibModalInstance.close();

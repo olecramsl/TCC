@@ -2,6 +2,7 @@ package br.com.syspsi.controller;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -28,6 +29,19 @@ public class CadastroController {
 	@Autowired
 	private GrupoPacienteRepositorio grupoPacienteRepositorio;
 	
+	private final static Logger logger = Logger.getLogger(CadastroController.class);
+	
+	private static void logMessage(String msg, boolean error) {
+    	if(!error && logger.isDebugEnabled()){
+    	    logger.debug(msg);
+    	}
+
+    	//logs an error message with parameter
+    	if (error) {
+    		logger.error(msg);
+    	}
+    }
+	
 	/**
 	 * @return uma lista de convênios ativos cadastrados no BD
 	 * @throws Exception caso algum problema ocorra
@@ -37,7 +51,7 @@ public class CadastroController {
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE					
 			)		
-	public List<Convenio> listarConveniosAtivos() throws Exception {
+	public List<Convenio> listarConveniosAtivos() {
 		return this.convenioRepositorio.findByAtivo(true);
 	}
 	
@@ -50,7 +64,7 @@ public class CadastroController {
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE					
 			)		
-	public List<GrupoPaciente> listarGruposPacientes() throws Exception {
+	public List<GrupoPaciente> listarGruposPacientes() {
 		return (List<GrupoPaciente>) this.grupoPacienteRepositorio.findAll();
 	}
 	
@@ -65,7 +79,9 @@ public class CadastroController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public Paciente salvarPaciente(@RequestBody Paciente paciente) throws Exception {		
+	public Paciente salvarPaciente(@RequestBody Paciente paciente) throws Exception {
+		logMessage("salvarPaciente: cadastro do paciente " + paciente.getNomeExibicao(), false);		
+		
 		paciente.setPsicologo(LoginController.getPsicologoLogado());
 		if (paciente.getPsicologo() != null) {
 			try {
@@ -77,15 +93,19 @@ public class CadastroController {
 					paciente.validarCPF(paciente.getCpfResponsavel());
 				}
 				
+				logMessage("salvarPaciente: cadastro do paciente " + paciente.getNomeExibicao() + " realizado com sucesso!", false);				
 				return (Paciente) this.pacienteRepositorio.save(paciente);
 			} catch (DataIntegrityViolationException e) {
 				if (e.getMessage().toLowerCase().contains("cpf")) {
+					logMessage("salvarPaciente: CPF já cadastrado!", true);
 					throw new Exception("O CPF informado já está cadastrado.");
 				} else {
+					logMessage("salvarPaciente: erro ao salvar o paciente: " + e.getMessage(), true);
 					throw new Exception("Erro ao salvar o paciente.");
 				}
 			} 
 		} else {
+			logMessage("salvarPaciente: psicologo null!", true);
 			throw new Exception("Erro ao salvar o paciente: psicólogo não informado.");
 		}
 	}

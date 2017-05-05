@@ -6,16 +6,12 @@ angular.module("syspsi").directive('exitConsultaPacientePage', ['$rootScope', '$
             	if ($rootScope.sairPaginaConsulta) {
             		$rootScope.sairPaginaConsulta = false;
             	} else {
-            		$rootScope.sairPaginaConsulta = true;
+            		$rootScope.sairPaginaConsulta = true;            		
             		if (consultaPacienteFactory.getConteudoProntuarioMudou() && !confirm('Há informações não salvas no prontuário. Deseja realmente sair?')) {
             			event.preventDefault();
-            		} else {            			
-            			consultaPacienteFactory.setId(null);            	
-	                	consultaPacienteFactory.setAgendamento(null);
-	                	consultaPacienteFactory.setProntuario(null);
-	                	consultaPacienteFactory.setInicio(null);
-	                	consultaPacienteFactory.setFim(null);
-	                	consultaPacienteFactory.setPaciente(null);
+            		} else {       
+            			consultaPacienteFactory.setAgendamento({});
+            			consultaPacienteFactory.setConsulta({});
             		}
             		/*
             		if (consultaPacienteFactory.getConteudoProntuarioMudou()) {
