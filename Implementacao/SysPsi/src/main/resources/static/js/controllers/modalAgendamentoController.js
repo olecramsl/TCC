@@ -315,5 +315,30 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 		  	agendamentoCarregado.description !== agendamento.description ||
 		  	agendamentoCarregado.repetirSemanalmente !== agendamento.repetirSemanalmente ||
 		  	agendamentoCarregado.naoCompareceu !== agendamento.naoCompareceu;
-	}		
+	};
+	
+	ctrl.verProntuarios = function(paciente) {
+		$uibModalInstance.close();
+		agendamentoFactory.listarAgendamentosComConsulta(paciente).then(
+				successCallback = function(response) {					
+					consultaPacienteFactory.setLstAgendamentosComConsulta(response.data);
+					if (response.data.length > 0) {
+						consultaPacienteFactory.setAgendamento(response.data[0]);
+						$location.path('/prontuarios');
+					} else {						
+						$mdDialog.show(
+							$mdDialog.alert()
+								.clickOutsideToClose(true)
+								.title('Prontuários')
+								.textContent('Paciente não possui prontuários!')
+								.ariaLabel('Alerta')
+								.ok('Ok')						
+						);
+					}					
+				},
+				errorCallback = function (error, status){					
+					tratarExcecao(error); 
+				}
+		);
+	};	
 }]);

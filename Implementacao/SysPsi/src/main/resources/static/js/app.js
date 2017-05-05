@@ -13,7 +13,7 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("config",
 		// configure Idle settings
 		IdleProvider.idle(1800); // in seconds - 30min
 		IdleProvider.timeout(120); // in seconds - 2min		
-		KeepaliveProvider.interval(1500); // in seconds - 25min			
+		KeepaliveProvider.interval(1200); // in seconds - 20min			
 		KeepaliveProvider.http(config.BASE_URL + '/keepAlive');
 		
 		$routeProvider.
