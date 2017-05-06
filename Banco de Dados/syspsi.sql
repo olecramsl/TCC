@@ -135,7 +135,7 @@ DEFAULT CHARACTER SET = utf8;
 CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPaciente` BIGINT(20) UNSIGNED NOT NULL,
-  `idConvenio` INT(10) UNSIGNED NULL DEFAULT NULL,
+  `idConvenio` INT(10) UNSIGNED NULL,
   `idConsulta` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
   `idGCalendar` VARCHAR(1024) NULL DEFAULT NULL,
   `idRecurring` VARCHAR(1024) NULL DEFAULT NULL,
@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   `grupo` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
   `description` VARCHAR(50) NULL DEFAULT NULL,
   `eventoPrincipal` TINYINT(4) NOT NULL DEFAULT '0',
-  `color` VARCHAR(45) NOT NULL DEFAULT 'blue',
+  `color` VARCHAR(45) NOT NULL DEFAULT '#0A6CAC',
   `ativo` TINYINT(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   INDEX `fk_Agendamento_Paciente_idx` (`idPaciente` ASC),
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
   CONSTRAINT `fk_agendamento_consulta1`
     FOREIGN KEY (`idConsulta`)
     REFERENCES `syspsi`.`consulta` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
