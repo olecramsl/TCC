@@ -1,4 +1,4 @@
-angular.module('syspsi').factory('loginFactory', ['$http', 'config', function($http, config) {
+angular.module('syspsi').factory('loginFactory', ['$http', 'config', function($http, config) {		
 	var _login = function(headers) {		
 		return $http.get(config.BASE_URL + '/user', {headers : headers});
 	};
@@ -7,8 +7,13 @@ angular.module('syspsi').factory('loginFactory', ['$http', 'config', function($h
 		return $http.post('logout', {});
 	};
 	
-	return {
+	var _realizarBackup = function() {
+		return $http.get(config.BASE_URL + '/realizarBackup');
+	}
+	
+	return {		
 		login: _login,
-		logout: _logout
+		logout: _logout,
+		realizarBackup: _realizarBackup		
 	};
 }]);

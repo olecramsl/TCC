@@ -1,5 +1,5 @@
-angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'loginFactory', function($scope, $rootScope, 
-		$http, $location, loginFactory) {
+angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', '$mdDialog', 'loginFactory', 'utilService',
+	function($scope, $rootScope, $http, $location, $mdDialog, loginFactory, utilService) {
 	var ctrl = this;
 	
 	var authenticate = function(credentials, callback) {		
@@ -10,6 +10,12 @@ angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http
 		loginFactory.login(headers).then(function(response) {
 			if (response.data.name) {				
 				$rootScope.authenticated = true;				
+				loginFactory.realizarBackup().then(
+						successCallback = function(response) {},
+						errorCallback = function(error) {														
+							utilService.tratarExcecao(error);
+						}
+				);
 				$location.path('/dashboard');
 			} else {											
 				$rootScope.authenticated = false;

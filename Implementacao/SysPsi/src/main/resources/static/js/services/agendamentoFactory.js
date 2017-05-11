@@ -100,6 +100,6 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', funct
 		moverAgendamentosFuturos: _moverAgendamentosFuturos,
 		atualizarAgendamentosFuturos: _atualizarAgendamentosFuturos,
 		listarAgendamentosComConsulta: _listarAgendamentosComConsulta,		
-		prepararAgendamentoDTO: _prepararAgendamentoDTO		
+		prepararAgendamentoDTO: _prepararAgendamentoDTO	
 	};
 }]);

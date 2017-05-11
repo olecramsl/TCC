@@ -1,7 +1,7 @@
 angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModalInstance', '$location', '$mdDialog', 'agendamentoFactory', 
-	'configFactory', 'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'config', 
+	'configFactory', 'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'utilService', 'config', 
 	function ($scope, $uibModalInstance, $location, $mdDialog, agendamentoFactory, configFactory, convenioFactory, modalAgendamentoFactory, 
-		modalAgendamentoService, consultaPacienteFactory, config) {
+		modalAgendamentoService, consultaPacienteFactory, utilService, config) {
 	
 	var ctrl = this;	
 	
@@ -13,29 +13,6 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	ctrl.lstConveniosAtivos = convenioFactory.getLstConveniosAtivos();
 	ctrl.tempoSessao = configFactory.getTempoSessao();
 	
-	/**
-	 * Trata eventuais excessoes que possam ocorrer
-	 */
-	var tratarExcecao = function(error) {		
-		var msg;
-		try {
-			// captura de excecao enviada pela Controller (codigo java)
-			msg = error.data.message;
-		} catch(erro) {
-			// Erro nivel Javascript
-			msg = error.data.message;
-		}
-			
-		$mdDialog.show(
-			$mdDialog.alert()
-				.clickOutsideToClose(true)
-				.title('Algo saiu errado ...')
-				.textContent(msg)
-				.ariaLabel('Alerta')
-				.ok('Ok')						
-		);		
-	};		
-	 
 	 /**
 	  * Atualiza o campo description do agendamento
 	  */
@@ -56,7 +33,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 					 angular.element('.calendar').fullCalendar('renderEvents',response.data);
 				 },
 				 errorCallback = function (error) {	  			  		  
-					 tratarExcecao(error);
+					 utilService.tratarExcecao(error);
 				 }
 		 );		
 	 };
@@ -70,7 +47,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 					 atualizarViewFC();			
 				 },
 				 errorCallback = function (error, status){					
-					 tratarExcecao(error);			  						
+					 utilService.tratarExcecao(error);			  						
 				 }
 		 );	
 		 $uibModalInstance.close();
@@ -85,7 +62,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 					 atualizarViewFC();			
 				 },
 				 errorCallback = function (error, status){					
-					 tratarExcecao(error);			  						
+					 utilService.tratarExcecao(error);			  						
 				 }
 		 );	
 		 $uibModalInstance.close();
@@ -100,7 +77,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 					 atualizarViewFC();			
 				 },
 				 errorCallback = function (error, status){					
-					 tratarExcecao(error);			  						
+					 utilService.tratarExcecao(error);			  						
 				 }
 		 );	
 		 $uibModalInstance.close();
@@ -171,7 +148,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 						}
 					},
 					errorCallback = function (error, status){					
-						tratarExcecao(error);			  							
+						utilService.tratarExcecao(error);			  							
 					}					
 			);			
 		// Novo agendamento
@@ -190,7 +167,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 						atualizarViewFC();
 					},
 					errorCallBack = function(error) {
-						tratarExcecao(error);
+						utilService.tratarExcecao(error);
 					}
 			);																
 		};								
@@ -222,14 +199,14 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 									angular.element('.calendar').fullCalendar('removeEvents',agendamento.id);				
 								},
 								errorCallback = function (error, status){					
-									tratarExcecao(error);			  						
+									utilService.tratarExcecao(error);			  						
 								}
 						);
 					}
 					angular.element('.calendar').fullCalendar('removeEvents',agendamento.id);				
 				},
 				errorCallback = function (error, status){					
-					tratarExcecao(error);			  						
+					utilService.tratarExcecao(error);			  						
 				}
 			);				
 		$uibModalInstance.close();
@@ -337,7 +314,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 					}					
 				},
 				errorCallback = function (error, status){					
-					tratarExcecao(error); 
+					utilService.tratarExcecao(error); 
 				}
 		);
 	};	

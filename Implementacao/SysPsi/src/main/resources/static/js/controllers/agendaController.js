@@ -6,8 +6,9 @@ angular.forEach(lazyModules, function(dependency) {
 });
 
 angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 'pacienteFactory', 'configFactory',  
-	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'config', function ($scope, $mdDialog, agendamentoFactory, 
-			pacienteFactory, configFactory, convenioFactory, modalAgendamentoFactory,	modalAgendamentoService, config) {
+	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'utilService', 'config', function ($scope, $mdDialog, 
+			agendamentoFactory,	pacienteFactory, configFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, utilService,
+			config) {
 	
   var ctrl = this;
   
@@ -26,29 +27,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   $scope.$watch(function () { return agendamentoFactory.getAgendamentoCarregado(); }, function (newValue, oldValue) {
    	  ctrl.agendamentoCarregado = newValue;
   });
-  
-  /**
-   * Trata eventuais excessoes que possam ocorrer
-   */
-  var tratarExcecao = function(error) {
-	  var msg;
-	  try {
-		  // captura de excecao enviada pela Controller (codigo java)
-		  msg = error.data.message;
-	  } catch(erro) {
-		  // Erro nivel Javascript
-		  msg = error.data.message;
-	  }
-	  $mdDialog.show(
-		$mdDialog.alert()
-			.clickOutsideToClose(true)
-			.title('Algo saiu errado ...')
-			.textContent(msg)
-			.ariaLabel('Alerta')
-			.ok('Ok')						
-	  );	
-  }    
-  
+    
   var select = function(start, end) {
 	  limparDadosAgendamento();	  
 	  agendamentoFactory.setAgendamentoCarregado(null);	  
@@ -135,7 +114,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	    	  agendamentoFactory.setLstPacientesAtivos(response.data);	    	  
 	  	  },
 	  	  errorCallback = function (error, status){
-	  		tratarExcecao(error); 
+	  		utilService.tratarExcecao(error); 
 	  	  }
 	  );
   };   
@@ -146,7 +125,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 		    	  convenioFactory.setLstConveniosAtivos(response.data);		    	  		    	  		    	 
 		  	  },
 		  	  errorCallback = function (error, status){
-		  		tratarExcecao(error); 
+		  		utilService.tratarExcecao(error); 
 		  	  }
 		  );
   };
@@ -160,7 +139,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	    	  configFactory.setConfigSys(response.data);
 	  	  },
 	  	  errorCallback = function (error, status){
-	  		tratarExcecao(error); 
+	  		utilService.tratarExcecao(error); 
 	  	  }
 	  );     
   }
@@ -183,7 +162,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 				  angular.element('.calendar').fullCalendar('renderEvents',response.data);
 			  },
 			  errorCallback = function (error) {	  			  		  
-				  tratarExcecao(error);
+				  utilService.tratarExcecao(error);
 			  }
 	  );	  
   };      
@@ -228,13 +207,13 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 							  }
 						  },
 						  errorCallback = function (error){			  
-							  tratarExcecao(error);			  						
+							  utilService.tratarExcecao(error);			  						
 						  }
 				  );
 			  }
 		  },
 		  errorCallback = function (error){			  
-			  tratarExcecao(error);			  						
+			  utilService.tratarExcecao(error);			  						
 		  }
 	  );		  	 	 
   };           

@@ -5,8 +5,8 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialog', 'consultaPacienteFactory', 'agendamentoFactory', 
-	function ($scope, $mdDialog, consultaPacienteFactory, agendamentoFactory) {	
+angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog','consultaPacienteFactory','agendamentoFactory','utilService',
+	function ($scope, $mdDialog, consultaPacienteFactory, agendamentoFactory, utilService) {	
 	var ctrl = this;
 		
 	ctrl.salvando = false;
@@ -26,29 +26,6 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 	
 	ctrl.agendamento = consultaPacienteFactory.getAgendamento();
 	ctrl.oldProntuario = consultaPacienteFactory.getProntuario();					
-	
-	/**
-	 * Trata eventuais excessoes que possam ocorrer
-	 */
-	var tratarExcecao = function(error) {
-		var msg;
-		try {
-			// captura de excecao enviada pela Controller (codigo java)
-			msg = error.data.message;
-		} catch(erro) {
-			// Erro nivel Javascript
-			msg = error.data.message;
-		}
-		
-		$mdDialog.show(
-			$mdDialog.alert()
-				.clickOutsideToClose(true)
-				.title('Algo saiu errado ...')
-				.textContent(msg)
-				.ariaLabel('Alerta')
-				.ok('Ok')						
-		);
-	};		
 	
 	// Editor options.
 	ctrl.options = {			
@@ -155,7 +132,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 				},
 				errorCallback = function (error, status){
 					ctrl.salvando = false;
-					tratarExcecao(error); 
+					utilService.tratarExcecao(error); 
 				}
 		);
 	};	
@@ -177,7 +154,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope', '$mdDialo
 							consultaPacienteFactory.setConteudoProntuarioMudou(false);
 						},
 						errorCallback = function (error, status){					
-							tratarExcecao(error); 
+							utilService.tratarExcecao(error); 
 						}
 				);
 			} else {

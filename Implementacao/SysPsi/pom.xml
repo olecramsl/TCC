@@ -90,22 +90,6 @@
 			<artifactId>jasypt</artifactId>
 			<version>1.9.0</version>
 		</dependency>		 
-		<!-- https://mvnrepository.com/artifact/com.github.ulisesbocchio/jasypt-spring-boot-starter -->
-		<!-- 		 
-		<dependency> 
-			<groupId>com.github.ulisesbocchio</groupId> 
-			<artifactId>jasypt-spring-boot-starter</artifactId> 
-			<version>1.12</version>
-		 </dependency>
-		  -->		  
-		<!-- https://mvnrepository.com/artifact/org.jasypt/jasypt-spring3 -->
-		<!--
-		<dependency>
-			<groupId>org.jasypt</groupId>
-			<artifactId>jasypt-spring3</artifactId>
-			<version>1.9.0</version>
-		</dependency>
-		-->		
 	</dependencies>
 
 	<build>

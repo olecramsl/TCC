@@ -5,11 +5,10 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', 
-	'$location', '$route', 'configFactory',	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 
-	'consultaPacienteFactory', 'agendamentoFactory', '$route',	function ($mdDialog, $uibModal,	$scope,	
-		$http, $location, $route, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
-		consultaPacienteFactory, agendamentoFactory) {	
+angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', '$route', 'configFactory',
+	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'utilService', 
+	function ($mdDialog, $uibModal,	$scope,	$http, $location, $route, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
+		consultaPacienteFactory, agendamentoFactory, utilService) {	
 	
 	var ctrl = this;
 		
@@ -37,29 +36,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	}
 	
 	ctrl.lstAgendamentosComConsulta = {};
-	
-	/**
-	 * Trata eventuais excessoes que possam ocorrer
-	 */
-	var tratarExcecao = function(error) {
-		var msg;
-		try {
-			// captura de excecao enviada pela Controller (codigo java)
-			msg = error.data.message;
-		} catch(erro) {
-			// Erro nivel Javascript
-			msg = error.data.message;
-		}
-		$mdDialog.show(
-			$mdDialog.alert()
-				.clickOutsideToClose(true)
-				.title('Algo saiu errado ...')
-				.textContent(msg)
-				.ariaLabel('Alerta')
-				.ok('Ok')						
-		);		
-	};
-	
+		
 	/**
 	 * Configurações do sistema
 	 */  
@@ -69,7 +46,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 					configSys = response.data;	    	  
 				},
 				errorCallback = function (error, status){
-					tratarExcecao(error); 
+					utilService.tratarExcecao(error); 
 				}
 		);     
 	}
@@ -80,7 +57,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 					ctrl.lstGruposPacientes = response.data;					
 				},
 				errorCallback = function (error, status){					
-					tratarExcecao(error); 
+					utilService.tratarExcecao(error); 
 				}
 		);
 	}
@@ -95,7 +72,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 					ctrl.lstConveniosAtivos = response.data;					
 				},
 				errorCallback = function (error, status){					
-					tratarExcecao(error); 
+					utilService.tratarExcecao(error); 
 				}
 		);
 	};
@@ -107,7 +84,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 						ctrl.lstPacientes = response.data;					
 					},
 					errorCallback = function (error, status){					
-						tratarExcecao(error); 
+						utilService.tratarExcecao(error); 
 					}
 			);
 		} else if (ctrl.pesquisa.tipoPesquisa === "2") {			
@@ -116,7 +93,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 						ctrl.lstPacientes = response.data;					
 					},
 					errorCallback = function (error, status){					
-						tratarExcecao(error); 
+						utilService.tratarExcecao(error); 
 					}
 			);
 		} else {			
@@ -125,7 +102,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 						ctrl.lstPacientes = response.data;					
 					},
 					errorCallback = function (error, status){					
-						tratarExcecao(error); 
+						utilService.tratarExcecao(error); 
 					}
 			);
 		}		
@@ -203,7 +180,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 			},
 			errorCallback = function (error, status){		
 				paciente.dataNascimento = dataNascimentoPaciente; 
-				tratarExcecao(error); 
+				utilService.tratarExcecao(error); 
 			}
 		);		
 	};	
@@ -252,7 +229,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 					$location.path("/consulta");
 				},
 				errorCallback = function (error, status){					
-					tratarExcecao(error); 
+					utilService.tratarExcecao(error); 
 				}
 		);				
 	};		
@@ -283,7 +260,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 					ctrl.carregarPacientes();	
 				},
 				errorCallback = function (error, status) { 	
-					tratarExcecao(error); 
+					utilService.tratarExcecao(error); 
 				}
 			);
 		}, function() {});				
@@ -296,7 +273,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 					ctrl.carregarPacientes();
 				},
 				errorCallback = function (error, status) {					
-					tratarExcecao(error); 
+					utilService.tratarExcecao(error); 
 				}
 			);
 		};
@@ -337,7 +314,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 					}					
 				},
 				errorCallback = function (error, status){					
-					tratarExcecao(error); 
+					utilService.tratarExcecao(error); 
 				}
 		);
 	};
