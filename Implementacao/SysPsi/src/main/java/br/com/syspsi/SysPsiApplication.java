@@ -53,8 +53,7 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 	
 	@Bean
 	public DataSource dataSource() throws Exception {		
-		
-		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+				
 		/*
 		 * Password criado para criptografar a senha no arquivo application.yml
 		 * A senha criptografada pode ser gerada com o Jasypt CLI Tools disponível em
@@ -67,6 +66,7 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 		 * 		 
 		 * a senha_para_criptografia deve ser setada em textEncryptor.setPassword()
 		*/
+		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 		textEncryptor.setPassword("$tM4l8OhfQ6&6f#");  
 		String plainText = textEncryptor.decrypt(this.dbPassword);
 			 

@@ -15,6 +15,16 @@ public class Backup {
 	private Calendar inicio;
 	private Calendar fim;
 	
+	// Apenas para JPA
+	protected Backup() {
+		
+	}
+	
+	public Backup(Calendar inicio, Calendar fim) {
+		this.id = null;
+		this.inicio = inicio;
+		this.fim = fim;
+	}
 	/**
 	 * @return the id
 	 */
