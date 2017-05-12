@@ -5,6 +5,9 @@ spring:
     password: zM1vxBTcDcBgmE576nl8beZFlAZeaQJn
     
 backup:
+  # Indicar onde os backups devem ser salvos
   salvarEm: C:\Users\marcelo.lima\Desktop\backup
+  # Indicar o número máximo de arquivos de backup a serem guardado
+  qtdMaxArquivos: 20
   mysql:
     path: C:\Program Files\MySQL\MySQL Server 5.7\bin
