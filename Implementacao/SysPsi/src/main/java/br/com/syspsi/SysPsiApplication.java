@@ -4,9 +4,11 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.sql.DataSource;
 
-import org.jasypt.util.text.BasicTextEncryptor;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -28,6 +30,8 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 
+import br.com.syspsi.model.entity.Backup;
+
 @SpringBootApplication
 @EntityScan(basePackages = {
         "br.com.syspsi.model.entity"
@@ -46,36 +50,30 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 	@Value("${spring.datasource.password}")
 	private String dbPassword;
 	
+	private final static Logger logger = Logger.getLogger(SysPsiApplication.class);
+	
 	@PostConstruct
 	void started() {
 		TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
 	}
 	
 	@Bean
-	public DataSource dataSource() throws Exception {		
-				
-		/*
-		 * Password criado para criptografar a senha no arquivo application.yml
-		 * A senha criptografada pode ser gerada com o Jasypt CLI Tools disponível em
-		 * http://www.jasypt.org/cli.html. A criptografia da senha pode ser gerada com o comando
-		 * encrypt.bat input="senha_do_bd" password="senha_para_criptografia" 
-		 * a senha_do_bd está sendo recuperaga do arquivo application.yml com a instrução
-		 * 
-		 * @Value("${spring.datasource.password}")
-		 * private String dbPassword;
-		 * 		 
-		 * a senha_para_criptografia deve ser setada em textEncryptor.setPassword()
-		*/
-		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-		textEncryptor.setPassword("$tM4l8OhfQ6&6f#");  
-		String plainText = textEncryptor.decrypt(this.dbPassword);
-			 
-		DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+	public DataSource dataSource() throws Exception {							
+		try {
+			String plainText = Backup.decrypt(this.dbPassword);
+			DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
 	    	dataSourceBuilder.url(dbUrl);
 	       	dataSourceBuilder.username(dbUsername);
 	       	dataSourceBuilder.password(plainText);
 	        	
-	    return dataSourceBuilder.build();
+	       	return dataSourceBuilder.build();
+		} catch (IllegalBlockSizeException ex) {
+			logger.error("Erro ao descriptografar password do arquivo application.yml: " + ex.getMessage());
+			throw new Exception();
+		} catch(BadPaddingException ex) {
+			logger.error("Erro no acesso ao BD: " + "password inválido no arquivo application.yml!");
+			throw new Exception();
+		}		
 	}
 	
 	@Override

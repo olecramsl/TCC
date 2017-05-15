@@ -84,12 +84,6 @@
 			<artifactId>google-api-services-calendar</artifactId>
 			<version>v3-rev232-1.22.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.jasypt/jasypt -->		
-		<dependency>
-			<groupId>org.jasypt</groupId>
-			<artifactId>jasypt</artifactId>
-			<version>1.9.0</version>
-		</dependency>		 
 	</dependencies>
 
 	<build>

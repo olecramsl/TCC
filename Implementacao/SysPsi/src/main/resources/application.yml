@@ -2,11 +2,11 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/syspsi
     username: USERSYSPSIAPP
-    password: zM1vxBTcDcBgmE576nl8beZFlAZeaQJn
+    password: H6dzrVtdXy38sP7xfPVLHg==
     
 backup:
   # Indicar onde os backups devem ser salvos
-  salvarEm: C:\Users\marcelo.lima\Desktop\backup
+  salvarEm: C:\Users\Marcelo\Desktop\backup
   # Indicar o número máximo de arquivos de backup a serem guardado
   qtdMaxArquivos: 20
   mysql:

@@ -13,7 +13,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -63,6 +62,27 @@ public class BackupController {
 			)			
 	public void realizarBackup() throws Exception {						
 		logMessage("realizarBackup(): Início", false);
+		
+		/*
+		// Para descriptografar aquivo de backup
+		FileWriter fw1 = null;
+		BufferedWriter out1 = null;
+		try {
+			String arq = this.dirToSave + "\\syspsi_20170514_1940.sql.enc";
+			List<String> linhas1 = Files.readAllLines(Paths.get(arq), Charset.forName("UTF-8"));
+			fw1 = new FileWriter(this.dirToSave + "\\syspsi_20170514_1940.sql");							
+			out1 = new BufferedWriter(fw1);
+			for (String linha : linhas1) {								
+				out1.write(Backup.decrypt(linha));
+				out1.newLine();
+			}
+		} catch(Exception ex) {
+			System.out.println("Erro decrypt" + ex.getMessage());
+		} finally {							
+			out1.close();
+		}
+		*/
+		
 		Backup todayBackup = this.backupRepositorio.executouBackupHoje();		
 		if (todayBackup != null) {			
 			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");			
@@ -82,22 +102,7 @@ public class BackupController {
 				// Apaga arquivos de backup excedentes, caso existam
 				this.realizarManutencaoArquivosBackup();
 								
-				/*
-				 * Password criado para criptografar a senha no arquivo application.yml
-				 * A senha criptografada pode ser gerada com o Jasypt CLI Tools disponível em
-				 * http://www.jasypt.org/cli.html. A criptografia da senha pode ser gerada com o comando
-				 * encrypt.bat input="senha_do_bd" password="senha_para_criptografia" 
-				 * a senha_do_bd está sendo recuperaga do arquivo application.yml com a instrução
-				 * 
-				 * @Value("${spring.datasource.password}")
-				 * private String dbPassword;
-				 * 		 
-				 * a senha_para_criptografia deve ser setada em textEncryptor.setPassword()
-				*/
-				BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-				textEncryptor.setPassword("$tM4l8OhfQ6&6f#");  
-				String plainText = textEncryptor.decrypt(this.dbPassword);
-				
+				String plainText = Backup.decrypt(this.dbPassword);
 				
 				SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 				Calendar inicio = Calendar.getInstance();
@@ -135,7 +140,8 @@ public class BackupController {
 							logMessage("Número de linhas lidas: " + linhas.size(), false);
 							
 							for (String linha : linhas) {								
-								out.write(textEncryptor.encrypt(linha));
+								//out.write(textEncryptor.encrypt(linha));
+								out.write(Backup.encrypt(linha));
 								out.newLine();
 							}
 							logMessage("Fim da criptografia do sql", false);
@@ -147,26 +153,7 @@ public class BackupController {
 							throw new Exception("Erro ao criptografar arquivo de backup. Informe imediatamente o administrador do sistema!");
 						} finally {				         
 				            out.close();
-				        }
-						
-												
-						/* Para descriptografar aquivo de backup
-						FileWriter fw1 = null;
-						BufferedWriter out1 = null;
-						try {
-							List<String> linhas1 = Files.readAllLines(Paths.get(resultFile + ".enc"), Charset.forName("UTF-8"));
-							fw1 = new FileWriter(resultFile);							
-							out1 = new BufferedWriter(fw1);
-							for (String linha : linhas1) {								
-								out1.write(textEncryptor.decrypt(linha));
-								out1.newLine();
-							}
-						} catch(Exception ex) {
-							System.out.println("Erro decrypt" + ex.getMessage());
-						} finally {							
-							out1.close();
-						}
-						*/						
+				        }																																	
 					}
 					
 					Calendar fim = Calendar.getInstance();
