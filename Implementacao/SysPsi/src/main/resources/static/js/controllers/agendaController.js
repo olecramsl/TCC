@@ -5,10 +5,9 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 'pacienteFactory', 'configFactory',  
-	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'utilService', 'config', function ($scope, $mdDialog, 
-			agendamentoFactory,	pacienteFactory, configFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, utilService,
-			config) {
+angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 'pacienteFactory', 'convenioFactory', 
+	'modalAgendamentoFactory', 'modalAgendamentoService', 'utilService', 'config', function ($scope, $mdDialog,	agendamentoFactory,	
+			pacienteFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, utilService,	config) {
 	
   var ctrl = this;
   
@@ -37,7 +36,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 		  var time = moment();
 		  start = moment(start).hour(time.hour()).minute(time.minute()).second(0).millisecond(0);
 		  end = moment(start); // a consulta deve terminar no mesmo dia
-		  end.add(configFactory.getTempoSessao(), 'm');
+		  end.add(60, 'm');
 	  }
 		
 	  var dataInicialAgendamento = start.local();
@@ -131,20 +130,6 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   };
   
   /**
-   * Configurações do sistema
-   */  
-  var carregarConfiguracoes = function() {
-	  configFactory.loadConfig().then(
-	      successCallback = function(response) {	
-	    	  configFactory.setConfigSys(response.data);
-	  	  },
-	  	  errorCallback = function (error, status){
-	  		utilService.tratarExcecao(error); 
-	  	  }
-	  );     
-  }
-
-  /**
    * Limpa os dados pertinentes a um agendamento
    */
   var limparDadosAgendamento = function() {
@@ -219,6 +204,5 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   };           
   
   carregarPacientesAtivos();
-  carregarConveniosAtivos();
-  carregarConfiguracoes();
+  carregarConveniosAtivos();  
 }]);

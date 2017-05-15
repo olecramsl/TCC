@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.syspsi.model.Util;
 import br.com.syspsi.model.entity.Backup;
 import br.com.syspsi.repository.BackupRepositorio;
 
@@ -64,16 +65,16 @@ public class BackupController {
 		logMessage("realizarBackup(): Início", false);
 		
 		/*
-		// Para descriptografar aquivo de backup
+		// Para descriptografar aquivo de backup		
 		FileWriter fw1 = null;
 		BufferedWriter out1 = null;
 		try {
-			String arq = this.dirToSave + "\\syspsi_20170514_1940.sql.enc";
+			String arq = this.dirToSave + "\\syspsi_20170515_1631.sql.enc";
 			List<String> linhas1 = Files.readAllLines(Paths.get(arq), Charset.forName("UTF-8"));
-			fw1 = new FileWriter(this.dirToSave + "\\syspsi_20170514_1940.sql");							
+			fw1 = new FileWriter(this.dirToSave + "\\syspsi_20170515_1631.sql");							
 			out1 = new BufferedWriter(fw1);
 			for (String linha : linhas1) {								
-				out1.write(Backup.decrypt(linha));
+				out1.write(Util.decrypt(linha));
 				out1.newLine();
 			}
 		} catch(Exception ex) {
@@ -81,7 +82,7 @@ public class BackupController {
 		} finally {							
 			out1.close();
 		}
-		*/
+		*/		
 		
 		Backup todayBackup = this.backupRepositorio.executouBackupHoje();		
 		if (todayBackup != null) {			
@@ -98,11 +99,11 @@ public class BackupController {
 					logMessage("Não foi possível localizar o diretório para salvar o backup: " + dirToSave, true);
 					throw new Exception("Não foi possível realizar o backup!");
 				}		
-				
+								
 				// Apaga arquivos de backup excedentes, caso existam
 				this.realizarManutencaoArquivosBackup();
 								
-				String plainText = Backup.decrypt(this.dbPassword);
+				String plainText = Util.decrypt(this.dbPassword);
 				
 				SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 				Calendar inicio = Calendar.getInstance();
@@ -140,8 +141,7 @@ public class BackupController {
 							logMessage("Número de linhas lidas: " + linhas.size(), false);
 							
 							for (String linha : linhas) {								
-								//out.write(textEncryptor.encrypt(linha));
-								out.write(Backup.encrypt(linha));
+								out.write(Util.encrypt(linha));
 								out.newLine();
 							}
 							logMessage("Fim da criptografia do sql", false);

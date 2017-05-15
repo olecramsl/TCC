@@ -30,7 +30,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 
-import br.com.syspsi.model.entity.Backup;
+import br.com.syspsi.model.Util;
 
 @SpringBootApplication
 @EntityScan(basePackages = {
@@ -60,7 +60,7 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 	@Bean
 	public DataSource dataSource() throws Exception {							
 		try {
-			String plainText = Backup.decrypt(this.dbPassword);
+			String plainText = Util.decrypt(this.dbPassword);
 			DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
 	    	dataSourceBuilder.url(dbUrl);
 	       	dataSourceBuilder.username(dbUsername);

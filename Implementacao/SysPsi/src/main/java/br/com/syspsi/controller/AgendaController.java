@@ -35,6 +35,7 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 
 import br.com.syspsi.exception.GCalendarException;
+import br.com.syspsi.model.Util;
 import br.com.syspsi.model.dto.AgendamentoDTO;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Paciente;
@@ -470,7 +471,7 @@ public class AgendaController {
 				
 				// Decripta dados do prontuário				
 				if (ag.getConsulta() != null && ag.getConsulta().getProntuario() != null && !ag.getConsulta().getProntuario().isEmpty()) {
-					ag.getConsulta().setProntuario(ag.getConsulta().decrypt(ag.getConsulta().getProntuario(), psicologo));
+					ag.getConsulta().setProntuario(Util.decrypt(ag.getConsulta().getProntuario(), psicologo));
 				}
 				
 				lstAgendamentos.add(ag);
@@ -535,7 +536,7 @@ public class AgendaController {
 						
 		if (agendamento.getConsulta() != null && agendamento.getConsulta().getProntuario() != null && 
 			!agendamento.getConsulta().getProntuario().isEmpty()) {						
-			agendamento.getConsulta().setProntuario(agendamento.getConsulta().encrypt(agendamento.getConsulta().getProntuario(), psicologo));
+			agendamento.getConsulta().setProntuario(Util.encrypt(agendamento.getConsulta().getProntuario(), psicologo));
 		}
 				
 		agendamento = this.agendamentoRepositorio.save(agendamento);
@@ -550,7 +551,7 @@ public class AgendaController {
 		}
 		
 		if (agendamento.getConsulta() != null) {
-			agendamento.getConsulta().setProntuario(agendamento.getConsulta().decrypt(agendamento.getConsulta().getProntuario(), psicologo));
+			agendamento.getConsulta().setProntuario(Util.decrypt(agendamento.getConsulta().getProntuario(), psicologo));
 		}
 		logMessage("salvarAgendamento: fim", false);
 
@@ -637,7 +638,7 @@ public class AgendaController {
 			}
 			
 			agendamento.setAtivo(false);
-			agendamento.getConsulta().setProntuario(agendamento.getConsulta().encrypt(agendamento.getConsulta().getProntuario(), psicologo));
+			agendamento.getConsulta().setProntuario(Util.encrypt(agendamento.getConsulta().getProntuario(), psicologo));
 			this.agendamentoRepositorio.save(agendamento);
 		}
 		
@@ -864,7 +865,7 @@ public class AgendaController {
 		List<Agendamento> lstAgendamento = new ArrayList<>();
 		for (Agendamento ag : this.agendamentoRepositorio.listarAgendamentosComConsulta(paciente, psicologo)) {
 			if (ag.getConsulta() != null && ag.getConsulta().getProntuario() != null && !ag.getConsulta().getProntuario().isEmpty()) {
-				ag.getConsulta().setProntuario(ag.getConsulta().decrypt(ag.getConsulta().getProntuario(), psicologo));
+				ag.getConsulta().setProntuario(Util.decrypt(ag.getConsulta().getProntuario(), psicologo));
 			}
 			lstAgendamento.add(ag);
 		}

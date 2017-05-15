@@ -6,7 +6,7 @@ spring:
     
 backup:
   # Indicar onde os backups devem ser salvos
-  salvarEm: C:\Users\Marcelo\Desktop\backup
+  salvarEm: C:\Users\marcelo.lima\Desktop\backup
   # Indicar o número máximo de arquivos de backup a serem guardado
   qtdMaxArquivos: 20
   mysql:

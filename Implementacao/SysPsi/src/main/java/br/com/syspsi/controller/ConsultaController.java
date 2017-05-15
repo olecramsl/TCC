@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.syspsi.model.Util;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
@@ -63,7 +64,7 @@ public class ConsultaController {
 				
 		agendamento.getConsulta().setInicio(agendamento.getStart());
 		agendamento.getConsulta().setFim(agendamento.getEnd());
-		agendamento.getConsulta().setProntuario(agendamento.getConsulta().encrypt(agendamento.getConsulta().getProntuario(), psicologo));				
+		agendamento.getConsulta().setProntuario(Util.encrypt(agendamento.getConsulta().getProntuario(), psicologo));				
 		
 		agendamento.setColor(AgendaController.COR_AGENDAMENTO_DEFAULT);
 		if (agendamento.getConvenio() != null) {

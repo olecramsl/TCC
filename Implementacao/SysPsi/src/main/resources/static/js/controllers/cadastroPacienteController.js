@@ -5,9 +5,9 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', '$route', 'configFactory',
+angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', '$route', 
 	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'utilService', 
-	function ($mdDialog, $uibModal,	$scope,	$http, $location, $route, configFactory, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
+	function ($mdDialog, $uibModal,	$scope,	$http, $location, $route, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
 		consultaPacienteFactory, agendamentoFactory, utilService) {	
 	
 	var ctrl = this;
@@ -37,20 +37,6 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	
 	ctrl.lstAgendamentosComConsulta = {};
 		
-	/**
-	 * Configurações do sistema
-	 */  
-	var carregarConfiguracoes = function() {
-		configFactory.loadConfig().then(
-				successCallback = function(response) {	
-					configSys = response.data;	    	  
-				},
-				errorCallback = function (error, status){
-					utilService.tratarExcecao(error); 
-				}
-		);     
-	}
-	
 	var carregarGruposPacientes = function() {
 		cadastroPacienteFactory.listarGruposPacientes().then(
 				successCallback = function(response) {	  
@@ -319,7 +305,6 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		);
 	};
 			
-	carregarConfiguracoes();
 	carregarConveniosAtivos();
 	ctrl.carregarPacientes();
 	carregarGruposPacientes();

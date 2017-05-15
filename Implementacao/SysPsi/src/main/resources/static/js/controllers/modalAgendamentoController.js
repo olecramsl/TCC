@@ -1,7 +1,7 @@
 angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModalInstance', '$location', '$mdDialog', 'agendamentoFactory', 
-	'configFactory', 'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'utilService', 'config', 
-	function ($scope, $uibModalInstance, $location, $mdDialog, agendamentoFactory, configFactory, convenioFactory, modalAgendamentoFactory, 
-		modalAgendamentoService, consultaPacienteFactory, utilService, config) {
+	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'utilService', 'config', function ($scope, 
+			$uibModalInstance, $location, $mdDialog, agendamentoFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, 
+			consultaPacienteFactory, utilService, config) {
 	
 	var ctrl = this;	
 	
@@ -11,7 +11,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	ctrl.msgConfirmacao = modalAgendamentoFactory.getMsgConfirmacao();
 	ctrl.tipoConfirmacao = modalAgendamentoFactory.getTipoConfirmacao();
 	ctrl.lstConveniosAtivos = convenioFactory.getLstConveniosAtivos();
-	ctrl.tempoSessao = configFactory.getTempoSessao();
+	ctrl.tempoSessao = 60; // em minutos
 	
 	 /**
 	  * Atualiza o campo description do agendamento
