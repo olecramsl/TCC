@@ -46,6 +46,10 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("config",
 			}).when('/consultarPacientes', { 
 				templateUrl: "templates/consultar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
+				controllerAs: "ctrl"			
+			}).when('/financeiro', { 
+				templateUrl: "templates/financeiro.html",
+				controller: "FinanceiroCtrl",
 				controllerAs: "ctrl"
 			}).otherwise({redirectTo: '/'});
 	

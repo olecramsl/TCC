@@ -5,7 +5,7 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 		$mdDialog.cancel();
 	};
 	
-	$scope.finalizar = function(valor) {		
+	$scope.finalizarConsulta = function(valor) {		
 		if ($scope.valor && $scope.valor > 0) {
 			consultaPacienteFactory.setValor($scope.valor);
 			consultaPacienteFactory.setRecibo(!!$scope.recibo);
@@ -14,5 +14,9 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 			consultaPacienteFactory.setRecibo(null);
 		}
 		$mdDialog.hide();		
+	};
+	
+	$scope.cadastrarDespesa = function(despesa) {
+		console.log(despesa);
 	};
 }]);
