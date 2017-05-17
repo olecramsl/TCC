@@ -1,28 +1,29 @@
-<md-dialog>
-	<form ng-cloak>
-		<md-toolbar>
-			<div class="md-toolbar-tools">
-				<h2>Finalizar Consulta</h2>
-			</div>
-		</md-toolbar>
-	
-		<md-dialog-content>
-			<div class="md-dialog-content">
+<md-dialog>	
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+			<h2>Finalizar Consulta</h2>
+		</div>
+	</md-toolbar>
+
+	<md-dialog-content>
+		<div class="md-dialog-content">
+			<form ng-cloak name="finalizarConsultaForm">
 				<md-input-container class="md-block">
-  					<label>Valor</label>
-  					<input type="number" ng-model="valor" required>
+ 					<label>Valor</label>	 					
+ 					<input name="valor" maxlength="7" ng-model="valor" md-autofocus 						
+						ng-pattern="/^\$?[\d]+(\,\d{1,2})?$/"
+						ng-required="true">
 				</md-input-container>
 								
 				<md-checkbox ng-model="recibo" aria-label="Recibo emitido para o paciente">
-  					Recibo emitido para o paciente
-				</md-checkbox>
-				
-			</div>
-		</md-dialog-content>
-	
-		<md-dialog-actions layout="row"> 
-			<md-button ng-click="finalizarConsulta()"> Finalizar </md-button> 
-			<md-button ng-click="cancel()"> Cancelar </md-button> 
-		</md-dialog-actions>
-	</form>
+	 				Recibo emitido para o paciente
+				</md-checkbox>					
+			</form>
+		</div>
+	</md-dialog-content>
+
+	<md-dialog-actions layout="row"> 
+		<md-button ng-disabled="finalizarConsultaForm.$invalid" ng-click="finalizarConsulta(valor, recibo)"> Finalizar </md-button> 
+		<md-button ng-click="cancel()"> Cancelar </md-button> 
+	</md-dialog-actions>
 </md-dialog>

@@ -143,7 +143,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 		    templateUrl: 'templates/finalizar_consulta_modal.html',
 		    parent: angular.element(document.body),		    
 		    clickOutsideToClose: true		    
-		}).then(function() {
+		}).then(function() {			
 			if (consultaPacienteFactory.getValor()) {
 				agendamento.consulta = prepararConsulta(agendamento.consulta.prontuario);
 				

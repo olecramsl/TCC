@@ -1,5 +1,6 @@
 package br.com.syspsi.model.entity;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 
 import javax.persistence.Entity;
@@ -18,7 +19,7 @@ public class Despesa {
     @JoinColumn(name="idpsicologo")	
 	private Psicologo psicologo;
 	private String descricao;
-	private double valor;
+	private BigDecimal valor;
 	private Calendar vencimento;
 	private boolean pago;
 	private String observacao;
@@ -68,14 +69,14 @@ public class Despesa {
 	/**
 	 * @return the valor
 	 */
-	public double getValor() {
+	public BigDecimal getValor() {
 		return valor;
 	}
 	
 	/**
 	 * @param valor the valor to set
 	 */
-	public void setValor(double valor) {
+	public void setValor(BigDecimal valor) {
 		this.valor = valor;
 	}
 	

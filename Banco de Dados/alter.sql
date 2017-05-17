@@ -1,4 +1,5 @@
 USE syspsi;
+SET lc_time_names = 'pt_BR';
 DROP TABLE IF EXISTS `syspsi`.`config`;
 -- -----------------------------------------------------
 -- Table `syspsi`.`despesa`

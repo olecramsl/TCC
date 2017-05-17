@@ -1,7 +1,7 @@
 <head>
 	<meta charset="utf-8">
 </head>
-<div id="page-wrapper">
+<div id="page-wrapper" exitCadastroDespesaPage>
 	<div class="row">
 		<div class="col-lg-12">
 			<h1 class="page-header">Financeiro</h1>
@@ -13,9 +13,55 @@
 		<div class="col-lg-12">
 			<div class="panel panel-default">					
 				<div class="panel-body">
-					<div class="col-lg-8">
-						<button type="button" ng-click="ctrl.cadastrarDespesa()" class="btn btn-primary btn-lg btn-block">Cadastrar nova Despesa</button>
-					</div>												
+					<div class="row">
+						<div class="col-lg-2"></div>
+						<div class="col-lg-8">
+							<button type="button" ng-click="ctrl.cadastrarDespesa()" class="btn btn-primary btn-lg btn-block">Cadastrar nova Despesa</button>
+						</div>								
+					</div>
+					
+					<hr />
+                 	<div id="list" class="row">
+					    <div class="table-responsive col-md-12">
+					        <table class="table table-striped" cellspacing="0" cellpadding="0">
+					            <thead>
+					                <tr>					                	
+					                    <th>Descrição</th>
+					                    <th>Dt Vencimento</th>
+					                    <th>Valor</th>
+					                    <th>Pago</th>
+					                    <th>Observação</th>
+					                    <th>Ações</th>
+					                 </tr>
+					            </thead>
+					            <tbody>								            			
+					                <tr ng-repeat="despesa in ctrl.lstDespesas"> <!-- | filter:ctrl.pesquisaNome">  -->					                	
+					                    <td>{{despesa.descricao}}</td>
+					                    <td>{{despesa.vencimento | date: 'dd/MM/yyyy'}}</td>
+					                    <td>{{despesa.valor | monetarioFormat}}</td>
+					                    <td>{{despesa.pago | booleanFormat}}</td>
+					                    <td>{{despesa.observacao}}</td>
+					                    <td>					                    	
+					                    	<a class="btn btn-warning btn-xs" ng-click="ctrl.editarDespesa(despesa)" title="Editar Despesa"><i class="fa fa-pencil fa-fw"></i></a>
+					                    	<a class="btn btn-danger btn-xs" ng-click="ctrl.excluirDespesa(despesa)" title="Excluir Despesa"><i class="fa fa-close fa-fw"></i></a>					                    	
+					                    	<!-- 
+					                        <a class="btn btn-success btn-xs" ng-click="ctrl.iniciarConsulta(paciente)" title="Iniciar Consulta"><i class="fa fa-calendar-check-o fa-fw"></i></a>
+					                        <a class="btn btn-primary btn-xs" ng-click="ctrl.verProntuarios(paciente)" title="Prontuários"><i class="fa fa-file-text-o fa-fw"></i></a>
+					                        <a class="btn btn-warning btn-xs" ng-click="ctrl.editarPaciente(paciente)" title="Editar Paciente"><i class="fa fa-pencil fa-fw"></i></a>					                        
+					                        <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirPaciente(paciente)" title="Excluir Paciente"><i class="fa fa-user-times fa-fw"></i></a> 					                        						                        
+					                        <a class="btn btn-info btn-xs" ng-if="paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Desativar Paciente"><i class="fa fa-minus fa-fw"></i></a>
+					                        <a class="btn btn-info btn-xs" ng-if="!paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Ativar Paciente"><i class="fa fa-refresh fa-fw"></i></a>
+					                         -->
+					                    </td>
+					                </tr>					 
+					            </tbody>
+					         </table>					 
+					     </div>
+					 </div> <!-- /#list -->                             		                                 					
+					
+					
+					
+														
 				</div>
 			</div>
 		</div>

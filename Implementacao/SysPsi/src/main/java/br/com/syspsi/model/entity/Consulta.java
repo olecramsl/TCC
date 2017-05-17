@@ -1,6 +1,7 @@
 package br.com.syspsi.model.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Calendar;
 
 import javax.persistence.Entity;
@@ -16,7 +17,7 @@ public class Consulta implements Serializable {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
 	private String prontuario;
-	private double valor;
+	private BigDecimal valor;
 	private boolean recibo;
 	private Calendar inicio;
 	private Calendar fim;		
@@ -52,15 +53,15 @@ public class Consulta implements Serializable {
 	/**
 	 * @return the valor
 	 */
-	public double getValor() {
+	public BigDecimal getValor() {
 		return valor;
 	}
 
 	/**
 	 * @param valor the valor to set
 	 */
-	public void setValor(double valor) {
-		this.valor = valor;
+	public void setValor(BigDecimal valor) {
+		this.valor = valor;	
 	}
 
 	/**
