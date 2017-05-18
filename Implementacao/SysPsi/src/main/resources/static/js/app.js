@@ -1,4 +1,4 @@
-angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("config", {
+angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts", {
 	BASE_URL: "http://localhost:8080",
 	TIPOS_CONFIRMACOES: {
 		'REMOVER_EVENTOS_FUTUROS': 1,
@@ -7,14 +7,14 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("config",
 		'REMOVER_EVENTO': 4,
 		'REMOVER_EVENTOS_GRUPO': 5
 	}
-}).config(['$routeProvider', '$httpProvider', 'IdleProvider', 'KeepaliveProvider', 'config',
-		function($routeProvider, $httpProvider, IdleProvider, KeepaliveProvider, config) {
+}).config(['$routeProvider', '$httpProvider', '$mdDateLocaleProvider', 'IdleProvider', 'KeepaliveProvider', 'consts',
+		function($routeProvider, $httpProvider, $mdDateLocaleProvider, IdleProvider, KeepaliveProvider, consts) {
 		
 		// configure Idle settings
 		IdleProvider.idle(1800); // in seconds - 30min
 		IdleProvider.timeout(120); // in seconds - 2min		
 		KeepaliveProvider.interval(1200); // in seconds - 20min			
-		KeepaliveProvider.http(config.BASE_URL + '/keepAlive');
+		KeepaliveProvider.http(consts.BASE_URL + '/keepAlive');
 		
 		$routeProvider.
 			when('/login', { 
@@ -22,7 +22,9 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("config",
 				controller: "LoginCtrl",
 				controllerAs: "ctrl"
 			}).when('/dashboard', { 
-				templateUrl: "templates/dashboard.html"
+				templateUrl: "templates/dashboard.html",
+				controller: "DashboardCtrl",
+				controllerAs: "ctrl"
 			}).when('/agenda/', { 
 				templateUrl: "templates/agenda.html",
 				controller: "AgendaCtrl",
@@ -53,6 +55,10 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("config",
 				controllerAs: "ctrl"
 			}).otherwise({redirectTo: '/'});
 	
+		$mdDateLocaleProvider.formatDate = function(date) {
+			return moment(date).format('DD/MM/YYYY');
+		};
+		
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 	}]).run(['$rootScope', '$location', 'loginFactory', 'Idle', 'idleService', function($rootScope, 
 			$location, loginFactory, Idle, idleService){

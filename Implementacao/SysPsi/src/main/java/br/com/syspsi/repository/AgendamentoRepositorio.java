@@ -60,4 +60,11 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "AND a.consulta IS NOT NULL "					
 			+ "ORDER BY a.start ASC")
 	public List<Agendamento> listarAgendamentosComConsulta(Paciente paciente, Psicologo psicologo);
+	@Query("SELECT a FROM Agendamento a "			
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "							
+			+ "WHERE (a.start BETWEEN ?1 AND ?2) "
+			+ "AND a.consulta IS NOT NULL "
+			+ "AND ps = ?3")
+	public List<Agendamento> listarConsultasPorPeriodo(Calendar dataInicial, Calendar dataFinal, Psicologo psicologo);
 }

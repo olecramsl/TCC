@@ -1,4 +1,4 @@
-angular.module('syspsi').factory('modalAgendamentoFactory', ['$http', 'config', function($http, config) {
+angular.module('syspsi').factory('modalAgendamentoFactory', ['$http', function($http) {
 	var _msgErro;
 	var _msgConfirmacao;
 	var _tipoConfirmacao;		

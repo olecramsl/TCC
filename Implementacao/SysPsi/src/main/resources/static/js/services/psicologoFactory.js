@@ -1,6 +1,6 @@
-angular.module('syspsi').factory('psicologoFactory', ['$http', 'config', function($http, config) {
+angular.module('syspsi').factory('psicologoFactory', ['$http', 'consts', function($http, consts) {
 	var _gerarChave = function() {		
-		return $http.get(config.BASE_URL + '/gerarChave');
+		return $http.get(consts.BASE_URL + '/gerarChave');
 	};
 
 	return {			

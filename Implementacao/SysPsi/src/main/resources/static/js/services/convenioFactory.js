@@ -1,8 +1,8 @@
-angular.module('syspsi').factory('convenioFactory', ['$http', 'config', function($http, config) {	
+angular.module('syspsi').factory('convenioFactory', ['$http', 'consts', function($http, consts) {	
 	var _lstConveniosAtivos = null;
 	
 	var _listarConveniosAtivos = function() {
-		return $http.get(config.BASE_URL + '/listarConveniosAtivos');
+		return $http.get(consts.BASE_URL + '/listarConveniosAtivos');
 	}
 	
 	return {

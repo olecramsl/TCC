@@ -1,11 +1,11 @@
-angular.module('syspsi').factory('pacienteFactory', ['$http', 'config', function($http, config) {
+angular.module('syspsi').factory('pacienteFactory', ['$http', 'consts', function($http, consts) {
 	var _listarPacientesAtivosInativos = function(ativo) {		
 		var params = {ativo: ativo};
-		return $http.get(config.BASE_URL + '/listarPacientesAtivosInativos', {params});
+		return $http.get(consts.BASE_URL + '/listarPacientesAtivosInativos', {params});
 	};
 	
 	var _listarPacientes = function() {				
-		return $http.get(config.BASE_URL + '/listarPacientes');
+		return $http.get(consts.BASE_URL + '/listarPacientes');
 	};		
 	
 	return {

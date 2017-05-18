@@ -39,22 +39,51 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 		financeiroFactory.salvarDespesa(novaDespesa).then(
 				successCallback = function(response) {
 					if (ctrl.editando) {
-						var lstDespesas = financeiroFactory.getLstDespesas(); 					
-					    var index = -1;
+						// Exclui o item da lista. Se após edição a despesa estiver no range do período, inclui novamente
+						var lstDespesas = financeiroFactory.getLstDespesas();
+						var antigoValor = 0;
+					    var index = -1;					    
 						for(var i = 0; i < lstDespesas.length; i++) {
-							if (lstDespesas[i].id === novaDespesa.id) {
+							if (lstDespesas[i].id === novaDespesa.id) {														
 								index = i;
+								antigoValor = lstDespesas[i].valor;
 								break;
 							}
 						}					
-						if (index > -1) {
-							// trata-se de uma edição
+						if (index > -1) {														
 							lstDespesas.splice(index, 1);
 							financeiroFactory.setLstDespesas(lstDespesas);
+							
+							if (novaDespesa.pago) {
+								var totalDespesasPagas = financeiroFactory.getTotalDespesasPagasPeriodo();							
+								financeiroFactory.setTotalDespesasPagasPeriodo(totalDespesasPagas - antigoValor);
+							} else {
+								var totalDespesasNaoPagas = financeiroFactory.getTotalDespesasNaoPagasPeriodo();							
+								financeiroFactory.setTotalDespesasNaoPagasPeriodo(totalDespesasNaoPagas - antigoValor);
+							}
+							
+							var totalDespesas = financeiroFactory.getTotalDespesasPeriodo();						
+							financeiroFactory.setTotalDespesasPeriodo(totalDespesas - antigoValor);
 						}
 					}
 					
-					financeiroFactory.addDespesaNaLista(response.data);
+					var dtInicio = financeiroFactory.getDtInicioPeriodo();
+					var dtFim = financeiroFactory.getDtFimPeriodo();
+					var dtDespesa = response.data.vencimento;
+					if (dtDespesa >= dtInicio && dtDespesa <= dtFim) {						
+						financeiroFactory.addDespesaNaLista(response.data);
+						
+						if (response.data.pago) {
+							var totalDespesasPagas = financeiroFactory.getTotalDespesasPagasPeriodo();							
+							financeiroFactory.setTotalDespesasPagasPeriodo(totalDespesasPagas + response.data.valor);
+						} else {
+							var totalDespesasNaoPagas = financeiroFactory.getTotalDespesasNaoPagasPeriodo();							
+							financeiroFactory.setTotalDespesasNaoPagasPeriodo(totalDespesasNaoPagas + response.data.valor);
+						}
+						
+						var totalDespesas = financeiroFactory.getTotalDespesasPeriodo();						
+						financeiroFactory.setTotalDespesasPeriodo(totalDespesas + response.data.valor);
+					}
 				},
 				errorCallback = function(error) {
 					utilService.tratarExcecao(error); 

@@ -21,9 +21,31 @@
 					</div>
 					
 					<hr />
+					<div class="row">
+						<div class="col-md-2">
+							<h4>Período:</h4> 
+						</div>
+						<div class="col-md-5">
+							<md-datepicker ng-model="ctrl.dtInicio" md-placeholder="Informe a data"></md-datepicker>
+						</div>
+						<div class="col-md-5"> 
+							<md-datepicker ng-model="ctrl.dtFim" md-placeholder="Informe a data" md-min-date="ctrl.dtInicio"></md-datepicker>
+						</div>
+					</div>
+					<br />
+					<div class="row">
+						<div class="col-md-8">
+							<h4>Total recebido com consultas no período: </h4>
+						</div>
+						<div class="col-md-4" style="text-align: right; color: #0A6CAC;">
+							<h4>{{ctrl.totalConsultasPeriodo | monetarioFormat}}</h4>
+						</div>
+					</div>
+					
                  	<div id="list" class="row">
 					    <div class="table-responsive col-md-12">
 					        <table class="table table-striped" cellspacing="0" cellpadding="0">
+					        	<caption style="text-align: center;">Despesas no período</caption>					        						        
 					            <thead>
 					                <tr>					                	
 					                    <th>Descrição</th>
@@ -55,13 +77,35 @@
 					                    </td>
 					                </tr>					 
 					            </tbody>
+					            <tfoot>
+  									<tr style="color: #00B768; font-weight: bold;">  
+  										<td></td>									  									
+  										<td></td>
+  										<td></td>
+  										<td></td>
+     									<td>Subtotal de valores pagos</td>     									     									     								     									     								
+     									<td>{{ctrl.totalDespesasPagasPeriodo | monetarioFormat}}</td>
+  									</tr>
+  									<tr style="color: #E4004D; font-weight: bold;">
+  										<td></td>
+  										<td></td>
+  										<td></td>
+  										<td></td>
+  										<td>Subtotal de valores não pagos</td>
+  										<td>{{ctrl.totalDespesasNaoPagasPeriodo | monetarioFormat}}</td>
+  									</tr>
+  									<tr style="color: #0A6CAC; font-weight: bold;">
+  										<td></td>
+  										<td></td>
+  										<td></td>
+  										<td></td>
+  										<td>Total de despesas</td>
+  										<td>{{ctrl.totalDespesasPeriodo | monetarioFormat}}</td>
+  									</tr>
+ 								</tfoot>
 					         </table>					 
 					     </div>
-					 </div> <!-- /#list -->                             		                                 					
-					
-					
-					
-														
+					 </div> <!-- /#list -->                             		                                 																																	
 				</div>
 			</div>
 		</div>

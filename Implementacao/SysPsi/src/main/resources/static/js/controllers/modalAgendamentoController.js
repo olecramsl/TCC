@@ -1,7 +1,7 @@
 angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModalInstance', '$location', '$mdDialog', 'agendamentoFactory', 
-	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'utilService', 'config', function ($scope, 
+	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'utilService', 'consts', function ($scope, 
 			$uibModalInstance, $location, $mdDialog, agendamentoFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, 
-			consultaPacienteFactory, utilService, config) {
+			consultaPacienteFactory, utilService, consts) {
 	
 	var ctrl = this;	
 	
@@ -137,12 +137,12 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 						
 						if ((agendamento.grupo > 0) && (!agendamento.repetirSemanalmente) && 
 							(agendamento.formatedStart === agendamentoCarregado.formatedStart)) {
-							modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS);
+							modalAgendamentoFactory.setTipoConfirmacao(consts.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS);
 							modalAgendamentoFactory.setMsgConfirmacao("Você optou por não repetir este evento semanalmente. Deseja excluir os eventos futuros associados a este agendamento?");				
 							modalAgendamentoService.openConfirmModal();
 						} else if ((agendamento.grupo > 0) && ((agendamento.formatedStart !== agendamentoCarregado.formatedStart) || 
 								  (agendamentoCarregado.paciente.id !== agendamento.paciente.id))) {
-							modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.ALTERAR_DADOS_FUTUROS);							
+							modalAgendamentoFactory.setTipoConfirmacao(consts.TIPOS_CONFIRMACOES.ALTERAR_DADOS_FUTUROS);							
 							modalAgendamentoFactory.setMsgConfirmacao("Replicar alterações nos eventos futuros?");							
 							modalAgendamentoService.openConfirmModal();
 						}
@@ -180,7 +180,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 * Confirma com o usuário a remoção do evento
 	 */
 	ctrl.confirmarRemocaoEvento = function (agendamento) {		
-		modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.REMOVER_EVENTO);
+		modalAgendamentoFactory.setTipoConfirmacao(consts.TIPOS_CONFIRMACOES.REMOVER_EVENTO);
 		modalAgendamentoFactory.setMsgConfirmacao("Tem certeza que deseja excluir o agendamento?");
 		modalAgendamentoService.openConfirmModal();
 		
@@ -212,7 +212,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 		$uibModalInstance.close();
 		
 		if (agendamento.grupo > 0) {
-			modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS);
+			modalAgendamentoFactory.setTipoConfirmacao(consts.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS);
 			modalAgendamentoFactory.setMsgConfirmacao("Remover também os eventos futuros?");
 			modalAgendamentoService.openConfirmModal();
 		}		
@@ -250,13 +250,13 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 * Direciona para função correta quando selecionado "Sim" na janela modal de confirmação
 	 */
 	ctrl.confirmar = function(agendamento, tipoConfirmacao) {	
-		if (tipoConfirmacao === config.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS) {
+		if (tipoConfirmacao === consts.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS) {
 			removerEventosFuturos(agendamento);			
-		} else if (tipoConfirmacao === config.TIPOS_CONFIRMACOES.MOVER_EVENTOS) {
+		} else if (tipoConfirmacao === consts.TIPOS_CONFIRMACOES.MOVER_EVENTOS) {
 			moverEventosFuturos(agendamento);
-		} else if (tipoConfirmacao === config.TIPOS_CONFIRMACOES.ALTERAR_DADOS_FUTUROS) {
+		} else if (tipoConfirmacao === consts.TIPOS_CONFIRMACOES.ALTERAR_DADOS_FUTUROS) {
 			atualizarEventosFuturos(agendamento);
-		} else if (tipoConfirmacao === config.TIPOS_CONFIRMACOES.REMOVER_EVENTO) {
+		} else if (tipoConfirmacao === consts.TIPOS_CONFIRMACOES.REMOVER_EVENTO) {
 			removerEvento(agendamento);
 		}
 		$uibModalInstance.close();

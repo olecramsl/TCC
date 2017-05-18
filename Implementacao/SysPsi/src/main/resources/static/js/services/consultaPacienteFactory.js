@@ -1,10 +1,10 @@
-angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'config', function($http, config) {
+angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'consts', function($http, consts) {
 	var _agendamento;
 	var _lstAgendamentosComConsulta;
 	var _conteudoProntuarioMudou;
 	
 	var _salvarConsultaPaciente = function(agendamento) {
-		return $http.post(config.BASE_URL + '/salvarConsultaPaciente', angular.copy(agendamento));
+		return $http.post(consts.BASE_URL + '/salvarConsultaPaciente', angular.copy(agendamento));
 	};	
 	
 	return {

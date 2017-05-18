@@ -6,8 +6,8 @@ angular.forEach(lazyModules, function(dependency) {
 });
 
 angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 'pacienteFactory', 'convenioFactory', 
-	'modalAgendamentoFactory', 'modalAgendamentoService', 'utilService', 'config', function ($scope, $mdDialog,	agendamentoFactory,	
-			pacienteFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, utilService,	config) {
+	'modalAgendamentoFactory', 'modalAgendamentoService', 'utilService', 'consts', function ($scope, $mdDialog,	agendamentoFactory,	
+			pacienteFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, utilService, consts) {
 	
   var ctrl = this;
   
@@ -185,7 +185,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 							  if (agendamentoFactory.getStart().format("WW") === oldEvent.start.format("WW")) {								  							  
 								  var diasDiferenca = oldEvent.start.dayOfYear() - event.start.dayOfYear();
 								  if ((diasDiferenca < 7) && (event.start.day() !== oldEvent.start.day())) {
-									  modalAgendamentoFactory.setTipoConfirmacao(config.TIPOS_CONFIRMACOES.MOVER_EVENTOS);
+									  modalAgendamentoFactory.setTipoConfirmacao(consts.TIPOS_CONFIRMACOES.MOVER_EVENTOS);
 									  modalAgendamentoFactory.setMsgConfirmacao("Você moveu um agendamento configurado para repetir semanalmente. Deseja mover também os eventos futuros associados a este agendamento?");
 									  modalAgendamentoService.openConfirmModal();	
 								  }

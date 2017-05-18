@@ -1,5 +1,4 @@
 USE syspsi;
-SET lc_time_names = 'pt_BR';
 DROP TABLE IF EXISTS `syspsi`.`config`;
 -- -----------------------------------------------------
 -- Table `syspsi`.`despesa`
@@ -9,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`despesa` (
   `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
   `descricao` VARCHAR(30) NOT NULL,
   `valor` DECIMAL(10,2) NOT NULL,
-  `vencimento` DATE NULL,
+  `vencimento` DATE NOT NULL,
   `pago` TINYINT(1) NULL,
   `observacao` TEXT NULL,
   PRIMARY KEY (`id`),

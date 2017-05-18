@@ -2,23 +2,39 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		financeiroFactory, utilService) {
 	var ctrl = this;
 	
+	ctrl.dtInicio = new Date(moment().startOf('month').local());
+	ctrl.dtFim = new Date(moment().endOf('month').local());
+			 	 	
 	$scope.$watch(function () { return financeiroFactory.getLstDespesas(); }, function (newValue, oldValue) {
 	   	  ctrl.lstDespesas = newValue;
 	});
 	
-	var carregarDespesasDoMes = function() {		
-		var dataInicial = moment().startOf('month').local().format();
-		var dataFinal = moment().endOf('month').local().format();
-		
-		financeiroFactory.listarDespesasPorPeriodo(dataInicial, dataFinal).then(
-				successCallback = function(response) {
-					financeiroFactory.setLstDespesas(response.data);
-				},
-				errorCallback = function(error) {
-					utilService.tratarExcecao(error);
-				}
-		);
-	};
+	$scope.$watch(function () { return ctrl.dtInicio; }, function (newValue, oldValue) {
+		financeiroFactory.setDtInicioPeriodo(newValue);
+	   	if (newValue > ctrl.dtFim) {
+	   		ctrl.dtFim = ctrl.dtInicio;
+	   	}
+	});
+	
+	$scope.$watch(function () { return ctrl.dtFim; }, function (newValue, oldValue) {
+		financeiroFactory.setDtFimPeriodo(newValue);
+	});
+	
+	$scope.$watch(function () { return financeiroFactory.getTotalConsultasPeriodo(); }, function (newValue, oldValue) {
+		ctrl.totalConsultasPeriodo = newValue;
+	});
+	
+	$scope.$watch(function () { return financeiroFactory.getTotalDespesasPeriodo(); }, function (newValue, oldValue) {
+		ctrl.totalDespesasPeriodo = newValue;
+	});
+	
+	$scope.$watch(function () { return financeiroFactory.getTotalDespesasPagasPeriodo(); }, function (newValue, oldValue) {
+		ctrl.totalDespesasPagasPeriodo = newValue;
+	});
+	
+	$scope.$watch(function () { return financeiroFactory.getTotalDespesasNaoPagasPeriodo(); }, function (newValue, oldValue) {
+		ctrl.totalDespesasNaoPagasPeriodo = newValue;
+	});
 	
 	ctrl.cadastrarDespesa  = function() {
 		$mdDialog.show({
@@ -26,8 +42,11 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		    templateUrl: 'templates/cadastrar_despesa_modal.html',
 		    parent: angular.element(document.body),		    
 		    clickOutsideToClose: true		    
-		}).then(function() {			
-		}, function() {});
+		}).then(function() {	
+			financeiroFactory.setDespesa({});
+		}, function() {
+			financeiroFactory.setDespesa({});
+		});
 	};
 	
 	ctrl.excluirDespesa = function(despesa) {
@@ -44,7 +63,18 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 						var index = lstDespesas.indexOf(despesa);						
 						if (index > -1) {
 							lstDespesas.splice(index, 1);
-							financeiroFactory.setLstDespesas(lstDespesas); 
+							financeiroFactory.setLstDespesas(lstDespesas);
+							
+							if (despesa.pago) {
+								var totalDespesasPagas = financeiroFactory.getTotalDespesasPagasPeriodo();							
+								financeiroFactory.setTotalDespesasPagasPeriodo(totalDespesasPagas - despesa.valor);
+							} else {
+								var totalDespesasNaoPagas = financeiroFactory.getTotalDespesasNaoPagasPeriodo();							
+								financeiroFactory.setTotalDespesasNaoPagasPeriodo(totalDespesasNaoPagas - despesa.valor);
+							}
+							
+							var totalDespesas = financeiroFactory.getTotalDespesasPeriodo();						
+							financeiroFactory.setTotalDespesasPeriodo(totalDespesas - despesa.valor);														
 						}
 						
 					},
@@ -75,9 +105,9 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		    parent: angular.element(document.body),		    
 		    clickOutsideToClose: true		    
 		}).then(function() {	
-			
-		}, function() {});
-	}
-	
-	carregarDespesasDoMes();
+			financeiroFactory.setDespesa({});
+		}, function() {
+			financeiroFactory.setDespesa({});
+		});
+	};		
 }]);

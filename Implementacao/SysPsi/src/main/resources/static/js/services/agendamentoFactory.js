@@ -1,43 +1,43 @@
-angular.module('syspsi').factory('agendamentoFactory', ['$http', 'config', function($http, config) {
+angular.module('syspsi').factory('agendamentoFactory', ['$http', 'consts', function($http, consts) {
 	var _agendamento = {};
 	var _agendamentoCarregado = {};	
 	var _lstPacientesAtivos = null;		
 	
 	var _listarAgendamentos = function(dataInicial, dataFinal) {
 		var params = {dataInicial: dataInicial.format(), dataFinal: dataFinal.format()};
-		return $http.get(config.BASE_URL + '/listarAgendamentos', {params});
+		return $http.get(consts.BASE_URL + '/listarAgendamentos', {params});
 	};
 	
 	var _salvarAgendamento = function(agendamentoDTO) {
-		return $http.post(config.BASE_URL + '/salvarAgendamento', angular.copy(agendamentoDTO));
+		return $http.post(consts.BASE_URL + '/salvarAgendamento', angular.copy(agendamentoDTO));
 	};
 	
 	var _salvarAgendamentoTemporarioGCalendar = function(agendamentoDTO) {
-		return $http.post(config.BASE_URL + '/salvarAgendamentoTemporarioGCalendar', angular.copy(agendamentoDTO));
+		return $http.post(consts.BASE_URL + '/salvarAgendamentoTemporarioGCalendar', angular.copy(agendamentoDTO));
 	};
 	
 	var _atribuirNovoEventoPrincipal = function(agendamento) {
-		return $http.post(config.BASE_URL + '/atribuirNovoEventoPrincipal', angular.copy(agendamento));
+		return $http.post(consts.BASE_URL + '/atribuirNovoEventoPrincipal', angular.copy(agendamento));
 	}
 	
 	var _removerAgendamento = function(agendamento) {
-		return $http.post(config.BASE_URL + '/removerAgendamento', angular.copy(agendamento));
+		return $http.post(consts.BASE_URL + '/removerAgendamento', angular.copy(agendamento));
 	};
 	
 	var _removerAgendamentosFuturos = function(agendamento) {
-		return $http.post(config.BASE_URL + '/removerAgendamentosFuturos', angular.copy(agendamento));
+		return $http.post(consts.BASE_URL + '/removerAgendamentosFuturos', angular.copy(agendamento));
 	};
 	
 	var _moverAgendamentosFuturos = function(agendamento) {
-		return $http.post(config.BASE_URL + '/moverAgendamentosFuturos', angular.copy(agendamento));
+		return $http.post(consts.BASE_URL + '/moverAgendamentosFuturos', angular.copy(agendamento));
 	};
 	
 	var _atualizarAgendamentosFuturos = function(agendamento) {
-		return $http.post(config.BASE_URL + '/atualizarAgendamentosFuturos', angular.copy(agendamento));
+		return $http.post(consts.BASE_URL + '/atualizarAgendamentosFuturos', angular.copy(agendamento));
 	};
 	
 	var _listarAgendamentosComConsulta = function(paciente) {
-		return $http.post(config.BASE_URL + '/listarAgendamentosComConsulta', paciente);
+		return $http.post(consts.BASE_URL + '/listarAgendamentosComConsulta', paciente);
 	};
 	
 	/**

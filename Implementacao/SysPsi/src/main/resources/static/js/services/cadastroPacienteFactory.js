@@ -1,9 +1,9 @@
-angular.module('syspsi').factory('cadastroPacienteFactory', ['$http', 'config', function($http, config) {
+angular.module('syspsi').factory('cadastroPacienteFactory', ['$http', 'consts', function($http, consts) {
 	var _paciente;
 	var _editandoPaciente;
 	
 	var _listarGruposPacientes = function() {
-		return $http.get(config.BASE_URL + '/listarGruposPacientes');
+		return $http.get(consts.BASE_URL + '/listarGruposPacientes');
 	};
 	
 	var _salvarPaciente = function(paciente) {	
@@ -30,15 +30,15 @@ angular.module('syspsi').factory('cadastroPacienteFactory', ['$http', 'config', 
 		}
 		
 		novoPaciente.ativo = true;
-		return $http.post(config.BASE_URL + '/salvarPaciente', novoPaciente);
+		return $http.post(consts.BASE_URL + '/salvarPaciente', novoPaciente);
 	};
 	
 	var _excluirPaciente = function(paciente) {
-		return $http.post(config.BASE_URL + '/excluirPaciente', paciente);
+		return $http.post(consts.BASE_URL + '/excluirPaciente', paciente);
 	};
 	
 	var _atualizarPaciente = function(paciente) {
-		return $http.post(config.BASE_URL + '/atualizarPaciente', paciente);
+		return $http.post(consts.BASE_URL + '/atualizarPaciente', paciente);
 	};
 	
 	return {
