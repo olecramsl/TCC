@@ -1,14 +1,14 @@
 // Modulos desta controller	
-var lazyModules = ['ui.bootstrap'];
+var lazyModules = ['ui.bootstrap', 'ngTable'];
   
 angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
 angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', '$route', 
-	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'utilService', 
-	function ($mdDialog, $uibModal,	$scope,	$http, $location, $route, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
-		consultaPacienteFactory, agendamentoFactory, utilService) {	
+	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'NgTableParams', 
+	'utilService', function ($mdDialog, $uibModal,	$scope,	$http, $location, $route, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
+		consultaPacienteFactory, agendamentoFactory, NgTableParams, utilService) {	
 	
 	var ctrl = this;
 		
@@ -18,7 +18,11 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	   	  } else {	   		  
 	   		  ctrl.maiorIdade = false;	   		  
 	   	  }
-	});	
+	});			
+	
+	$scope.$watch(function () { return ctrl.lstPacientes; }, function (newValue, oldValue) {
+		ctrl.tableParams = new NgTableParams({ count: 10 }, { counts: [], dataset: ctrl.lstPacientes });
+	});
 	
 	/*
 	 Ativos = 1
@@ -67,7 +71,8 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		if (ctrl.pesquisa.tipoPesquisa === "1") {			
 			pacienteFactory.listarPacientesAtivosInativos(true).then(
 					successCallback = function(response) {	  
-						ctrl.lstPacientes = response.data;					
+						ctrl.lstPacientes = response.data;
+						
 					},
 					errorCallback = function (error, status){					
 						utilService.tratarExcecao(error); 
@@ -76,7 +81,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		} else if (ctrl.pesquisa.tipoPesquisa === "2") {			
 			pacienteFactory.listarPacientesAtivosInativos(false).then(
 					successCallback = function(response) {	  
-						ctrl.lstPacientes = response.data;					
+						ctrl.lstPacientes = response.data;							
 					},
 					errorCallback = function (error, status){					
 						utilService.tratarExcecao(error); 
@@ -85,13 +90,13 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		} else {			
 			pacienteFactory.listarPacientes().then(
 					successCallback = function(response) {	  
-						ctrl.lstPacientes = response.data;					
+						ctrl.lstPacientes = response.data;						
 					},
 					errorCallback = function (error, status){					
 						utilService.tratarExcecao(error); 
 					}
 			);
-		}		
+		}				
 	}
 	
 	ctrl.buscarCep = function(strCep) {
@@ -307,5 +312,5 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 			
 	carregarConveniosAtivos();
 	ctrl.carregarPacientes();
-	carregarGruposPacientes();
+	carregarGruposPacientes();		
 }]);

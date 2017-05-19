@@ -1,12 +1,17 @@
-angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'financeiroFactory', 'utilService', function($scope, $mdDialog, 
-		financeiroFactory, utilService) {
-	var ctrl = this;
-	
-	ctrl.dtInicio = new Date(moment().startOf('month').local());
-	ctrl.dtFim = new Date(moment().endOf('month').local());
+// Modulos desta controller
+var lazyModules = ['ngTable'];
+  
+angular.forEach(lazyModules, function(dependency) {
+	angular.module('syspsi').requires.push(dependency);
+});
+
+angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'financeiroFactory', 'NgTableParams', 'utilService', 
+	function($scope, $mdDialog,	financeiroFactory, NgTableParams, utilService) {
+	var ctrl = this;				
 			 	 	
 	$scope.$watch(function () { return financeiroFactory.getLstDespesas(); }, function (newValue, oldValue) {
 	   	  ctrl.lstDespesas = newValue;
+	   	  ctrl.tableParams = new NgTableParams({ count: 5 }, { counts: [], dataset: ctrl.lstDespesas });
 	});
 	
 	$scope.$watch(function () { return ctrl.dtInicio; }, function (newValue, oldValue) {
@@ -20,7 +25,7 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		financeiroFactory.setDtFimPeriodo(newValue);
 	});
 	
-	$scope.$watch(function () { return financeiroFactory.getTotalConsultasPeriodo(); }, function (newValue, oldValue) {
+	$scope.$watch(function () { return financeiroFactory.getTotalConsultasPeriodo(); }, function (newValue, oldValue) {		
 		ctrl.totalConsultasPeriodo = newValue;
 	});
 	
@@ -34,7 +39,7 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 	
 	$scope.$watch(function () { return financeiroFactory.getTotalDespesasNaoPagasPeriodo(); }, function (newValue, oldValue) {
 		ctrl.totalDespesasNaoPagasPeriodo = newValue;
-	});
+	});		
 	
 	ctrl.cadastrarDespesa  = function() {
 		$mdDialog.show({
@@ -74,7 +79,14 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 							}
 							
 							var totalDespesas = financeiroFactory.getTotalDespesasPeriodo();						
-							financeiroFactory.setTotalDespesasPeriodo(totalDespesas - despesa.valor);														
+							financeiroFactory.setTotalDespesasPeriodo(totalDespesas - despesa.valor);
+							
+							var dtInicioMesCorrente = financeiroFactory.getDtInicioMesCorrente();
+							var dtFimMesCorrente = financeiroFactory.getDtFimMesCorrente();
+							if (despesa.vencimento >= dtInicioMesCorrente && despesa.vencimento <= dtFimMesCorrente) {
+								totalDespesasMesCorrente = financeiroFactory.getTotalDespesasMesCorrente();
+								financeiroFactory.setTotalDespesasMesCorrente(totalDespesasMesCorrente - despesa.valor);
+							}
 						}
 						
 					},
@@ -109,5 +121,51 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		}, function() {
 			financeiroFactory.setDespesa({});
 		});
-	};		
+	};	
+	
+	ctrl.pesquisarPeriodo = function(dataInicial, dataFinal) {		
+		financeiroFactory.listarDespesasPorPeriodo(dataInicial, dataFinal).then(
+				successCallback = function(response) {					
+					financeiroFactory.setLstDespesas(response.data);
+					
+					var totalDespesas = 0;
+					var totalDespesasPagas = 0;
+					var totalDespesasNaoPagas = 0;
+					response.data.forEach(function(despesa) {
+						if (despesa.pago) {
+							totalDespesasPagas += despesa.valor;
+						} else {
+							totalDespesasNaoPagas += despesa.valor;
+						}
+						totalDespesas += despesa.valor;
+					});
+																				
+					financeiroFactory.setTotalDespesasPeriodo(totalDespesas);
+					financeiroFactory.setTotalDespesasPagasPeriodo(totalDespesasPagas);
+					financeiroFactory.setTotalDespesasNaoPagasPeriodo(totalDespesasNaoPagas);
+				},
+				errorCallback = function(error) {
+					financeiroFactory.setLstDespesas({});
+					utilService.tratarExcecao(error);
+				}
+		);
+		
+		financeiroFactory.listarConsultasPorPeriodo(dataInicial, dataFinal).then(
+				successCallback = function(response) {
+					var totalConsultas = 0;
+					response.data.forEach(function(agendamento) {
+						totalConsultas += agendamento.consulta.valor;
+					});										
+					financeiroFactory.setTotalConsultasPeriodo(totalConsultas);
+				},
+				errorCallback = function(error) {
+					financeiroFactory.setTotalConsultasPeriodo(0);
+					utilService.tratarExcecao(error);
+				}
+		);
+	}
+	
+	ctrl.dtInicio = new Date(moment().startOf('month').local());
+	ctrl.dtFim = new Date(moment().endOf('month').local());	
+	ctrl.pesquisarPeriodo(ctrl.dtInicio, ctrl.dtFim);
 }]);

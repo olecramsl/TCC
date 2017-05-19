@@ -28,9 +28,8 @@ angular.module('syspsi').service('modalAgendamentoService', ['$uibModal', 'agend
 		    size: size
 		});
 	    
-		modalInstance.result.then(function (selectedItem) {}, function () {        	
-			agendamentoFactory.setAgendamento({});
-			agendamentoFactory.setIndexPacienteSelecionado(null);
+		modalInstance.result.then(function (selectedItem) {}, function () {			
+			agendamentoFactory.setAgendamento({});					
 		});
 	};
 }]);

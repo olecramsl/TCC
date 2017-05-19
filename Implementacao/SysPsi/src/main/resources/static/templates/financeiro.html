@@ -25,11 +25,14 @@
 						<div class="col-md-2">
 							<h4>Período:</h4> 
 						</div>
-						<div class="col-md-5">
+						<div class="col-md-4">
 							<md-datepicker ng-model="ctrl.dtInicio" md-placeholder="Informe a data"></md-datepicker>
 						</div>
-						<div class="col-md-5"> 
+						<div class="col-md-4"> 
 							<md-datepicker ng-model="ctrl.dtFim" md-placeholder="Informe a data" md-min-date="ctrl.dtInicio"></md-datepicker>
+						</div>
+						<div class="col-md-2"> 
+							<button type="button" ng-click="ctrl.pesquisarPeriodo(ctrl.dtInicio, ctrl.dtFim)" class="btn btn-primary btn-block">Pesquisar</button>
 						</div>
 					</div>
 					<br />
@@ -42,69 +45,21 @@
 						</div>
 					</div>
 					
-                 	<div id="list" class="row">
-					    <div class="table-responsive col-md-12">
-					        <table class="table table-striped" cellspacing="0" cellpadding="0">
-					        	<caption style="text-align: center;">Despesas no período</caption>					        						        
-					            <thead>
-					                <tr>					                	
-					                    <th>Descrição</th>
-					                    <th>Dt Vencimento</th>
-					                    <th>Valor</th>
-					                    <th>Pago</th>
-					                    <th>Observação</th>
-					                    <th>Ações</th>
-					                 </tr>
-					            </thead>
-					            <tbody>								            			
-					                <tr ng-repeat="despesa in ctrl.lstDespesas"> <!-- | filter:ctrl.pesquisaNome">  -->					                	
-					                    <td>{{despesa.descricao}}</td>
-					                    <td>{{despesa.vencimento | date: 'dd/MM/yyyy'}}</td>
-					                    <td>{{despesa.valor | monetarioFormat}}</td>
-					                    <td>{{despesa.pago | booleanFormat}}</td>
-					                    <td>{{despesa.observacao}}</td>
-					                    <td>					                    	
-					                    	<a class="btn btn-warning btn-xs" ng-click="ctrl.editarDespesa(despesa)" title="Editar Despesa"><i class="fa fa-pencil fa-fw"></i></a>
-					                    	<a class="btn btn-danger btn-xs" ng-click="ctrl.excluirDespesa(despesa)" title="Excluir Despesa"><i class="fa fa-close fa-fw"></i></a>					                    	
-					                    	<!-- 
-					                        <a class="btn btn-success btn-xs" ng-click="ctrl.iniciarConsulta(paciente)" title="Iniciar Consulta"><i class="fa fa-calendar-check-o fa-fw"></i></a>
-					                        <a class="btn btn-primary btn-xs" ng-click="ctrl.verProntuarios(paciente)" title="Prontuários"><i class="fa fa-file-text-o fa-fw"></i></a>
-					                        <a class="btn btn-warning btn-xs" ng-click="ctrl.editarPaciente(paciente)" title="Editar Paciente"><i class="fa fa-pencil fa-fw"></i></a>					                        
-					                        <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirPaciente(paciente)" title="Excluir Paciente"><i class="fa fa-user-times fa-fw"></i></a> 					                        						                        
-					                        <a class="btn btn-info btn-xs" ng-if="paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Desativar Paciente"><i class="fa fa-minus fa-fw"></i></a>
-					                        <a class="btn btn-info btn-xs" ng-if="!paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Ativar Paciente"><i class="fa fa-refresh fa-fw"></i></a>
-					                         -->
-					                    </td>
-					                </tr>					 
-					            </tbody>
-					            <tfoot>
-  									<tr style="color: #00B768; font-weight: bold;">  
-  										<td></td>									  									
-  										<td></td>
-  										<td></td>
-  										<td></td>
-     									<td>Subtotal de valores pagos</td>     									     									     								     									     								
-     									<td>{{ctrl.totalDespesasPagasPeriodo | monetarioFormat}}</td>
-  									</tr>
-  									<tr style="color: #E4004D; font-weight: bold;">
-  										<td></td>
-  										<td></td>
-  										<td></td>
-  										<td></td>
-  										<td>Subtotal de valores não pagos</td>
-  										<td>{{ctrl.totalDespesasNaoPagasPeriodo | monetarioFormat}}</td>
-  									</tr>
-  									<tr style="color: #0A6CAC; font-weight: bold;">
-  										<td></td>
-  										<td></td>
-  										<td></td>
-  										<td></td>
-  										<td>Total de despesas</td>
-  										<td>{{ctrl.totalDespesasPeriodo | monetarioFormat}}</td>
-  									</tr>
- 								</tfoot>
-					         </table>					 
-					     </div>
+                 	<div id="list" class="row">                 		 
+						<table ng-table="ctrl.tableParams" class="table table-condensed table-bordered table-striped">
+							<caption style="text-align: center;">Despesas no período</caption>							
+    						<tr ng-repeat="despesa in $data">
+        						<td data-title="'Descrição'">{{despesa.descricao}}</td>
+					            <td data-title="'Dt Vencimento'">{{despesa.vencimento | date: 'dd/MM/yyyy'}}</td>
+					       		<td data-title="'Valor'">{{despesa.valor | monetarioFormat}}</td>
+					            <td data-title="'Pago'">{{despesa.pago | booleanFormat}}</td>
+					            <td data-title="'Observação'">{{despesa.observacao}}</td>
+					            <td data-title="'Ações'">
+					            	<a class="btn btn-warning btn-xs" ng-click="ctrl.editarDespesa(despesa)" title="Editar Despesa"><i class="fa fa-pencil fa-fw"></i></a>
+					                <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirDespesa(despesa)" title="Excluir Despesa"><i class="fa fa-close fa-fw"></i></a>
+					            </td>					                    		
+    						</tr>    						    						    						    					
+						</table>
 					 </div> <!-- /#list -->                             		                                 																																	
 				</div>
 			</div>

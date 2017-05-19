@@ -1,9 +1,11 @@
 angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', function($http, consts) {
 	var _despesa;
-	var _lstDespesas;
+	var _lstDespesas;	
 	var _dtInicioPeriodo;
 	var _dtFimPeriodo;
+	var _totalConsultasMesCorrente;	
 	var _totalConsultasPeriodo;
+	var _totalDespesasMesCorrente;
 	var _totalDespesasPeriodo;
 	var _totalDespesasPagasPeriodo;
 	var _totalDespesasNaoPagasPeriodo;
@@ -46,12 +48,18 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		setDespesaPago: function(pago) { despesa.pago = pago; },
 		getDespesaObservacao: function() { return _despesa.observacao; },
 		setDespesaPago: function(observacao) { despesa.observacao = observacao; },
+		getDtInicioMesCorrente: function() { return moment().startOf('month').local(); },		
+		getDtFimMesCorrente: function() { return moment().endOf('month').local(); },		
 		getDtInicioPeriodo: function() { return _dtInicioPeriodo; },
 		setDtInicioPeriodo: function(dtInicioPeriodo) { _dtInicioPeriodo = dtInicioPeriodo; },
 		getDtFimPeriodo: function() { return _dtFimPeriodo; },
 		setDtFimPeriodo: function(dtFimPeriodo) { _dtFimPeriodo = dtFimPeriodo; },
+		getTotalConsultasMesCorrente: function() { return _totalConsultasMesCorrente; },
+		setTotalConsultasMesCorrente: function(totalConsultasMesCorrente) { _totalConsultasMesCorrente = totalConsultasMesCorrente; },		
 		getTotalConsultasPeriodo: function() { return _totalConsultasPeriodo; },
 		setTotalConsultasPeriodo: function(totalConsultasPeriodo) { _totalConsultasPeriodo = totalConsultasPeriodo; },
+		getTotalDespesasMesCorrente: function() { return _totalDespesasMesCorrente; },
+		setTotalDespesasMesCorrente: function(totalDespesasMesCorrente) { _totalDespesasMesCorrente = totalDespesasMesCorrente; },		
 		getTotalDespesasPeriodo: function() { return _totalDespesasPeriodo; },
 		setTotalDespesasPeriodo: function(totalDespesasPeriodo) { _totalDespesasPeriodo = totalDespesasPeriodo; },
 		getTotalDespesasPagasPeriodo: function() { return _totalDespesasPagasPeriodo; },

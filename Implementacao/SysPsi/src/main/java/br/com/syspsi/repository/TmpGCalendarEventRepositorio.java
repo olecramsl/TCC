@@ -12,7 +12,7 @@ import br.com.syspsi.model.entity.TmpGCalendarEvent;
 
 public interface TmpGCalendarEventRepositorio extends CrudRepository<TmpGCalendarEvent, Long> {
 	@Query("SELECT idGCalendar FROM TmpGCalendarEvent "
-			+ "WHERE start BETWEEN ?1 AND ?2")
+			+ "WHERE DATE(start) BETWEEN DATE(?1) AND DATE(?2)")
 	public List<String> listarPorPeriodo(Calendar start, Calendar end);
 	public List<TmpGCalendarEvent> findByStartBetween(Calendar start, Calendar end);
 	public TmpGCalendarEvent findByIdGCalendar(String idGCalendar);

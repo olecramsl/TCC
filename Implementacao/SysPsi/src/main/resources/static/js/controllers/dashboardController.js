@@ -1,5 +1,14 @@
-angular.module('syspsi').controller('DashboardCtrl', ['financeiroFactory', 'utilService', function(financeiroFactory, utilService) {
+angular.module('syspsi').controller('DashboardCtrl', ['$scope', 'financeiroFactory', 'utilService', function($scope, financeiroFactory, 
+		utilService) {
 	var ctrl = this;
+	
+	$scope.$watch(function() { return financeiroFactory.getTotalConsultasMesCorrente(); }, function(newValue, oldValue) {
+		ctrl.totalConsultasMesCorrente = newValue;
+	});
+	
+	$scope.$watch(function() { return financeiroFactory.getTotalDespesasMesCorrente(); }, function(newValue, oldValue) {
+		ctrl.totalDespesasMesCorrente = newValue;
+	});
 	
 	var carregarDespesasDoMes = function() {		
 		var dataInicial = moment().startOf('month').local().format();
@@ -20,8 +29,8 @@ angular.module('syspsi').controller('DashboardCtrl', ['financeiroFactory', 'util
 						}
 						totalDespesas += despesa.valor;
 					});
-					
-					ctrl.totalDespesasMesCorrente = totalDespesas;
+															
+					financeiroFactory.setTotalDespesasMesCorrente(totalDespesas);
 					financeiroFactory.setTotalDespesasPeriodo(totalDespesas);
 					financeiroFactory.setTotalDespesasPagasPeriodo(totalDespesasPagas);
 					financeiroFactory.setTotalDespesasNaoPagasPeriodo(totalDespesasNaoPagas);
@@ -38,7 +47,7 @@ angular.module('syspsi').controller('DashboardCtrl', ['financeiroFactory', 'util
 					response.data.forEach(function(agendamento) {
 						totalConsultas += agendamento.consulta.valor;
 					});					
-					ctrl.totalConsultasMesCorrente = totalConsultas;
+					financeiroFactory.setTotalConsultasMesCorrente(totalConsultas);
 					financeiroFactory.setTotalConsultasPeriodo(totalConsultas);
 				},
 				errorCallback = function(error) {

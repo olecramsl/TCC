@@ -36,38 +36,23 @@
 	                   	</form>	                    	
 	            	</div>
 	            	<hr />
-	                <div class="row">
-	                 	<div id="list" class="row">
-						    <div class="table-responsive col-md-12">
-						        <table class="table table-striped" cellspacing="0" cellpadding="0">
-						            <thead>
-						                <tr>					                	
-						                    <th>Nome</th>
-						                    <th>CPF</th>
-						                    <th>Data de Nascimento</th>
-						                    <th>Telefone</th>
-						                    <th>Ações</th>
-						                 </tr>
-						            </thead>
-						            <tbody>								            			
-						                <tr ng-repeat="paciente in ctrl.lstPacientes | filter:ctrl.pesquisaNome">					                	
-						                    <td>{{paciente.nomeCompleto}}</td>
-						                    <td>{{paciente.cpf | cpfFormat}}</td>
-						                    <td>{{paciente.dataNascimento | date:'dd/MM/yyyy'}}</td>
-						                    <td>{{paciente.telefoneContato | telefoneFormat}}</td>
-						                    <td>
-						                        <a class="btn btn-success btn-xs" ng-click="ctrl.iniciarConsulta(paciente)" title="Iniciar Consulta"><i class="fa fa-calendar-check-o fa-fw"></i></a>
-						                        <a class="btn btn-primary btn-xs" ng-click="ctrl.verProntuarios(paciente)" title="Prontuários"><i class="fa fa-file-text-o fa-fw"></i></a>
-						                        <a class="btn btn-warning btn-xs" ng-click="ctrl.editarPaciente(paciente)" title="Editar Paciente"><i class="fa fa-pencil fa-fw"></i></a>					                        
-						                        <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirPaciente(paciente)" title="Excluir Paciente"><i class="fa fa-user-times fa-fw"></i></a> 					                        						                        
-						                        <a class="btn btn-info btn-xs" ng-if="paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Desativar Paciente"><i class="fa fa-minus fa-fw"></i></a>
-						                        <a class="btn btn-info btn-xs" ng-if="!paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Ativar Paciente"><i class="fa fa-refresh fa-fw"></i></a>
-						                    </td>
-						                </tr>					 
-						            </tbody>
-						         </table>					 
-						     </div>
-						 </div> <!-- /#list -->                             		                                 
+	                <div class="row">	                 	
+	                 	<table ng-table="ctrl.tableParams" class="table table-condensed table-bordered table-striped">							
+    						<tr ng-repeat="paciente in $data | filter:ctrl.pesquisaNome">
+        						<td data-title="'Nome'">{{paciente.nomeCompleto}}</td>
+					            <td data-title="'CPF'">{{paciente.cpf | cpfFormat}}</td>
+					       		<td data-title="'Data de Nascimento'">{{paciente.dataNascimento | date:'dd/MM/yyyy'}}</td>
+					            <td data-title="'Telefone'">{{paciente.telefoneContato | telefoneFormat}}</td>					            
+					            <td data-title="'Ações'">
+					            	<a class="btn btn-success btn-xs" ng-click="ctrl.iniciarConsulta(paciente)" title="Iniciar Consulta"><i class="fa fa-calendar-check-o fa-fw"></i></a>
+						            <a class="btn btn-primary btn-xs" ng-click="ctrl.verProntuarios(paciente)" title="Prontuários"><i class="fa fa-file-text-o fa-fw"></i></a>
+						            <a class="btn btn-warning btn-xs" ng-click="ctrl.editarPaciente(paciente)" title="Editar Paciente"><i class="fa fa-pencil fa-fw"></i></a>					                        
+						            <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirPaciente(paciente)" title="Excluir Paciente"><i class="fa fa-user-times fa-fw"></i></a> 					                        						                        
+						            <a class="btn btn-info btn-xs" ng-if="paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Desativar Paciente"><i class="fa fa-minus fa-fw"></i></a>
+						            <a class="btn btn-info btn-xs" ng-if="!paciente.ativo" ng-click="ctrl.ativarDesativarPaciente(paciente)" title="Ativar Paciente"><i class="fa fa-refresh fa-fw"></i></a>
+					            </td>					                    		
+    						</tr>
+    					</table>						                              		                                
 					</div>
 				</div>
 			</div>

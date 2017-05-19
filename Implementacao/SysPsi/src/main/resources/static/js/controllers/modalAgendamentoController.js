@@ -87,7 +87,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 * Cancela a operação na janela modal
 	 */
 	ctrl.cancelar = function () {				
-		$uibModalInstance.dismiss('cancel');		
+		$uibModalInstance.dismiss('cancel');				
 	};		
 	
 	/**
