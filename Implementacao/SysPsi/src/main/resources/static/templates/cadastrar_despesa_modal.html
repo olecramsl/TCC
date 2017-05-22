@@ -19,7 +19,8 @@
 					<label>Valor</label>
 					<input name="valor" maxlength="7" ng-model="despesa.valor" 
 						ng-pattern="/^\$?[\d]+(\,\d{1,2})?$/"
-						ng-required="true">
+						ng-required="true"
+						formatted-valor>
 				</md-input-container>
 				<md-input-container class="md-block">
 					<label>Data de Vencimento</label>

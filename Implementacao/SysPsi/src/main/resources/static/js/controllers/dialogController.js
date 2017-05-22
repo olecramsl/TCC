@@ -65,10 +65,10 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 						var totalDespesasMesCorrente = 0;
 						var totalDespesasPagas = 0;
 						var totalDespesasNaoPagas = 0;
+						var lstDespesas = financeiroFactory.getLstDespesas();
 						
 						if (ctrl.editando) {
-							// Exclui o item da lista. Se após edição a despesa estiver no range do período, inclui novamente
-							var lstDespesas = financeiroFactory.getLstDespesas();
+							// Exclui o item da lista. Se após edição a despesa estiver no range do período, inclui novamente							
 							var antigoValor = 0;
 							var vencimentoAntigo = null;
 						    var index = -1;					    
@@ -82,7 +82,7 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 							}					
 							if (index > -1) { // Edição														
 								lstDespesas.splice(index, 1);
-								financeiroFactory.setLstDespesas(lstDespesas);
+								financeiroFactory.setLstDespesas(angular.copy(lstDespesas));
 								
 								if (novaDespesa.pago) {
 									totalDespesasPagas = financeiroFactory.getTotalDespesasPagasPeriodo();							
@@ -102,8 +102,9 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 							}
 						}
 																									
-						if (dtDespesa >= dtInicio && dtDespesa <= dtFim) {						
-							financeiroFactory.addDespesaNaLista(response.data);
+						if (dtDespesa >= dtInicio && dtDespesa <= dtFim) {							
+							lstDespesas.push(response.data);							
+							financeiroFactory.setLstDespesas(angular.copy(lstDespesas));							
 							
 							if (response.data.pago) {
 								totalDespesasPagas = financeiroFactory.getTotalDespesasPagasPeriodo();							

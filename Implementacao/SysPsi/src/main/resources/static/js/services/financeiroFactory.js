@@ -1,6 +1,7 @@
 angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', function($http, consts) {
 	var _despesa;
 	var _lstDespesas;	
+	var _lstReceitas;
 	var _dtInicioPeriodo;
 	var _dtFimPeriodo;
 	var _totalConsultasMesCorrente;	
@@ -28,10 +29,11 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		return $http.get(consts.BASE_URL + '/listarConsultasPorPeriodo', {params});
 	}
 	
-	return {
-		addDespesaNaLista: function(despesa) { _lstDespesas.push(despesa); },	
+	return {		
 		getLstDespesas: function() { return _lstDespesas; },
 		setLstDespesas: function(lstDespesas) { _lstDespesas = lstDespesas; },
+		getLstReceitas: function() { return _lstReceitas; },
+		setLstReceitas: function(lstReceitas) { _lstReceitas = lstReceitas; },
 		getDespesa: function() { return _despesa; },
 		setDespesa: function(despesa) { _despesa = despesa; },
 		getDespesaId: function() { return _despesa.id; },

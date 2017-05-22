@@ -21,7 +21,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	});			
 	
 	$scope.$watch(function () { return ctrl.lstPacientes; }, function (newValue, oldValue) {
-		ctrl.tableParams = new NgTableParams({ count: 10 }, { counts: [], dataset: ctrl.lstPacientes });
+		ctrl.tableParams = new NgTableParams({ count: 10, sorting: { nomeCompleto: "asc" } }, { counts: [], dataset: ctrl.lstPacientes });
 	});
 	
 	/*

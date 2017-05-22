@@ -1,10 +1,10 @@
 <head>
 	<meta charset="utf-8">
 </head>
-<div id="page-wrapper" exitCadastroDespesaPage>
+<div id="page-wrapper">
 	<div class="row">
 		<div class="col-lg-12">
-			<h1 class="page-header">Financeiro</h1>
+			<h1 class="page-header">Despesas</h1>
 		</div>
 		<!-- /.col-lg-12 -->
 	</div>
@@ -32,31 +32,44 @@
 							<md-datepicker ng-model="ctrl.dtFim" md-placeholder="Informe a data" md-min-date="ctrl.dtInicio"></md-datepicker>
 						</div>
 						<div class="col-md-2"> 
-							<button type="button" ng-click="ctrl.pesquisarPeriodo(ctrl.dtInicio, ctrl.dtFim)" class="btn btn-primary btn-block">Pesquisar</button>
+							<button type="button" ng-click="ctrl.pesquisarDespesasPeriodo(ctrl.dtInicio, ctrl.dtFim)" class="btn btn-primary btn-block">Pesquisar</button>
 						</div>
 					</div>
 					<br />
-					<div class="row">
+					<div class="row">																	
 						<div class="col-md-8">
-							<h4>Total recebido com consultas no período: </h4>
+							<h4>Total de valores pagos no período: </h4>
 						</div>
-						<div class="col-md-4" style="text-align: right; color: #0A6CAC;">
-							<h4>{{ctrl.totalConsultasPeriodo | monetarioFormat}}</h4>
+						<div class="col-md-4" style="text-align: right; color: #0A6CAC; font-weight: bold;">
+							<h4>{{ctrl.totalDespesasPagasPeriodo | monetarioFormat}}</h4>
+						</div>						
+						<div class="col-md-8">
+							<h4>Total de valores não pagos no período: </h4>
+						</div>
+						<div class="col-md-4" style="text-align: right; color: #0A6CAC; font-weight: bold;">
+							<h4>{{ctrl.totalDespesasNaoPagasPeriodo | monetarioFormat}}</h4>
+						</div>
+						<div class="col-md-8">
+							<h4>Total de despesas no período: </h4>
+						</div>
+						<div class="col-md-4" style="text-align: right; color: #E4004D; font-weight: bold;">
+							<h4>{{ctrl.totalDespesasPeriodo | monetarioFormat}}</h4>
 						</div>
 					</div>
 					
                  	<div id="list" class="row">                 		 
-						<table ng-table="ctrl.tableParams" class="table table-condensed table-bordered table-striped">
+						<table ng-table="ctrl.tableDespesasParams" class="table table-condensed table-bordered table-striped">
 							<caption style="text-align: center;">Despesas no período</caption>							
     						<tr ng-repeat="despesa in $data">
         						<td data-title="'Descrição'">{{despesa.descricao}}</td>
-					            <td data-title="'Dt Vencimento'">{{despesa.vencimento | date: 'dd/MM/yyyy'}}</td>
-					       		<td data-title="'Valor'">{{despesa.valor | monetarioFormat}}</td>
-					            <td data-title="'Pago'">{{despesa.pago | booleanFormat}}</td>
+					            <td data-title="'Dt Vencimento'" class="text-center">{{despesa.vencimento | date: 'dd/MM/yyyy'}}</td>
+					       		<td data-title="'Valor'" class="text-center">{{despesa.valor | monetarioFormat}}</td>
+					            <td data-title="'Pago'" class="text-center">{{despesa.pago | booleanFormat}}</td>
 					            <td data-title="'Observação'">{{despesa.observacao}}</td>
 					            <td data-title="'Ações'">
 					            	<a class="btn btn-warning btn-xs" ng-click="ctrl.editarDespesa(despesa)" title="Editar Despesa"><i class="fa fa-pencil fa-fw"></i></a>
 					                <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirDespesa(despesa)" title="Excluir Despesa"><i class="fa fa-close fa-fw"></i></a>
+					                <a class="btn btn-success btn-xs" ng-disabled="despesa.pago" ng-click="ctrl.marcarPago(despesa)" title="Marcar como Pago"><i class="fa fa-check fa-fw"></i></a>
 					            </td>					                    		
     						</tr>    						    						    						    					
 						</table>

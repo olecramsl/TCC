@@ -1,0 +1,62 @@
+<head>
+	<meta charset="utf-8">
+</head>
+<div id="page-wrapper">
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header">Receitas</h1>
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<!-- /.row -->
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">					
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-md-2">
+							<h4>Período:</h4> 
+						</div>
+						<div class="col-md-4">
+							<md-datepicker ng-model="ctrl.dtInicio" md-placeholder="Informe a data"></md-datepicker>
+						</div>
+						<div class="col-md-4"> 
+							<md-datepicker ng-model="ctrl.dtFim" md-placeholder="Informe a data" md-min-date="ctrl.dtInicio"></md-datepicker>
+						</div>
+						<div class="col-md-2"> 
+							<button type="button" ng-click="ctrl.pesquisarReceitasPeriodo(ctrl.dtInicio, ctrl.dtFim)" class="btn btn-primary btn-block">Pesquisar</button>
+						</div>
+					</div>
+					<br />
+					<div class="row">																	
+						<div class="col-md-8">
+							<h4>Total de valores pagos em consultas no período: </h4>
+						</div>
+						<div class="col-md-4" style="text-align: right; color: #00B768; font-weight: bold;">
+							<h4>{{ctrl.totalConsultasPeriodo | monetarioFormat}}</h4>
+						</div>												
+					</div>
+					
+                 	<div id="list" class="row">                 		 
+						<table ng-table="ctrl.tableReceitasParams" class="table table-condensed table-bordered table-striped">
+							<caption style="text-align: center;">Despesas no período</caption>							
+    						<tr ng-repeat="agendamento in $data">
+        						<td data-title="'Paciente'">{{agendamento.paciente.nomeExibicao}}</td>
+					            <td data-title="'Dt Consulta'" class="text-center">{{agendamento.consulta.inicio | date: 'dd/MM/yyyy'}}</td>
+					       		<td data-title="'Valor'" class="text-center">{{agendamento.consulta.valor | monetarioFormat}}</td>					            
+					            <td data-title="'Observação'">{{agendamento.description}}</td>
+					            <td data-title="'Ações'">
+					            	<!-- 
+					            	<a class="btn btn-warning btn-xs" ng-click="ctrl.editarDespesa(despesa)" title="Editar Despesa"><i class="fa fa-pencil fa-fw"></i></a>
+					                <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirDespesa(despesa)" title="Excluir Despesa"><i class="fa fa-close fa-fw"></i></a>
+					                <a class="btn btn-success btn-xs" ng-disabled="despesa.pago" ng-click="ctrl.marcarPago(despesa)" title="Marcar como Pago"><i class="fa fa-check fa-fw"></i></a>
+					                 -->
+					            </td>					                    		
+    						</tr>    						    						    						    					
+						</table>
+					 </div> <!-- /#list -->                             		                                 																																	
+				</div>
+			</div>
+		</div>
+	</div>
+</div>									
