@@ -5,8 +5,17 @@ angular.module('syspsi').directive('formattedValor', ['$filter', function($filte
 			ctrl.$formatters.push(function(data) {				
 				//convert data from model format to view format				
 				if (data) {
-					var valorFormat = $filter('monetarioFormat');
-					return valorFormat(data); //converted
+					if (data) {    
+			    		var novoValor = data.toFixed(2).toString();
+			    		if (novoValor.split(".").length > 1 || novoValor.split(",").length > 1) {    			   
+			    			novoValor = novoValor.replace('.',',');
+			    		} else {    			   
+			    			novoValor = novoValor + ",00";
+			    		}
+			    		return novoValor;
+			    	} else {
+			    		return "0,00";
+			    	} 	
 				}				
 			});
 		}

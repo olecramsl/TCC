@@ -65,33 +65,13 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 			.cancel('Não');
 
 		$mdDialog.show(confirm).then(function() {  			
-			financeiroFactory.excluirDespesa(despesa).then(
+			var despesaDTO = financeiroFactory.prepararDespesaDTO(despesa);
+			financeiroFactory.excluirDespesa(despesaDTO).then(
 					successCallback = function(response) {
-						var lstDespesas = financeiroFactory.getLstDespesas(); 
-						var index = lstDespesas.indexOf(despesa);						
-						if (index > -1) {				
-							lstDespesas.splice(index, 1);							
-							financeiroFactory.setLstDespesas(angular.copy(lstDespesas));							
-
-							if (despesa.pago) {
-								var totalDespesasPagas = financeiroFactory.getTotalDespesasPagasPeriodo();							
-								financeiroFactory.setTotalDespesasPagasPeriodo(totalDespesasPagas - despesa.valor);
-							} else {
-								var totalDespesasNaoPagas = financeiroFactory.getTotalDespesasNaoPagasPeriodo();							
-								financeiroFactory.setTotalDespesasNaoPagasPeriodo(totalDespesasNaoPagas - despesa.valor);
-							}
-							
-							var totalDespesas = financeiroFactory.getTotalDespesasPeriodo();						
-							financeiroFactory.setTotalDespesasPeriodo(totalDespesas - despesa.valor);
-							
-							var dtInicioMesCorrente = financeiroFactory.getDtInicioMesCorrente();
-							var dtFimMesCorrente = financeiroFactory.getDtFimMesCorrente();
-							if (despesa.vencimento >= dtInicioMesCorrente && despesa.vencimento <= dtFimMesCorrente) {
-								totalDespesasMesCorrente = financeiroFactory.getTotalDespesasMesCorrente();
-								financeiroFactory.setTotalDespesasMesCorrente(totalDespesasMesCorrente - despesa.valor);
-							}
-						}
-						
+						financeiroFactory.setLstDespesas(response.data.lstDespesas);
+						financeiroFactory.setTotalDespesasPeriodo(response.data.totalDespesas);
+						financeiroFactory.setTotalDespesasPagasPeriodo(response.data.totalDespesasPagas);
+						financeiroFactory.setTotalDespesasNaoPagasPeriodo(response.data.totalDespesasNaoPagas);
 					},
 					errorCallback = function(error) {
 						utilService.tratarExcecao(error);
@@ -126,24 +106,11 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 	
 	ctrl.pesquisarDespesasPeriodo = function(dataInicial, dataFinal) {		
 		financeiroFactory.listarDespesasPorPeriodo(dataInicial, dataFinal).then(
-				successCallback = function(response) {							
-					financeiroFactory.setLstDespesas(response.data);					
-					
-					var totalDespesas = 0;
-					var totalDespesasPagas = 0;
-					var totalDespesasNaoPagas = 0;
-					response.data.forEach(function(despesa) {
-						if (despesa.pago) {
-							totalDespesasPagas += despesa.valor;
-						} else {
-							totalDespesasNaoPagas += despesa.valor;
-						}
-						totalDespesas += despesa.valor;
-					});
-													
-					financeiroFactory.setTotalDespesasPeriodo(totalDespesas);
-					financeiroFactory.setTotalDespesasPagasPeriodo(totalDespesasPagas);
-					financeiroFactory.setTotalDespesasNaoPagasPeriodo(totalDespesasNaoPagas);					
+				successCallback = function(response) {
+					financeiroFactory.setLstDespesas(response.data.lstDespesas);
+					financeiroFactory.setTotalDespesasPeriodo(response.data.totalDespesas);
+					financeiroFactory.setTotalDespesasPagasPeriodo(response.data.totalDespesasPagas);
+					financeiroFactory.setTotalDespesasNaoPagasPeriodo(response.data.totalDespesasNaoPagas);
 				},
 				errorCallback = function(error) {					
 					financeiroFactory.setLstDespesas({});
@@ -155,12 +122,8 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 	ctrl.pesquisarReceitasPeriodo = function(dataInicial, dataFinal) {		
 		financeiroFactory.listarConsultasPorPeriodo(dataInicial, dataFinal).then(
 				successCallback = function(response) {
-					financeiroFactory.setLstReceitas(response.data);
-					var totalConsultas = 0;
-					response.data.forEach(function(agendamento) {
-						totalConsultas += agendamento.consulta.valor;
-					});										
-					financeiroFactory.setTotalConsultasPeriodo(totalConsultas);
+					financeiroFactory.setLstReceitas(response.data.lstAgendamentos);
+					financeiroFactory.setTotalConsultasPeriodo(response.data.totalConsultas);
 				},
 				errorCallback = function(error) {
 					financeiroFactory.setTotalConsultasPeriodo(0);
@@ -173,32 +136,32 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		var novaDespesa = angular.copy(despesa);	
 		novaDespesa.pago = true;
 		
-		financeiroFactory.salvarDespesa(novaDespesa).then(
+		var despesaDTO = financeiroFactory.prepararDespesaDTO(novaDespesa);
+		financeiroFactory.salvarDespesa(despesaDTO).then(
 				successCallback = function(response) {
-					var lstDespesas = financeiroFactory.getLstDespesas();				
-				    var index = -1;
-				    var valorDespesa = 0;
-					for(var i = 0; i < lstDespesas.length; i++) {
-						if (lstDespesas[i].id === novaDespesa.id) {						
-							index = i;
-							valorDespesa = lstDespesas[i].valor; 
-							lstDespesas[i].pago = true;
-							break;
-						}
-					}
-										
-					if (index > -1) {
-						var totalDespesasPagas = financeiroFactory.getTotalDespesasPagasPeriodo();							
-						financeiroFactory.setTotalDespesasPagasPeriodo(totalDespesasPagas + valorDespesa);
-						
-						var totalDespesasNaoPagas = financeiroFactory.getTotalDespesasNaoPagasPeriodo();							
-						financeiroFactory.setTotalDespesasNaoPagasPeriodo(totalDespesasNaoPagas - valorDespesa);											
-					}					
+					financeiroFactory.setLstDespesas(response.data.lstDespesas);
+					financeiroFactory.setTotalDespesasPeriodo(response.data.totalDespesas);
+					financeiroFactory.setTotalDespesasPagasPeriodo(response.data.totalDespesasPagas);
+					financeiroFactory.setTotalDespesasNaoPagasPeriodo(response.data.totalDespesasNaoPagas);
 				},
 				errorCallback = function(error) {
 					utilService.tratarExcecao(error);
 				}
 		);		
+	};
+	
+	ctrl.editarConsulta = function(agendamento) {		
+		financeiroFactory.setAgendamento(agendamento);
+		$mdDialog.show({
+			controller: 'DialogCtrl',			
+		    templateUrl: 'templates/editar_consulta_modal.html',
+		    parent: angular.element(document.body),		    
+		    clickOutsideToClose: true		    
+		}).then(function() {			
+			financeiroFactory.setAgendamento({});
+		}, function() {			
+			financeiroFactory.setAgendamento({});
+		});
 	};
 	
 	ctrl.dtInicio = new Date(moment().startOf('month').local());

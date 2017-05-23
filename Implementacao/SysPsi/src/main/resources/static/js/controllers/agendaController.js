@@ -102,32 +102,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 			  eventDrop : eventDrop,
 			  viewRender: viewRender			
 		  })
-  };  
-    
-  /**
-   * Popula a lista de pacientes ativos
-   */
-  var carregarPacientesAtivos = function() {
-	  pacienteFactory.listarPacientesAtivosInativos(true).then(
-	      successCallback = function(response) {	    	  
-	    	  agendamentoFactory.setLstPacientesAtivos(response.data);	    	  
-	  	  },
-	  	  errorCallback = function (error, status){
-	  		utilService.tratarExcecao(error); 
-	  	  }
-	  );
-  };   
-  
-  var carregarConveniosAtivos = function() {
-	  convenioFactory.listarConveniosAtivos().then(
-		      successCallback = function(response) {		    	  
-		    	  convenioFactory.setLstConveniosAtivos(response.data);		    	  		    	  		    	 
-		  	  },
-		  	  errorCallback = function (error, status){
-		  		utilService.tratarExcecao(error); 
-		  	  }
-		  );
-  };
+  };        
   
   /**
    * Limpa os dados pertinentes a um agendamento
@@ -201,8 +176,5 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 			  utilService.tratarExcecao(error);			  						
 		  }
 	  );		  	 	 
-  };           
-  
-  carregarPacientesAtivos();
-  carregarConveniosAtivos();  
+  };                
 }]);

@@ -7,8 +7,8 @@ angular.forEach(lazyModules, function(dependency) {
 
 angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', '$route', 
 	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'NgTableParams', 
-	'utilService', function ($mdDialog, $uibModal,	$scope,	$http, $location, $route, convenioFactory, pacienteFactory, cadastroPacienteFactory, 
-		consultaPacienteFactory, agendamentoFactory, NgTableParams, utilService) {	
+	'utilService', function ($mdDialog, $uibModal,	$scope,	$http, $location, $route, convenioFactory, pacienteFactory,	cadastroPacienteFactory, 
+	consultaPacienteFactory, agendamentoFactory, NgTableParams, utilService) {	
 	
 	var ctrl = this;
 		
@@ -55,17 +55,6 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		  
 	// Busca CEP
 	ctrl.loading = false;
-	
-	var carregarConveniosAtivos = function() {
-		convenioFactory.listarConveniosAtivos().then(
-				successCallback = function(response) {	  
-					ctrl.lstConveniosAtivos = response.data;					
-				},
-				errorCallback = function (error, status){					
-					utilService.tratarExcecao(error); 
-				}
-		);
-	};
 	
 	ctrl.carregarPacientes = function() {	
 		if (ctrl.pesquisa.tipoPesquisa === "1") {			
@@ -166,8 +155,16 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 				
 					
 				ctrl.paciente = {};				
-				$scope.cadastroPacienteForm.$setPristine();									
+				$scope.cadastroPacienteForm.$setPristine();	
 				
+				pacienteFactory.listarPacientesAtivosInativos(true).then(
+						successCallback = function(response) {					    
+					    	  agendamentoFactory.setLstPacientesAtivos(response.data);	    	  
+					  	  },
+					  	  errorCallback = function (error, status){
+					  		utilService.tratarExcecao(error); 
+					  	  }
+				);
 			},
 			errorCallback = function (error, status){		
 				paciente.dataNascimento = dataNascimentoPaciente; 
@@ -249,6 +246,15 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 			cadastroPacienteFactory.excluirPaciente(paciente).then(
 				successCallback = function(response) {																							
 					ctrl.carregarPacientes();	
+					
+					pacienteFactory.listarPacientesAtivosInativos(true).then(
+							successCallback = function(response) {					    
+						    	  agendamentoFactory.setLstPacientesAtivos(response.data);	    	  
+						  	  },
+						  	  errorCallback = function (error, status){
+						  		utilService.tratarExcecao(error); 
+						  	  }
+					);
 				},
 				errorCallback = function (error, status) { 	
 					utilService.tratarExcecao(error); 
@@ -262,6 +268,15 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 			cadastroPacienteFactory.atualizarPaciente(paciente).then(		
 				successCallback = function(response) {									
 					ctrl.carregarPacientes();
+					
+					pacienteFactory.listarPacientesAtivosInativos(true).then(
+							successCallback = function(response) {					    
+						    	  agendamentoFactory.setLstPacientesAtivos(response.data);	    	  
+						  	  },
+						  	  errorCallback = function (error, status){
+						  		utilService.tratarExcecao(error); 
+						  	  }
+					);
 				},
 				errorCallback = function (error, status) {					
 					utilService.tratarExcecao(error); 
@@ -309,8 +324,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 				}
 		);
 	};
-			
-	carregarConveniosAtivos();
+				
 	ctrl.carregarPacientes();
 	carregarGruposPacientes();		
 }]);

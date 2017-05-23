@@ -4,7 +4,7 @@ import java.util.Calendar;
 
 import br.com.syspsi.model.entity.Agendamento;
 
-public class AgendamentoDTO {
+public class InAgendamentoDTO {
 	private Agendamento agendamento;
 	private boolean repetirSemanalmente;	
 	private Calendar dataInicialViewFC;

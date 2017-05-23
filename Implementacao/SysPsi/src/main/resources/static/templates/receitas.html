@@ -39,19 +39,18 @@
 					
                  	<div id="list" class="row">                 		 
 						<table ng-table="ctrl.tableReceitasParams" class="table table-condensed table-bordered table-striped">
-							<caption style="text-align: center;">Despesas no período</caption>							
+							<caption style="text-align: center;">Receitas no período</caption>							
     						<tr ng-repeat="agendamento in $data">
         						<td data-title="'Paciente'">{{agendamento.paciente.nomeExibicao}}</td>
+        						<td data-title="'Convenio'" class="text-center">{{agendamento.convenio.nome}}</td>
 					            <td data-title="'Dt Consulta'" class="text-center">{{agendamento.consulta.inicio | date: 'dd/MM/yyyy'}}</td>
-					       		<td data-title="'Valor'" class="text-center">{{agendamento.consulta.valor | monetarioFormat}}</td>					            
-					            <td data-title="'Observação'">{{agendamento.description}}</td>
+					            <td data-title="'Hora Consulta'" class="text-center">{{agendamento.consulta.inicio | date: 'HH:mm'}}</td>
+					       		<td data-title="'Valor'" class="text-center">{{agendamento.consulta.valor | monetarioFormat}}</td>
+					       		<td data-title="'Recibo Entregue'" class="text-center">{{agendamento.consulta.recibo | booleanFormat}}</td>					            
+					            <td data-title="'Observação'">{{agendamento.description}}</td>					            					                    		
 					            <td data-title="'Ações'">
-					            	<!-- 
-					            	<a class="btn btn-warning btn-xs" ng-click="ctrl.editarDespesa(despesa)" title="Editar Despesa"><i class="fa fa-pencil fa-fw"></i></a>
-					                <a class="btn btn-danger btn-xs" ng-click="ctrl.excluirDespesa(despesa)" title="Excluir Despesa"><i class="fa fa-close fa-fw"></i></a>
-					                <a class="btn btn-success btn-xs" ng-disabled="despesa.pago" ng-click="ctrl.marcarPago(despesa)" title="Marcar como Pago"><i class="fa fa-check fa-fw"></i></a>
-					                 -->
-					            </td>					                    		
+					            	<a class="btn btn-warning btn-xs" ng-click="ctrl.editarConsulta(agendamento)" title="Editar Consulta"><i class="fa fa-pencil fa-fw"></i></a>
+					            </td>
     						</tr>    						    						    						    					
 						</table>
 					 </div> <!-- /#list -->                             		                                 																																	

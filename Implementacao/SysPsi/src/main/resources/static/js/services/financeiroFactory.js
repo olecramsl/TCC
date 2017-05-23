@@ -1,12 +1,11 @@
 angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', function($http, consts) {
+	var _agendamento;
 	var _despesa;
 	var _lstDespesas;	
 	var _lstReceitas;
 	var _dtInicioPeriodo;
-	var _dtFimPeriodo;
-	var _totalConsultasMesCorrente;	
-	var _totalConsultasPeriodo;
-	var _totalDespesasMesCorrente;
+	var _dtFimPeriodo;	
+	var _totalConsultasPeriodo;	
 	var _totalDespesasPeriodo;
 	var _totalDespesasPagasPeriodo;
 	var _totalDespesasNaoPagasPeriodo;
@@ -29,7 +28,17 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		return $http.get(consts.BASE_URL + '/listarConsultasPorPeriodo', {params});
 	}
 	
+	var _prepararDespesaDTO = function(despesa) {		
+		return despesaDTO = {
+				despesa: angular.copy(despesa),
+				dataInicial: _dtInicioPeriodo,
+				dataFinal: _dtFimPeriodo
+		}
+	};
+	
 	return {		
+		getAgendamento: function() { return _agendamento; },
+		setAgendamento: function(agendamento) { _agendamento = agendamento; },	
 		getLstDespesas: function() { return _lstDespesas; },
 		setLstDespesas: function(lstDespesas) { _lstDespesas = lstDespesas; },
 		getLstReceitas: function() { return _lstReceitas; },
@@ -49,19 +58,13 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		getDespesaPago: function() { return _despesa.pago; },
 		setDespesaPago: function(pago) { despesa.pago = pago; },
 		getDespesaObservacao: function() { return _despesa.observacao; },
-		setDespesaPago: function(observacao) { despesa.observacao = observacao; },
-		getDtInicioMesCorrente: function() { return moment().startOf('month').local(); },		
-		getDtFimMesCorrente: function() { return moment().endOf('month').local(); },		
+		setDespesaPago: function(observacao) { despesa.observacao = observacao; },						
 		getDtInicioPeriodo: function() { return _dtInicioPeriodo; },
 		setDtInicioPeriodo: function(dtInicioPeriodo) { _dtInicioPeriodo = dtInicioPeriodo; },
 		getDtFimPeriodo: function() { return _dtFimPeriodo; },
-		setDtFimPeriodo: function(dtFimPeriodo) { _dtFimPeriodo = dtFimPeriodo; },
-		getTotalConsultasMesCorrente: function() { return _totalConsultasMesCorrente; },
-		setTotalConsultasMesCorrente: function(totalConsultasMesCorrente) { _totalConsultasMesCorrente = totalConsultasMesCorrente; },		
+		setDtFimPeriodo: function(dtFimPeriodo) { _dtFimPeriodo = dtFimPeriodo; },			
 		getTotalConsultasPeriodo: function() { return _totalConsultasPeriodo; },
-		setTotalConsultasPeriodo: function(totalConsultasPeriodo) { _totalConsultasPeriodo = totalConsultasPeriodo; },
-		getTotalDespesasMesCorrente: function() { return _totalDespesasMesCorrente; },
-		setTotalDespesasMesCorrente: function(totalDespesasMesCorrente) { _totalDespesasMesCorrente = totalDespesasMesCorrente; },		
+		setTotalConsultasPeriodo: function(totalConsultasPeriodo) { _totalConsultasPeriodo = totalConsultasPeriodo; },			
 		getTotalDespesasPeriodo: function() { return _totalDespesasPeriodo; },
 		setTotalDespesasPeriodo: function(totalDespesasPeriodo) { _totalDespesasPeriodo = totalDespesasPeriodo; },
 		getTotalDespesasPagasPeriodo: function() { return _totalDespesasPagasPeriodo; },
@@ -71,6 +74,7 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		salvarDespesa: _salvarDespesa,
 		excluirDespesa: _excluirDespesa,
 		listarDespesasPorPeriodo: _listarDespesasPorPeriodo,
-		listarConsultasPorPeriodo: _listarConsultasPorPeriodo
+		listarConsultasPorPeriodo: _listarConsultasPorPeriodo,
+		prepararDespesaDTO: _prepararDespesaDTO
 	};
 }]);

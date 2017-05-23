@@ -5,7 +5,10 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	
 	var ctrl = this;	
 	
-	ctrl.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();	
+	//$scope.$watch(function() { return agendamentoFactory.getLstPacientesAtivos(); }, function(newValue, oldValue) {
+	//	ctrl.lstPacientesAtivos = newValue;
+	//});
+	ctrl.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();
 	ctrl.agendamento = agendamentoFactory.getAgendamento();
 	ctrl.agendamentoCarregado = agendamentoFactory.getAgendamentoCarregado();	
 	ctrl.msgConfirmacao = modalAgendamentoFactory.getMsgConfirmacao();

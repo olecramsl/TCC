@@ -36,7 +36,7 @@ import com.google.api.services.calendar.model.Events;
 
 import br.com.syspsi.exception.GCalendarException;
 import br.com.syspsi.model.Util;
-import br.com.syspsi.model.dto.AgendamentoDTO;
+import br.com.syspsi.model.dto.InAgendamentoDTO;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Paciente;
 import br.com.syspsi.model.entity.Psicologo;
@@ -494,7 +494,7 @@ public class AgendaController {
 	/**
 	 * Salva um agendamento. Se for um agendamento semanal, salva o primeiro evento. Nesse caso é necessário
 	 * chamar listarAgendamentos no AngularJS para que a view seja atualizada com os agendamentos futuros.
-	 * @param AgendamentoDTO dto contendo o agendamento; data inicial e final da view; e se o evento é semanal
+	 * @param InAgendamentoDTO dto contendo o agendamento; data inicial e final da view; e se o evento é semanal
 	 * @throws Exception Caso haja algum problema ao persistir os dados no BD	 
 	 */
 	@RequestMapping(
@@ -503,7 +503,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public Agendamento salvarAgendamento(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {
+	public Agendamento salvarAgendamento(@RequestBody InAgendamentoDTO agendamentoDTO) throws Exception {
 		logMessage("salvarAgendamento: início", false);		
 		Agendamento agendamento = agendamentoDTO.getAgendamento();
 		
@@ -561,7 +561,7 @@ public class AgendaController {
 	/**
 	 * Salva um agendamento. Se for um agendamento semanal, salva o primeiro evento. Nesse caso é necessário
 	 * chamar listarAgendamentos no AngularJS para que a view seja atualizada com os agendamentos futuros.
-	 * @param AgendamentoDTO dto contendo o agendamento; data inicial e final da view; e se o evento é semanal
+	 * @param InAgendamentoDTO dto contendo o agendamento; data inicial e final da view; e se o evento é semanal
 	 * @throws Exception Caso haja algum problema ao persistir os dados no BD	 
 	 */
 	@RequestMapping(
@@ -570,7 +570,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public Agendamento salvarAgendamentoTemporarioGCalendar(@RequestBody AgendamentoDTO agendamentoDTO) throws Exception {
+	public Agendamento salvarAgendamentoTemporarioGCalendar(@RequestBody InAgendamentoDTO agendamentoDTO) throws Exception {
 		logMessage("salvarAgendamentoTemporarioGCalendar: início", false);
 		Agendamento agendamento = agendamentoDTO.getAgendamento();
 		
