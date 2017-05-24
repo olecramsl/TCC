@@ -58,8 +58,8 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   };
 	
   var eventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {			
-	  var oldEvent = angular.copy(event); // evento dropado
-		
+	  var oldEvent = angular.copy(event); // evento dropado			  
+	  
 	  var days = moment.duration(delta).days()*(-1);
 	  oldEvent.start.add(days, "d");
 	  oldEvent.end.add(days, "d");						

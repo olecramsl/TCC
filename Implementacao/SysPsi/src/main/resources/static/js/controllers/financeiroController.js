@@ -65,7 +65,6 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 			.cancel('Não');
 
 		$mdDialog.show(confirm).then(function() {  			
-			//var despesaDTO = financeiroFactory.prepararDespesaDTO(despesa);
 			financeiroFactory.excluirDespesa(despesa).then(
 					successCallback = function(response) {
 						financeiroFactory.setLstDespesas(response.data.lstDespesas);

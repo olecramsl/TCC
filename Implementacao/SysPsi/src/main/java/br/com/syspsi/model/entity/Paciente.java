@@ -13,15 +13,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Paciente implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	private Long id;	
 	@ManyToOne
-    @JoinColumn(name="idpsicologo")
+    @JoinColumn(name="idpsicologo")	
 	private Psicologo psicologo;	
 	@ManyToOne
     @JoinColumn(name="idgrupo")
@@ -82,6 +84,7 @@ public class Paciente implements Serializable {
 	/**
 	 * @return the psicologo
 	 */
+	@JsonIgnore
 	public Psicologo getPsicologo() {
 		return psicologo;
 	}

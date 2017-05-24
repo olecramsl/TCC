@@ -105,7 +105,7 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 		private DataSource dataSource;	
 		
 		@Override	
-		protected void configure(HttpSecurity http) throws Exception {
+		protected void configure(HttpSecurity http) throws Exception {			
 			// Para qualquer requisição (anyRequest) é preciso estar 
 	        // autenticado (authenticated).			
 			http
