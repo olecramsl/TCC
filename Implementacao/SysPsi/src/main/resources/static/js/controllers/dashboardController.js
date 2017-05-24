@@ -24,7 +24,7 @@ angular.module('syspsi').controller('DashboardCtrl', ['$scope', 'financeiroFacto
 			  );
 	  };
 	  
-	  var carregarDespesasDoMes = function() {		
+	  var carregarContasDoMes = function() {		
 		  var dataInicial = moment().startOf('month').local().format();
 		  var dataFinal = moment().endOf('month').local().format();
 		
@@ -49,5 +49,5 @@ angular.module('syspsi').controller('DashboardCtrl', ['$scope', 'financeiroFacto
 	
 	carregarPacientesAtivos();
 	carregarConveniosAtivos();
-	carregarDespesasDoMes();
+	carregarContasDoMes();
 }]);

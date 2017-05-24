@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.syspsi.model.Util;
 import br.com.syspsi.model.dto.InDespesaDTO;
 import br.com.syspsi.model.dto.OutDespesaDTO;
 import br.com.syspsi.model.dto.OutReceitaDTO;
@@ -61,17 +62,17 @@ public class FinanceiroController {
 		
 		Despesa despesa = inDespesaDTO.getDespesa();
 		if (despesa == null) {
-			logMessage("FinanceiroController.excluirDespesa: despesa null", true);
+			logMessage("despesa null", true);
 			throw new Exception("Não foi possível excluir a despesa!");
 		}
 		
 		if (inDespesaDTO.getDataInicial() == null) {
-			logMessage("FinanceiroController.excluirDespesa: dataInicial null", true);
+			logMessage("dataInicial null", true);
 			throw new Exception("Não foi possível excluir a despesa!");
 		}
 		
 		if (inDespesaDTO.getDataFinal() == null) {
-			logMessage("FinanceiroController.excluirDespesa: dataFinal null", true);
+			logMessage("dataFinal null", true);
 			throw new Exception("Não foi possível excluir a despesa!");
 		}
 				
@@ -114,7 +115,7 @@ public class FinanceiroController {
 			throw new Exception("Não foi possível excluir a despesa!");
 		}
 		
-		try {
+		try {			
 			this.despesaRepositorio.delete(despesa);
 			OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(inDespesaDTO.getDataInicial(), inDespesaDTO.getDataFinal());
 			logMessage("FinanceiroController.excluirDespesa: fim", false);
@@ -184,8 +185,11 @@ public class FinanceiroController {
 			outReceitaDTO.setLstAgendamentos(this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo));
 			
 			BigDecimal totalConsultas = new BigDecimal(0);
-			for (Agendamento agendamento : outReceitaDTO.getLstAgendamentos()) {
+			for (Agendamento agendamento : outReceitaDTO.getLstAgendamentos()) {				
 				totalConsultas = totalConsultas.add(agendamento.getConsulta().getValor());
+				if (agendamento.getConsulta().getProntuario() != null && !agendamento.getConsulta().getProntuario().isEmpty()) {
+					agendamento.getConsulta().setProntuario(Util.decrypt(agendamento.getConsulta().getProntuario(), psicologo));
+				}
 			}
 			outReceitaDTO.setTotalConsultas(totalConsultas);
 			logMessage("ConsultaController.listarConsultasPorPeriodo: Fim", false);

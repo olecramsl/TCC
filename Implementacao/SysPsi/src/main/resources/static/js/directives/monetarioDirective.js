@@ -3,20 +3,20 @@ angular.module('syspsi').directive('formattedValor', ['$filter', function($filte
 		require: 'ngModel', 		
 		link: function(scope, element, attrs, ctrl) {			
 			ctrl.$formatters.push(function(data) {				
-				//convert data from model format to view format				
-				if (data) {
-					if (data) {    
-			    		var novoValor = data.toFixed(2).toString();
+				//convert data from model format to view format								
+				if (data) { 
+					if (!isNaN(data)) {						
+			    		var novoValor = parseFloat(data).toFixed(2);					
 			    		if (novoValor.split(".").length > 1 || novoValor.split(",").length > 1) {    			   
 			    			novoValor = novoValor.replace('.',',');
 			    		} else {    			   
 			    			novoValor = novoValor + ",00";
 			    		}
 			    		return novoValor;
-			    	} else {
-			    		return "0,00";
-			    	} 	
-				}				
+					} 
+		    	}
+				return "0,00";
+		    	 							
 			});
 		}
 	}

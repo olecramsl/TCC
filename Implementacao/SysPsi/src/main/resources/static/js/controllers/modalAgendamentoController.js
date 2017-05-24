@@ -99,8 +99,8 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	ctrl.salvar = function (agendamento, agendamentoCarregado) {
 		// Agendamento carregado da tebela temporária gCalendar
 		if (agendamentoCarregado && !agendamentoCarregado.paciente) {
-			var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento);
-			agendamentoFactory.salvarAgendamentoTemporarioGCalendar(agendamentoDTO).then();			
+			//var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento);
+			agendamentoFactory.salvarAgendamentoTemporarioGCalendar(agendamento).then();			
 		// Edicao	
 		} else if (agendamento.id) {	
 			var horas = agendamento.formatedStart.split(":")[0];
@@ -108,8 +108,8 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			agendamento.start = moment(agendamento.start).hour(horas).minute(minutos);
 			agendamento.end = moment(agendamento.start).add(ctrl.tempoSessao, 'm');			
 
-			var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento); 
-			agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
+			//var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento); 
+			agendamentoFactory.salvarAgendamento(agendamento).then(
 					successCallback = function(response) {	  				   					
 						var event = angular.element('.calendar').fullCalendar('clientEvents',agendamento.id);																								
 						if (event.length > 0) {
@@ -164,8 +164,8 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			agendamento.grupo = 0;
 					
 			
-			var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento);
-			agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
+			//var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento);
+			agendamentoFactory.salvarAgendamento(agendamento).then(
 					successCallback = function(response) {							
 						atualizarViewFC();
 					},

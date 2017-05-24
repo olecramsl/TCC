@@ -65,6 +65,7 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "INNER JOIN p.psicologo ps "							
 			+ "WHERE (DATE(a.start) BETWEEN DATE(?1) AND DATE(?2)) "
 			+ "AND a.consulta IS NOT NULL "
+			+ "AND a.consulta.valor > 0 "
 			+ "AND ps = ?3")
 	public List<Agendamento> listarConsultasPorPeriodo(Calendar dataInicial, Calendar dataFinal, Psicologo psicologo);
 }

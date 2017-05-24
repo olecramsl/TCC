@@ -8,11 +8,22 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'consts', funct
 		return $http.get(consts.BASE_URL + '/listarAgendamentos', {params});
 	};
 	
-	var _salvarAgendamento = function(agendamentoDTO) {
+	var _salvarAgendamento = function(ag) {
+		var agendamento = angular.copy(ag);
+		
+		var agendamentoDTO = {
+				agendamento        : agendamento,
+				repetirSemanalmente: agendamento.repetirSemanalmente				
+		};
 		return $http.post(consts.BASE_URL + '/salvarAgendamento', angular.copy(agendamentoDTO));
 	};
 	
-	var _salvarAgendamentoTemporarioGCalendar = function(agendamentoDTO) {
+	var _salvarAgendamentoTemporarioGCalendar = function(ag) {
+		var agendamentoDTO = {
+				agendamento        : agendamento,
+				repetirSemanalmente: agendamento.repetirSemanalmente				
+		};
+		
 		return $http.post(consts.BASE_URL + '/salvarAgendamentoTemporarioGCalendar', angular.copy(agendamentoDTO));
 	};
 	
@@ -40,24 +51,6 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'consts', funct
 		return $http.post(consts.BASE_URL + '/listarAgendamentosComConsulta', paciente);
 	};
 	
-	/**
-	 * Retorna o DTO a ser enviado ao método salvar
-	 */
-	var _prepararAgendamentoDTO = function(ag) {		
-		var agendamento = angular.copy(ag);
-		
-		var view = angular.element('.calendar').fullCalendar('getView');
-		var dataInicialView = view.start.local();
-		var dataFinalView = view.end.local();
-		
-		return agendamentoDTO = {
-				agendamento        : agendamento,
-				repetirSemanalmente: agendamento.repetirSemanalmente,				
-				dataInicialViewFC  : new Date(dataInicialView), 
-				dataFinalViewFC    : new Date(dataFinalView)
-		};
-	}		
-			
 	return {		
 		getAgendamento: function() { return _agendamento; },
 		setAgendamento: function(agendamento) { _agendamento = agendamento; },		
@@ -99,7 +92,6 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'consts', funct
 		removerAgendamentosFuturos: _removerAgendamentosFuturos,
 		moverAgendamentosFuturos: _moverAgendamentosFuturos,
 		atualizarAgendamentosFuturos: _atualizarAgendamentosFuturos,
-		listarAgendamentosComConsulta: _listarAgendamentosComConsulta,		
-		prepararAgendamentoDTO: _prepararAgendamentoDTO	
+		listarAgendamentosComConsulta: _listarAgendamentosComConsulta		
 	};
 }]);

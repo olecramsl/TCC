@@ -8,7 +8,8 @@
 	<meta name="author" content="">
 	<title>Syspsi</title>
 	
-	<link href="lib/wro-css/angular-bootstrap.css" rel="stylesheet">	
+	<!-- <link href="lib/wro-css/angular-bootstrap.css" rel="stylesheet">  -->	
+	<link href="lib/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css" >
 	<link href="lib/angular-material/angular-material-1.1.0.min.css" rel="stylesheet" type="text/css" >	 	
 	<link href="lib/clockpicker/bootstrap-clockpicker.min.css" rel="stylesheet" type="text/css" >
 	<link href='lib/fullcalendar/fullcalendar-3.1.0.min.css' rel='stylesheet' type="text/css" />
@@ -37,15 +38,15 @@
 	<!-- 
 	<div ng-controller="navigation" class="container">
 		<ul class="nav nav-pills" role="tablist">
-			<li class="active"><a href="#!/dashboard">home</a></li>
-			<li><a href="#!/login">login</a></li>
+			<li class="active"><a href="#/dashboard">home</a></li>
+			<li><a href="#/login">login</a></li>
 			<li ng-show="authenticated"><a href="" ng-click="logout()">logout</a></li>
 		</ul>
 	</div>
 	 -->
 	
 	<div ng-controller="LoginCtrl as ctrl">
-		<div ng-show="!authenticated"><a href="#!/login">login</a></div>
+		<div ng-show="!authenticated"><a href="#/login">login</a></div>
 		<div id="wrapper" ng-show="authenticated">
 			<!-- Navigation -->
 			<nav class="navbar navbar-default navbar-static-top" role="navigation"
@@ -82,44 +83,44 @@
 					<div class="sidebar-nav navbar-collapse">
 						<ul class="nav" id="side-menu">
 							<li>							
-								<a href="#!/dashboard"><i class="fa fa-dashboard fa-fw"></i>Dashboard</a>
+								<a href="#/dashboard"><i class="fa fa-dashboard fa-fw"></i>Dashboard</a>
 							</li>
 							
 							<li>
-								<a href="#!/agenda/"><i class="fa fa-table fa-fw"></i> Agenda</a>
+								<a href="#/agenda/"><i class="fa fa-table fa-fw"></i> Agenda</a>
 							</li>
 													
 							<li>
-	                            <a href="#!"><i class="fa fa-user-o fa-fw"></i> Pacientes<span class="fa arrow"></span></a>
+	                            <a href="#"><i class="fa fa-user-o fa-fw"></i> Pacientes<span class="fa arrow"></span></a>
 	                            <ul class="nav nav-second-level">
 	                                <li>
-	                                    <a href="#!/cadastrarPaciente"><i class="fa fa-user-plus fa-fw"></i>Cadastrar</a>
+	                                    <a href="#/cadastrarPaciente"><i class="fa fa-user-plus fa-fw"></i>Cadastrar</a>
 	                                </li>
 	                                <li>
-	                                    <a href="#!/consultarPacientes"><i class="fa fa-search fa-fw"></i>Consultar</a>
+	                                    <a href="#/consultarPacientes"><i class="fa fa-search fa-fw"></i>Consultar</a>
 	                                </li>
 	                            </ul>
 	                            <!-- /.nav-second-level -->
 	                        </li>
 							
 							<li>								
-	                            <a href="#!/financeiro"><i class="fa fa-money fa-fw"></i> Financeiro<span class="fa arrow"></span></a>
+	                            <a href="#/financeiro"><i class="fa fa-money fa-fw"></i> Financeiro<span class="fa arrow"></span></a>
 	                            <ul class="nav nav-second-level">
 	                                <li>
-	                                    <a href="#!/despesas"><i class="fa fa-arrow-down fa-fw"></i>Despesas</a>
+	                                    <a href="#/despesas"><i class="fa fa-arrow-down fa-fw"></i>Despesas</a>
 	                                </li>
 	                                <li>
-	                                    <a href="#!/receitas"><i class="fa fa-arrow-up fa-fw"></i>Receitas</a>
+	                                    <a href="#/receitas"><i class="fa fa-arrow-up fa-fw"></i>Receitas</a>
 	                                </li>
 	                            </ul>
 	                            <!-- /.nav-second-level -->
 	                        </li>
 							
 							<li>
-	                            <a href="#!"><i class="fa fa-handshake-o fa-fw"></i> Convênios<span class="fa arrow"></span></a>
+	                            <a href="#"><i class="fa fa-handshake-o fa-fw"></i> Convênios<span class="fa arrow"></span></a>
 	                            <ul class="nav nav-second-level">
 	                                <li>
-	                                    <a href="#!"><i class="fa fa-edit fa-fw"></i>Cadastro</a>
+	                                    <a href="#"><i class="fa fa-edit fa-fw"></i>Cadastro</a>
 	                                </li>
 	                            </ul>
 	                            <!-- /.nav-second-level -->
@@ -135,7 +136,14 @@
 	
 	<div ng-view></div>	 	
 	
-	<script type="text/javascript" src='lib/wro-js/angular-bootstrap.js'></script>		 	
+	<!-- <script type="text/javascript" src='lib/wro-js/angular-bootstrap.js'></script>  -->
+	<script type="text/javascript" src='lib/jquery-3.2.1.min.js'></script>
+	<script type="text/javascript" src='lib/angular-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/angular-route-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/angular-animate-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/angular-aria-1.5.9.min.js'></script>	
+	<script type="text/javascript" src='lib/angular-messages-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/bootstrap/bootstrap.min.js'></script>		 	
 	<script type="text/javascript" src='lib/angular-material/angular-material-1.1.0.min.js'></script>  	   	
 	<script type="text/javascript" src='lib/moment/moment-2.17.1.min.js'></script>	
 	<script type="text/javascript" src='lib/fullcalendar/fullcalendar-3.1.0.min.js'></script>

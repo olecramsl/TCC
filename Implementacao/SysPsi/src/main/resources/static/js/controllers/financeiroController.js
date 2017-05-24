@@ -65,8 +65,8 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 			.cancel('Não');
 
 		$mdDialog.show(confirm).then(function() {  			
-			var despesaDTO = financeiroFactory.prepararDespesaDTO(despesa);
-			financeiroFactory.excluirDespesa(despesaDTO).then(
+			//var despesaDTO = financeiroFactory.prepararDespesaDTO(despesa);
+			financeiroFactory.excluirDespesa(despesa).then(
 					successCallback = function(response) {
 						financeiroFactory.setLstDespesas(response.data.lstDespesas);
 						financeiroFactory.setTotalDespesasPeriodo(response.data.totalDespesas);
@@ -136,8 +136,8 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		var novaDespesa = angular.copy(despesa);	
 		novaDespesa.pago = true;
 		
-		var despesaDTO = financeiroFactory.prepararDespesaDTO(novaDespesa);
-		financeiroFactory.salvarDespesa(despesaDTO).then(
+		//var despesaDTO = financeiroFactory.prepararDespesaDTO(novaDespesa);
+		financeiroFactory.salvarDespesa(novaDespesa).then(
 				successCallback = function(response) {
 					financeiroFactory.setLstDespesas(response.data.lstDespesas);
 					financeiroFactory.setTotalDespesasPeriodo(response.data.totalDespesas);

@@ -133,8 +133,8 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   var updateEventDroped = function(event, oldEvent) {	  
 	  event.repetirSemanalmente = false;
 	  event.grupo = 0;
-	  var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(event);	 
-	  agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
+	  //var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(event);	 
+	  agendamentoFactory.salvarAgendamento(event).then(
 		  successCallback = function(response) {
 			  angular.element('.calendar').fullCalendar('removeEvents', event.id);
 			  angular.element('.calendar').fullCalendar('renderEvent', response.data);
@@ -146,8 +146,8 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 				  oldEvent.ativo = false;
 				  oldEvent.repetirSemanalmente = false;
 				  
-				  agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(oldEvent);
-				  agendamentoFactory.salvarAgendamento(agendamentoDTO).then(
+				  //agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(oldEvent);
+				  agendamentoFactory.salvarAgendamento(oldEvent).then(
 						  successCallback = function(response) {
 							  agendamentoFactory.setAgendamento(angular.copy(event));
 							  // Mantem o grupo original para pesquisa e, caso assim deseje o usuário, deslocamento dos eventos futuros

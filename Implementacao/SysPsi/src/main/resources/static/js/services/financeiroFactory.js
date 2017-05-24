@@ -10,12 +10,23 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 	var _totalDespesasPagasPeriodo;
 	var _totalDespesasNaoPagasPeriodo;
 	
-	var _salvarDespesa = function(despesa) {		
-		return $http.post(consts.BASE_URL + '/salvarDespesa', despesa);
+	var _salvarDespesa = function(despesa) {
+		var despesaDTO = {
+				despesa: angular.copy(despesa),
+				dataInicial: _dtInicioPeriodo,
+				dataFinal: _dtFimPeriodo
+		}
+		
+		return $http.post(consts.BASE_URL + '/salvarDespesa', despesaDTO);
 	};
 	
 	var _excluirDespesa = function(despesa) {
-		return $http.post(consts.BASE_URL + '/excluirDespesa', despesa);
+		var despesaDTO = {
+				despesa: angular.copy(despesa),
+				dataInicial: _dtInicioPeriodo,
+				dataFinal: _dtFimPeriodo
+		}
+		return $http.post(consts.BASE_URL + '/excluirDespesa', despesaDTO);
 	};
 	
 	var _listarDespesasPorPeriodo = function(dataInicial, dataFinal) {
@@ -27,14 +38,6 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		var params = {dataInicial: dataInicial, dataFinal: dataFinal};
 		return $http.get(consts.BASE_URL + '/listarConsultasPorPeriodo', {params});
 	}
-	
-	var _prepararDespesaDTO = function(despesa) {		
-		return despesaDTO = {
-				despesa: angular.copy(despesa),
-				dataInicial: _dtInicioPeriodo,
-				dataFinal: _dtFimPeriodo
-		}
-	};
 	
 	return {		
 		getAgendamento: function() { return _agendamento; },
@@ -74,7 +77,6 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		salvarDespesa: _salvarDespesa,
 		excluirDespesa: _excluirDespesa,
 		listarDespesasPorPeriodo: _listarDespesasPorPeriodo,
-		listarConsultasPorPeriodo: _listarConsultasPorPeriodo,
-		prepararDespesaDTO: _prepararDespesaDTO
+		listarConsultasPorPeriodo: _listarConsultasPorPeriodo
 	};
 }]);
