@@ -107,15 +107,20 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 		@Override	
 		protected void configure(HttpSecurity http) throws Exception {			
 			// Para qualquer requisição (anyRequest) é preciso estar 
-	        // autenticado (authenticated).			
+	        // autenticado (authenticated).
 			http
-		    	.httpBasic().and()
-		    	.authorizeRequests()
-		        	.antMatchers("/lib/**", "/js/**", "/", "/index.html", "/templates/login.html", "/webjars/**").permitAll()
-		        	.anyRequest().authenticated().and()
-		        .logout().and()
-		        .csrf()
-		        	.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());					
+				.authorizeRequests()
+					.antMatchers("/lib/**", "/js/**", "/", "/index.html").permitAll()
+					.anyRequest().authenticated().and()
+				.formLogin().loginPage("/index.html").and()
+				.logout().and()
+				.httpBasic().and()
+				.requiresChannel()
+					.anyRequest()
+					.requiresSecure().and()
+				.csrf()
+		        	.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());	
+				
 		}	
 		
 		@Override

@@ -93,6 +93,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
+			<!-- 
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
@@ -128,8 +129,7 @@
 						<groupId>org.webjars</groupId>
 						<artifactId>bootstrap</artifactId>
 						<version>3.3.7-1</version>
-					</dependency>
-					<!-- https://mvnrepository.com/artifact/org.webjars.bower/angular-route -->
+					</dependency>				
 					<dependency>
 						<groupId>org.webjars.bower</groupId>
 						<artifactId>angular-route</artifactId>
@@ -137,6 +137,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 

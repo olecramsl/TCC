@@ -10,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Psicologo implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -83,6 +85,7 @@ public class Psicologo implements Serializable {
 	/**
 	 * @return the senha
 	 */
+	@JsonIgnore
 	public String getSenha() {
 		return senha;
 	}
@@ -97,6 +100,7 @@ public class Psicologo implements Serializable {
 	/**
 	 * @return the chave
 	 */
+	@JsonIgnore
 	public byte[] getChave() {
 		return chave;
 	}

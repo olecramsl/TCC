@@ -19,7 +19,6 @@ angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http
 				$location.path('/dashboard');
 			} else {											
 				$rootScope.authenticated = false;
-				$location.path('/login');
 			}			
 			callback && callback();
 		}, function() {
@@ -43,6 +42,7 @@ angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http
 	ctrl.logout = function() {
 		loginFactory.logout();
 		$rootScope.authenticated = false;
+		ctrl.credentials = {};
 	    $location.path("/");
 	};
 }]);

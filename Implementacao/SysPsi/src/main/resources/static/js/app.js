@@ -1,5 +1,6 @@
 angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts", {
-	BASE_URL: "http://localhost:8080",
+	//BASE_URL: "http://localhost:8080",
+	BASE_URL: "https://localhost:8443",
 	TIPOS_CONFIRMACOES: {
 		'REMOVER_EVENTOS_FUTUROS': 1,
 		'MOVER_EVENTOS': 2,
@@ -7,8 +8,8 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 		'REMOVER_EVENTO': 4,
 		'REMOVER_EVENTOS_GRUPO': 5
 	}
-}).config(['$routeProvider', '$httpProvider', '$mdDateLocaleProvider', 'IdleProvider', 'KeepaliveProvider', 'consts',
-		function($routeProvider, $httpProvider, $mdDateLocaleProvider, IdleProvider, KeepaliveProvider, consts) {
+}).config(['$routeProvider', '$mdDateLocaleProvider', 'IdleProvider', 'KeepaliveProvider', 'consts', function($routeProvider, 
+		$mdDateLocaleProvider, IdleProvider, KeepaliveProvider, consts) {
 		
 		// configure Idle settings
 		IdleProvider.idle(1800); // in seconds - 30min
@@ -17,15 +18,11 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 		KeepaliveProvider.http(consts.BASE_URL + '/keepAlive');
 		
 		$routeProvider.
-			when('/login', { 
-				templateUrl: "templates/login.html",
-				controller: "LoginCtrl",
-				controllerAs: "ctrl"
-			}).when('/dashboard', { 
+			when('/dashboard', { 
 				templateUrl: "templates/dashboard.html",
 				controller: "DashboardCtrl",
 				controllerAs: "ctrl"
-			}).when('/agenda/', { 
+			}).when('/agenda', { 
 				templateUrl: "templates/agenda.html",
 				controller: "AgendaCtrl",
 				controllerAs: "ctrl"
@@ -63,7 +60,6 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 			return moment(date).format('DD/MM/YYYY');
 		};
 		
-		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 	}]).run(['$rootScope', '$location', 'loginFactory', 'Idle', 'idleService', function($rootScope, 
 			$location, loginFactory, Idle, idleService){
 		// start watching when the app runs. also starts the Keepalive service by default.

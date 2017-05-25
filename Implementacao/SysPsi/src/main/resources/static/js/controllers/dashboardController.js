@@ -1,5 +1,5 @@
-angular.module('syspsi').controller('DashboardCtrl', ['$scope', 'financeiroFactory', 'pacienteFactory', 'convenioFactory', 'agendamentoFactory',
-	'utilService', function($scope, financeiroFactory,	pacienteFactory, convenioFactory, agendamentoFactory, utilService) {
+angular.module('syspsi').controller('DashboardCtrl', ['$rootScope', '$scope', 'financeiroFactory', 'pacienteFactory', 'convenioFactory', 'agendamentoFactory',
+	'utilService', function($rootScope, $scope, financeiroFactory,	pacienteFactory, convenioFactory, agendamentoFactory, utilService) {
 	var ctrl = this;	
 		
 	var carregarPacientesAtivos = function() {

@@ -43,10 +43,41 @@
 			<li ng-show="authenticated"><a href="" ng-click="logout()">logout</a></li>
 		</ul>
 	</div>
-	 -->
-	
+	 -->	
 	<div ng-controller="LoginCtrl as ctrl">
-		<div ng-show="!authenticated"><a href="#/login">login</a></div>
+		<div class="col-md-4 col-md-offset-4" ng-show="!authenticated">    			
+	        <div class="login-panel panel panel-default">
+	            <div class="panel-heading">
+	                <h3 class="panel-title">Informe nome de usuário e senha</h3>
+	            </div>
+	            <div class="panel-body">
+	            	<div class="alert alert-danger" ng-show="ctrl.error">
+						Houve um problema no login. Por favor, tente novamente.					
+					</div>
+	                <form role="form" ng-submit="ctrl.login()">
+	                    <fieldset>
+	                        <div class="form-group">
+	                            <input class="form-control" placeholder="Usuário" id="username" name="username" 
+	                            	ng-model="ctrl.credentials.username" autofocus>
+	                        </div>
+	                        <div class="form-group">
+	                            <input class="form-control" placeholder="Senha" id="password" name="password" type="password" 
+	                            	ng-model="ctrl.credentials.password" value="">
+	                        </div>      
+	                        <!--                   
+	                        <div class="checkbox">
+	                            <label>
+	                                <input name="remember" type="checkbox" value="Remember Me">Lembrar-me
+	                            </label>
+	                        </div>
+	                         -->                                                                                       
+	                        <button type="submit" class="btn btn-lg btn-success btn-block">Entrar</button>
+	                    </fieldset>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+			
 		<div id="wrapper" ng-show="authenticated">
 			<!-- Navigation -->
 			<nav class="navbar navbar-default navbar-static-top" role="navigation"
@@ -64,8 +95,7 @@
 	
 				<ul class="nav navbar-top-links navbar-right">
 					<!-- /.dropdown -->
-					<li class="dropdown"><a class="dropdown-toggle"
-						data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
+					<li class="dropdown"><a class="dropdown-toggle"	data-toggle="dropdown"> <i class="fa fa-user fa-fw"></i>
 							<i class="fa fa-caret-down"></i>
 					</a>
 						<ul class="dropdown-menu dropdown-user">
@@ -83,7 +113,7 @@
 					<div class="sidebar-nav navbar-collapse">
 						<ul class="nav" id="side-menu">
 							<li>							
-								<a href="#/dashboard"><i class="fa fa-dashboard fa-fw"></i>Dashboard</a>
+								<a href="#/dashboard"><i class="fa fa-dashboard fa-fw"></i>Início</a>
 							</li>
 							
 							<li>
@@ -134,9 +164,8 @@
 		</div>	
 	</div>
 	
-	<div ng-view></div>	 	
-	
-	<!-- <script type="text/javascript" src='lib/wro-js/angular-bootstrap.js'></script>  -->
+	<div ng-view ng-show="authenticated"></div>	 	
+		
 	<script type="text/javascript" src='lib/jquery-3.2.1.min.js'></script>
 	<script type="text/javascript" src='lib/angular-1.5.9.min.js'></script>
 	<script type="text/javascript" src='lib/angular-route-1.5.9.min.js'></script>
