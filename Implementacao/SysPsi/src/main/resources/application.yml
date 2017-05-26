@@ -4,13 +4,13 @@ spring:
     username: USERSYSPSIAPP
     password: H6dzrVtdXy38sP7xfPVLHg==
     
-#server:
-#  port: 8443
-#  ssl:
-#    key-store: classpath:keystore.p12
-#    key-store-password: 123456
-#    keyStoreType: PKCS12
-#    keyAlias: tomcat
+server:
+  port: 8443
+  ssl:
+    key-store: classpath:keystore.p12
+    key-store-password: 123456
+    keyStoreType: PKCS12
+    keyAlias: tomcat
     
 backup:
   # Indicar onde os backups devem ser salvos

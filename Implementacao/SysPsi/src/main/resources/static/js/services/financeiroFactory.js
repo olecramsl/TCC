@@ -29,7 +29,7 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		return $http.post(consts.BASE_URL + '/excluirDespesa', despesaDTO);
 	};
 	
-	var _listarDespesasPorPeriodo = function(dataInicial, dataFinal) {
+	var _listarDespesasPorPeriodo = function(dataInicial, dataFinal) {		
 		var params = {dataInicial: dataInicial, dataFinal: dataFinal};
 		return $http.get(consts.BASE_URL + '/listarDespesasPorPeriodo', {params});
 	};

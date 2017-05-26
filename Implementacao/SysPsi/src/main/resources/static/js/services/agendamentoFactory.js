@@ -51,6 +51,11 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'consts', funct
 		return $http.post(consts.BASE_URL + '/listarAgendamentosComConsulta', paciente);
 	};
 	
+	var _listarAgendamentosComConsultaPeriodo = function(dataInicial, dataFinal, paciente) {		
+		var params = {dataInicial: dataInicial, dataFinal: dataFinal, idPaciente: paciente.id};
+		return $http.get(consts.BASE_URL + '/listarAgendamentosComConsultaPeriodo', {params});
+	};
+	
 	return {		
 		getAgendamento: function() { return _agendamento; },
 		setAgendamento: function(agendamento) { _agendamento = agendamento; },		
@@ -92,6 +97,7 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'consts', funct
 		removerAgendamentosFuturos: _removerAgendamentosFuturos,
 		moverAgendamentosFuturos: _moverAgendamentosFuturos,
 		atualizarAgendamentosFuturos: _atualizarAgendamentosFuturos,
-		listarAgendamentosComConsulta: _listarAgendamentosComConsulta		
+		listarAgendamentosComConsulta: _listarAgendamentosComConsulta,
+		listarAgendamentosComConsultaPeriodo: _listarAgendamentosComConsultaPeriodo
 	};
 }]);

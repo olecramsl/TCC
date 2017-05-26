@@ -42,6 +42,7 @@ import br.com.syspsi.model.entity.Paciente;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.model.entity.TmpGCalendarEvent;
 import br.com.syspsi.repository.AgendamentoRepositorio;
+import br.com.syspsi.repository.PacienteRepositorio;
 import br.com.syspsi.repository.TmpGCalendarEventRepositorio;
 
 @RestController
@@ -92,6 +93,9 @@ public class AgendaController {
     
     @Autowired
     private TmpGCalendarEventRepositorio gCalendarEventRepositorio;
+    
+    @Autowired
+    private PacienteRepositorio pacienteRepositorio;
     
     private static void logMessage(String msg, boolean error) {
     	if(!error && logger.isDebugEnabled()){
@@ -871,6 +875,56 @@ public class AgendaController {
 		}
 		
 		logMessage("listarAgendamentosComConsulta: fim", false);		
+		return lstAgendamento;
+	}
+	
+	@RequestMapping(
+			value = "/listarAgendamentosComConsultaPeriodo", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE
+			)
+	public List<Agendamento> listarAgendamentosComConsultaPeriodo(@RequestParam("dataInicial") String dataInicial, 
+			@RequestParam("dataFinal") String dataFinal, @RequestParam("idPaciente") Long idPaciente) throws Exception {		
+		logMessage("AgendaController.listarAgendamentosComConsultaPeriodo: início", false);		
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar di = Calendar.getInstance();
+		Calendar df = Calendar.getInstance();		
+		
+		try {
+			di.setTime(format.parse(dataInicial));
+			df.setTime(format.parse(dataFinal));
+		} catch (ParseException e) {
+			logMessage("Formato de data inválido", true);
+			throw new Exception("Não foi possível listar os prontuários.");
+		}
+		
+		if (idPaciente == null) {
+			logMessage("idPaciente recebido nulo", true);
+			throw new Exception("Não foi possível listar os prontuários.");
+		}
+						
+		Psicologo psicologo = LoginController.getPsicologoLogado();		
+		if (psicologo == null) {
+			logMessage("Psicólogo nulo em getPsicologoLogado", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}
+		
+		Paciente paciente = this.pacienteRepositorio.findOne(idPaciente);
+		if (paciente == null) {
+			logMessage("Paciente com id " + idPaciente + " não encontrado!", true);
+			throw new Exception("Não foi possível listar os prontuários.");
+		}
+				
+		List<Agendamento> lstAgendamento = new ArrayList<>();
+		for (Agendamento ag : this.agendamentoRepositorio.listarAgendamentosComConsultaPeriodo(di, df, paciente, psicologo)) {			
+			if (ag.getConsulta() != null && ag.getConsulta().getProntuario() != null && !ag.getConsulta().getProntuario().isEmpty()) {				
+				ag.getConsulta().setProntuario(Util.decrypt(ag.getConsulta().getProntuario(), psicologo));
+			}
+			lstAgendamento.add(ag);
+		}
+		
+		logMessage("AgendaController.listarAgendamentosComConsultaPeriodo: fim", false);		
 		return lstAgendamento;
 	}
 }

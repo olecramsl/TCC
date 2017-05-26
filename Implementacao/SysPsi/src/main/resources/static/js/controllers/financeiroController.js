@@ -44,6 +44,8 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		ctrl.totalDespesasNaoPagasPeriodo = newValue;
 	});		
 	
+	ctrl.searchDisabled = false;
+	
 	ctrl.cadastrarDespesa  = function() {
 		$mdDialog.show({
 			controller: 'DialogCtrl',			
@@ -104,6 +106,7 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 	};	
 	
 	ctrl.pesquisarDespesasPeriodo = function(dataInicial, dataFinal) {		
+		ctrl.searchDisabled = true;
 		financeiroFactory.listarDespesasPorPeriodo(dataInicial, dataFinal).then(
 				successCallback = function(response) {
 					financeiroFactory.setLstDespesas(response.data.lstDespesas);
@@ -113,12 +116,14 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 				},
 				errorCallback = function(error) {					
 					financeiroFactory.setLstDespesas({});
+					ctrl.searchDisabled = false;
 					utilService.tratarExcecao(error);
 				}
 		);				
 	};
 	
-	ctrl.pesquisarReceitasPeriodo = function(dataInicial, dataFinal) {		
+	ctrl.pesquisarReceitasPeriodo = function(dataInicial, dataFinal) {
+		ctrl.searchDisabled = true;
 		financeiroFactory.listarConsultasPorPeriodo(dataInicial, dataFinal).then(
 				successCallback = function(response) {
 					financeiroFactory.setLstReceitas(response.data.lstAgendamentos);
@@ -126,6 +131,7 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 				},
 				errorCallback = function(error) {
 					financeiroFactory.setTotalConsultasPeriodo(0);
+					ctrl.searchDisabled = false;
 					utilService.tratarExcecao(error);
 				}
 		);

@@ -10,6 +10,13 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 	var ctrl = this;
 		
 	ctrl.salvando = false;
+	ctrl.searchDisabled = false;
+	
+	if (consultaPacienteFactory.getLstAgendamentosComConsulta()) {		
+		var qtdAgendamentosConsulta = consultaPacienteFactory.getLstAgendamentosComConsulta().length;		
+		ctrl.dtInicio = new Date((consultaPacienteFactory.getLstAgendamentosComConsulta()[0]).consulta.inicio);
+		ctrl.dtFim = new Date((consultaPacienteFactory.getLstAgendamentosComConsulta()[qtdAgendamentosConsulta-1]).consulta.inicio);		
+	}
 			
 	// A consulta está sendo realizada pelo botão iniciar consulta da modal do agendamento
 	$scope.$watch(function () { return (ctrl.agendamento.consulta)?ctrl.agendamento.consulta.prontuario:null; }, function (newValue, oldValue) {		
@@ -20,7 +27,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 		}		
 	});		
 	
-	$scope.$watch(function () { return consultaPacienteFactory.getLstAgendamentosComConsulta(); }, function (newValue, oldValue) {
+	$scope.$watch(function () { return consultaPacienteFactory.getLstAgendamentosComConsulta(); }, function (newValue, oldValue) {		
 		ctrl.lstAgendamentosComConsulta = newValue;
 	});
 	
@@ -195,5 +202,31 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 				inicio: consultaPacienteFactory.getInicio(),
 				fim: consultaPacienteFactory.getFim()
 		};
-	};			
+	};
+	
+	ctrl.listarProntuariosPorPeriodo = function(dataInicial, dataFinal, paciente) {
+		ctrl.searchDisabled = true;
+		agendamentoFactory.listarAgendamentosComConsultaPeriodo(dataInicial, dataFinal, paciente).then(
+				successCallback = function(response) {					
+					consultaPacienteFactory.setLstAgendamentosComConsulta(response.data);					
+					if (response.data.length > 0) {
+						//consultaPacienteFactory.setAgendamento(response.data[0]);
+						ctrl.agendamento = response.data[0];
+					} else {
+						$mdDialog.show(
+							$mdDialog.alert()
+								.clickOutsideToClose(true)
+								.title('Prontuários')
+								.textContent('Paciente não possui prontuários!')
+								.ariaLabel('Alerta')
+								.ok('Ok')						
+						);
+					}					
+				},
+				errorCallback = function (error, status){
+					ctrl.searchDisabled = false;
+					utilService.tratarExcecao(error); 
+				}
+		);
+	}
 }]);

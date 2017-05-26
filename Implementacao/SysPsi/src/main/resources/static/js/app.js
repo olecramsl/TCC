@@ -56,8 +56,18 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 				controllerAs: "ctrl"
 			}).otherwise({redirectTo: '/'});
 	
+		$mdDateLocaleProvider.months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+	    $mdDateLocaleProvider.shortMonths = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+	    $mdDateLocaleProvider.days = ['Domingo', 'Segunda', 'terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+	    $mdDateLocaleProvider.shortDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+		
 		$mdDateLocaleProvider.formatDate = function(date) {
 			return moment(date).format('DD/MM/YYYY');
+		};
+		
+		$mdDateLocaleProvider.parseDate = function(dateString) {
+			var m = moment(dateString, 'DD/MM/YYYY', true);
+			return m.isValid() ? m.toDate() : new Date(NaN);
 		};
 		
 	}]).run(['$rootScope', '$location', 'loginFactory', 'Idle', 'idleService', function($rootScope, 

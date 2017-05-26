@@ -26,13 +26,15 @@
 							<h4>Período:</h4> 
 						</div>
 						<div class="col-md-4">
-							<md-datepicker ng-model="ctrl.dtInicio" md-placeholder="Informe a data"></md-datepicker>
+							<md-datepicker ng-change="ctrl.searchDisabled = false;" ng-model="ctrl.dtInicio" md-placeholder="Informe a data"></md-datepicker>
 						</div>
 						<div class="col-md-4"> 
-							<md-datepicker ng-model="ctrl.dtFim" md-placeholder="Informe a data" md-min-date="ctrl.dtInicio"></md-datepicker>
+							<md-datepicker ng-change="ctrl.searchDisabled = false;" ng-model="ctrl.dtFim" md-placeholder="Informe a data" md-min-date="ctrl.dtInicio"></md-datepicker>
 						</div>
 						<div class="col-md-2"> 
-							<button type="button" ng-click="ctrl.pesquisarDespesasPeriodo(ctrl.dtInicio, ctrl.dtFim)" class="btn btn-primary btn-block">Pesquisar</button>
+							<button type="button" ng-disabled="ctrl.searchDisabled" 
+								ng-click="ctrl.pesquisarDespesasPeriodo(ctrl.dtInicio, ctrl.dtFim)" 
+								class="btn btn-primary btn-block">Pesquisar</button>
 						</div>
 					</div>
 					<br />
@@ -73,7 +75,11 @@
 					            </td>					                    		
     						</tr>    						    						    						    					
 						</table>
-					 </div> <!-- /#list -->                             		                                 																																	
+					 </div> <!-- /#list -->       
+					 
+					 <div class="form-group">
+	  					<button id="btnImprimir" name="btnImprimir" type="button" class="btn btn-primary" style="float: right;">Imprimir despesas do período</button>   						
+	 				</div>                      		                                 																																	
 				</div>
 			</div>
 		</div>
