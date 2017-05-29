@@ -80,7 +80,7 @@ public class CadastroController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public Paciente salvarPaciente(@RequestBody Paciente paciente) throws Exception {
-		logMessage("salvarPaciente: cadastro do paciente " + paciente.getNomeExibicao(), false);		
+		logMessage("CadastroController.salvarPaciente: cadastro do paciente " + paciente.getNomeExibicao(), false);		
 		
 		paciente.setPsicologo(LoginController.getPsicologoLogado());
 		if (paciente.getPsicologo() != null) {
@@ -93,7 +93,7 @@ public class CadastroController {
 					paciente.validarCPF(paciente.getCpfResponsavel());
 				}
 				
-				logMessage("salvarPaciente: cadastro do paciente " + paciente.getNomeExibicao() + " realizado com sucesso!", false);				
+				logMessage("CadastroController.salvarPaciente: cadastro do paciente " + paciente.getNomeExibicao() + " realizado com sucesso!", false);				
 				return (Paciente) this.pacienteRepositorio.save(paciente);
 			} catch (DataIntegrityViolationException e) {
 				if (e.getMessage().toLowerCase().contains("cpf")) {
@@ -108,5 +108,38 @@ public class CadastroController {
 			logMessage("salvarPaciente: psicologo null!", true);
 			throw new Exception("Erro ao salvar o paciente: psicólogo não informado.");
 		}
+	}
+	
+	/**
+	 * Salva um paciente no BD
+	 * @param paciente o paciente a ser persistido no BD
+	 * @throws Exception caso algum problema ocorra
+	 */
+	@RequestMapping(
+			value = "/salvarConvenio", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public Convenio salvarConvenio(@RequestBody Convenio convenio) throws Exception {
+		logMessage("CadastroController.salvarConvenio: cadastro do convenio " + convenio.getNome(), false);
+		
+		try {
+			if (convenio.getCnpj() != null && !convenio.getCnpj().trim().isEmpty()) {
+				convenio.validarCNPJ(convenio.getCnpj());
+			}
+			convenio = (Convenio) this.convenioRepositorio.save(convenio);
+			
+			logMessage("salvarConvenio: cadastro do convenio " + convenio.getNome() + " realizado com sucesso!", false);				
+			return convenio;
+		} catch (DataIntegrityViolationException e) {
+			if (e.getMessage().toLowerCase().contains("cnpj")) {
+				logMessage("salvarConvenio: CNPJ já cadastrado!", true);
+				throw new Exception("O CNPJ informado já está cadastrado.");
+			} else {
+				logMessage("salvarConvenio: erro ao salvar o Convênio: " + e.getMessage(), true);
+				throw new Exception("Erro ao salvar o convênio.");
+			}
+		} 
 	}
 }

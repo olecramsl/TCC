@@ -83,7 +83,7 @@
 									<input name="cep" class="form-control" onKeyPress="mascara(this, '#####-###')" 
 										maxlength="9" ng-model="ctrl.paciente.cep" 
 										ng-pattern="/^[0-9]{5}[-][0-9]{3}$/"																										
-										ng-blur="!cadastroClienteForm.cep.$error.pattern && ctrl.paciente.cep?ctrl.buscarCep(ctrl.paciente.cep):''"
+										ng-blur="!cadastroConvenioForm.cep.$error.pattern && ctrl.paciente.cep?ctrl.buscarCep(ctrl.paciente.cep):''"
 										formatted-cep>												
 								</div>
 																			    																				
@@ -94,7 +94,7 @@
 									<p class="help-block" ng-show="ctrl.loading">Aguarde...</p>
 								</div>											
 								<div class="col-lg-2">
-									<label for="logradouro">Número</label> 
+									<label for="numero">Número</label> 
 									<input id="numero" name="numero" class="form-control" maxlength="10" ng-model="ctrl.paciente.numero" 													
 										ng-disabled="ctrl.loading">																						
 								</div>									

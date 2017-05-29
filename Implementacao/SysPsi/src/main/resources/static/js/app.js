@@ -38,6 +38,10 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 				templateUrl: "templates/cadastrar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
 				controllerAs: "ctrl"			
+			}).when('/cadastrarConvenio', { 
+				templateUrl: "templates/cadastrar_convenios.html",
+				controller: "CadastroConvenioCtrl",
+				controllerAs: "ctrl"			
 			}).when('/editarPaciente', { 
 				templateUrl: "templates/cadastrar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
