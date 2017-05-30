@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.syspsi.model.entity.Convenio;
@@ -53,6 +54,32 @@ public class CadastroController {
 			)		
 	public List<Convenio> listarConveniosAtivos() {
 		return this.convenioRepositorio.findByAtivo(true);
+	}
+	
+	/**
+	 * @return uma lista de convênios ativos cadastrados no BD
+	 * @throws Exception caso algum problema ocorra
+	 */
+	@RequestMapping(
+			value = "/listarConveniosInativos", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE					
+			)		
+	public List<Convenio> listarConveniosInativos() {
+		return this.convenioRepositorio.findByAtivo(false);
+	}
+	
+	/**
+	 * @return uma lista de convênios ativos cadastrados no BD
+	 * @throws Exception caso algum problema ocorra
+	 */
+	@RequestMapping(
+			value = "/listarConvenios", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE					
+			)		
+	public List<Convenio> listarConvenios() {
+		return (List<Convenio>) this.convenioRepositorio.findAll();
 	}
 	
 	/**
@@ -110,8 +137,54 @@ public class CadastroController {
 		}
 	}
 	
+	@RequestMapping(
+			value = "/listarPacientesAtivosInativos", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE			
+			)
+	public List<Paciente> listarPacientesAtivosInativos(@RequestParam("ativo") Boolean ativo) throws Exception {		
+		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByAtivoAndPsicologoOrderByNomeCompletoAsc(ativo, LoginController.getPsicologoLogado());
+		return lstPacientes;
+	}
+	
+	@RequestMapping(
+			value = "/listarPacientes", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE			
+			)
+	public List<Paciente> listarPacientes() throws Exception {		
+		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByPsicologoOrderByNomeCompletoAsc(LoginController.getPsicologoLogado());
+		return lstPacientes;
+	}
+	
+	@RequestMapping(
+			value = "/excluirPaciente", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void excluirPaciente(@RequestBody Paciente paciente) throws Exception {
+		if (paciente != null) {
+			this.pacienteRepositorio.delete(paciente);			
+			logMessage("Paciente id " + paciente.getId() + " e nome exibição " + paciente.getNomeExibicao() + " removido com sucesso", false);
+		} else {
+			logMessage("Paciente nulo", true);
+			throw new Exception("Não foi possível remover o paciente");
+		}
+	}
+	
+	@RequestMapping(
+			value = "/atualizarPaciente", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void atualizarPaciente(@RequestBody Paciente paciente) throws Exception {
+		this.pacienteRepositorio.save(paciente);
+	}
+	
 	/**
-	 * Salva um paciente no BD
+	 * Salva um convênio no BD
 	 * @param paciente o paciente a ser persistido no BD
 	 * @throws Exception caso algum problema ocorra
 	 */
@@ -141,5 +214,31 @@ public class CadastroController {
 				throw new Exception("Erro ao salvar o convênio.");
 			}
 		} 
+	}
+	
+	@RequestMapping(
+			value = "/atualizarConvenio", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void atualizarConvenio(@RequestBody Convenio convenio) throws Exception {
+		this.convenioRepositorio.save(convenio);
+	}
+	
+	@RequestMapping(
+			value = "/excluirConvenio", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public void excluirConvenio(@RequestBody Convenio convenio) throws Exception {
+		if (convenio != null) {
+			this.convenioRepositorio.delete(convenio);			
+			logMessage("Convenio id " + convenio.getId() + " e nome " + convenio.getNome() + " removido com sucesso", false);
+		} else {
+			logMessage("Convenio nulo", true);
+			throw new Exception("Não foi possível remover o convenio");
+		}
 	}
 }

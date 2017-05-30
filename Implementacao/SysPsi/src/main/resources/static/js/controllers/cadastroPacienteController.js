@@ -200,16 +200,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 				description: null,
 				repetirSemanalmente: false,
 				ativo: true			
-		}
-		
-		/*
-		agendamentoDTO = {
-				agendamento        : agendamento,
-				repetirSemanalmente: agendamento.repetirSemanalmente, 
-				dataInicialViewFC  : start, 
-				dataFinalViewFC    : end
-		}
-		*/
+		}		
 		
 		agendamentoFactory.salvarAgendamento(agendamento).then(
 				successCallback = function(response) {

@@ -38,10 +38,6 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 				templateUrl: "templates/cadastrar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
 				controllerAs: "ctrl"			
-			}).when('/cadastrarConvenio', { 
-				templateUrl: "templates/cadastrar_convenios.html",
-				controller: "CadastroConvenioCtrl",
-				controllerAs: "ctrl"			
 			}).when('/editarPaciente', { 
 				templateUrl: "templates/cadastrar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
@@ -50,6 +46,18 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 				templateUrl: "templates/consultar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
 				controllerAs: "ctrl"			
+			}).when('/cadastrarConvenio', { 
+				templateUrl: "templates/cadastrar_convenios.html",
+				controller: "CadastroConvenioCtrl",
+				controllerAs: "ctrl"			
+			}).when('/consultarConvenios', { 
+				templateUrl: "templates/consultar_convenios.html",
+				controller: "CadastroConvenioCtrl",
+				controllerAs: "ctrl"			
+			}).when('/editarConvenio', { 
+				templateUrl: "templates/cadastrar_convenios.html",
+				controller: "CadastroConvenioCtrl",
+				controllerAs: "ctrl"
 			}).when('/despesas', { 
 				templateUrl: "templates/despesas.html",
 				controller: "FinanceiroCtrl",

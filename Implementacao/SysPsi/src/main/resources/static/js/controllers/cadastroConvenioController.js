@@ -34,11 +34,10 @@ angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibM
 	ctrl.loading = false;
 	
 	ctrl.carregarConvenios = function() {
-		/*
 		if (ctrl.pesquisa.tipoPesquisa === "1") {			
-			pacienteFactory.listarPacientesAtivosInativos(true).then(
+			convenioFactory.listarConveniosAtivos().then(
 					successCallback = function(response) {	  
-						ctrl.lstPacientes = response.data;
+						ctrl.lstConvenios = response.data;
 						
 					},
 					errorCallback = function (error, status){					
@@ -46,25 +45,24 @@ angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibM
 					}
 			);
 		} else if (ctrl.pesquisa.tipoPesquisa === "2") {			
-			pacienteFactory.listarPacientesAtivosInativos(false).then(
+			convenioFactory.listarConveniosInativos().then(
 					successCallback = function(response) {	  
-						ctrl.lstPacientes = response.data;							
+						ctrl.lstConvenios = response.data;							
 					},
 					errorCallback = function (error, status){					
 						utilService.tratarExcecao(error); 
 					}
 			);
 		} else {			
-			pacienteFactory.listarPacientes().then(
+			convenioFactory.listarConvenios().then(
 					successCallback = function(response) {	  
-						ctrl.lstPacientes = response.data;						
+						ctrl.lstConvenios = response.data;						
 					},
 					errorCallback = function (error, status){					
 						utilService.tratarExcecao(error); 
 					}
 			);
 		}	
-		*/			
 	}
 	
 	ctrl.buscarCep = function(strCep) {
@@ -93,9 +91,15 @@ angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibM
 	
 	ctrl.salvarConvenio = function(convenio) {		
 		var novoConvenio = angular.copy(convenio);
-		novoConvenio.valorConsultaIndividual = convenio.valorConsultaIndividual.toString().replace(",", ".");
-		novoConvenio.valorConsultaCasal = convenio.valorConsultaCasal.toString().replace(",", ".");
-		novoConvenio.valorConsultaFamilia = convenio.valorConsultaFamilia.toString().replace(",", ".");
+		if (novoConvenio.valorConsultaIndividual) {
+			novoConvenio.valorConsultaIndividual = convenio.valorConsultaIndividual.toString().replace(",", ".");
+		}		
+		if (novoConvenio.valorConsultaCasal) {
+			novoConvenio.valorConsultaCasal = convenio.valorConsultaCasal.toString().replace(",", ".");
+		}
+		if (novoConvenio.valorConsultaFamilia) {
+			novoConvenio.valorConsultaFamilia = convenio.valorConsultaFamilia.toString().replace(",", ".");
+		}
 		cadastroConvenioFactory.salvarConvenio(novoConvenio).then(
 			successCallback = function(response) {																									
 				$mdDialog.show(
@@ -126,12 +130,10 @@ angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibM
 		);			
 	};	
 	
-	ctrl.editarConvenio = function(convenio) {
-		/*
-		cadastroPacienteFactory.setPaciente(paciente);
-		cadastroPacienteFactory.setEditandoPaciente(true);
-		$location.path("/editarPaciente");
-		*/
+	ctrl.editarConvenio = function(convenio) {		
+		cadastroConvenioFactory.setConvenio(convenio);
+		cadastroConvenioFactory.setEditandoConvenio(true);
+		$location.path("/editarConvenio");		
 	};
 		
 	ctrl.excluirConvenio = function(convenio) {
@@ -141,15 +143,14 @@ angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibM
 			.ok('Sim')
 			.cancel('Não');
 
-		$mdDialog.show(confirm).then(function() {
-			/*
-			cadastroPacienteFactory.excluirPaciente(paciente).then(
+		$mdDialog.show(confirm).then(function() {			
+			cadastroConvenioFactory.excluirConvenio(convenio).then(
 				successCallback = function(response) {																							
-					ctrl.carregarPacientes();	
+					ctrl.carregarConvenios();	
 					
-					pacienteFactory.listarPacientesAtivosInativos(true).then(
+					convenioFactory.listarConveniosAtivos().then(
 							successCallback = function(response) {					    
-						    	  agendamentoFactory.setLstPacientesAtivos(response.data);	    	  
+						    	  convenioFactory.setLstConveniosAtivos(response.data);	    	  
 						  	  },
 						  	  errorCallback = function (error, status){
 						  		utilService.tratarExcecao(error); 
@@ -159,21 +160,19 @@ angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibM
 				errorCallback = function (error, status) { 	
 					utilService.tratarExcecao(error); 
 				}
-			);
-			*/
+			);			
 		}, function() {});				
 	}
 	
 	ctrl.ativarDesativarConvenio = function(convenio) {
-		/*
 		var atualizar = function() {
-			cadastroPacienteFactory.atualizarPaciente(paciente).then(		
+			cadastroConvenioFactory.atualizarConvenio(convenio).then(		
 				successCallback = function(response) {									
-					ctrl.carregarPacientes();
+					ctrl.carregarConvenios();
 					
-					pacienteFactory.listarPacientesAtivosInativos(true).then(
+					convenioFactory.listarConveniosAtivos().then(
 							successCallback = function(response) {					    
-						    	  agendamentoFactory.setLstPacientesAtivos(response.data);	    	  
+						    	  convenioFactory.setLstConveniosAtivos(response.data);	    	  
 						  	  },
 						  	  errorCallback = function (error, status){
 						  		utilService.tratarExcecao(error); 
@@ -184,8 +183,7 @@ angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibM
 					utilService.tratarExcecao(error); 
 				}
 			);
-		};
-		*/
+		};		
 		if (convenio.ativo) {
 			var confirm = $mdDialog.confirm()
 				.title('Atenção')
