@@ -1,0 +1,76 @@
+<head>
+	<meta charset="utf-8">
+</head>
+
+<div id="page-wrapper" exit-cadastro-paciente-page>	
+<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header">Cadastro de Paciente</h1>
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<form novalidate name="cadastroPsicologoForm" 
+						ng-submit="cadastroPsicologoForm.$valid?ctrl.salvarPsicologo(ctrl.psicologo):false"
+						role="form">
+						<div class="form-group">
+							<div class="form-group row">
+								<div class="col-lg-8"
+									ng-class="cadastroPsicologoForm.nome.$error.required?'form-group has-error has-feedback' : ''">
+									<label for="nome">Nome Completo</label> 
+									<input name="nome" class="form-control" maxlength="45" ng-model="ctrl.psicologo.nomeCompleto" 
+										ng-required="true" autofocus>											
+								</div>
+								<div class="col-lg-4"
+									ng-class="cadastroPsicologoForm.cpf.$error.required || cadastroPsicologoForm.cpf.$error.pattern?'form-group has-error has-feedback' : ''">
+									<label for="cpf">CPF</label>									
+									<input name="cpf" class="form-control" onKeyPress="mascara(this, '###.###.###-##')" 
+										maxlength="14" ng-model="ctrl.psicologo.cpf" ng-pattern="/^[0-9]{3}[\.][0-9]{3}[\.][0-9]{3}[\-][0-9]{2}$/"										
+										formatted-cpf>
+								</div>																																																									
+							</div>
+							
+							<div class="form-group row">								
+								<div class="col-lg-4"
+									ng-class="cadastroPsicologoForm.dataNascimento.$error.pattern?'form-group has-error has-feedback' : ''">
+									<label for="dataNascimento">Data Nascimento</label> 																					
+									<input name="dataNascimento" class="form-control" onKeyPress="mascara(this, '##/##/####')" 
+										maxlength="10" ng-model="ctrl.paciente.dataNascimento" 
+										ng-pattern="/^(?:(?:31(\/)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/)(?:0?[1,3-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{4})$|^(?:29(\/)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{4})$/"
+										formatted-data-nascimento>
+								</div>										
+								<div class="col-lg-4"
+									ng-class="cadastroPsicologoForm.telefoneContato.$error.pattern?'form-group has-error has-feedback' : ''">
+									<label for="telefoneContato">Telefone de Contato</label>										
+									<input name="telefoneContato" class="form-control" onkeypress="mascara(this, '## ####-#####')" 
+										maxlength="13" ng-model="ctrl.paciente.telefoneContato" ng-pattern="/^([1-9]){2}[ ][0-9]{4}[-][0-9]{4,5}$/" 
+										formatted-telefone>		
+								</div>
+							</div>																									
+							
+							<div class="form-group row">										
+								<div class="col-lg-8"
+									ng-class="cadastroPsicologoForm.email.$error.pattern?'form-group has-error has-feedback' : ''">
+									<label for="email">Email</label>
+									<input name="email" class="form-control" maxlength="90" ng-model="ctrl.paciente.email" ng-pattern="/^\w+([-\.]\w+)*@\w+([-.]\w+)+$/">	
+								</div>
+								<div class="col-lg-4">
+									<label for="sexo">Sexo</label>
+									<select name="sexo" class="form-control" ng-model="ctrl.paciente.sexo">
+										<option value="">Selecione ...</option>
+										<option value="M">Masculino</option>
+										<option value="F">Feminino</option>											
+									</select>
+								</div>	
+							</div>																																														
+							<button id="btnSalvarDados" type="submit" style="float: right;" class="btn btn-primary">Salvar</button>
+						</div>						
+					</form>																							    			  						  						  							  					  							  						  														
+				</div>
+			</div>
+		</div>
+	</div>	
+</div>

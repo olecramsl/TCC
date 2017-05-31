@@ -109,12 +109,14 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 			// Para qualquer requisição (anyRequest) é preciso estar 
 	        // autenticado (authenticated).
 			http
+				//.httpBasic().and()
 				.authorizeRequests()
-					.antMatchers("/lib/**", "/js/**", "/", "/index.html").permitAll()
+					.antMatchers("/lib/**", "/js/**", "/", "/index.html", "/login").permitAll()
 					.anyRequest().authenticated().and()
 				.formLogin().loginPage("/index.html").and()
-				.logout().and()
-				.httpBasic().and()
+				//.usernameParameter("login")
+				//.passwordParameter("senha").and()
+				//.logout().and()				
 				.requiresChannel()
 					.anyRequest()
 					.requiresSecure().and()

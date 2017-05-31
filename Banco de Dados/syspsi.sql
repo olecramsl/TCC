@@ -32,14 +32,17 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
   `id` BIGINT(20) UNSIGNED NOT NULL,
-  `nome` VARCHAR(45) NOT NULL,
-  `sobrenome` VARCHAR(90) NOT NULL,
+  `nomeCompleto` VARCHAR(130) NOT NULL,
+  `cpf` VARCHAR(11) NOT NULL,
+  `crp` VARCHAR(20) NOT NULL,
   `login` VARCHAR(90) NOT NULL,
-  `senha` VARCHAR(70) NOT NULL,
+  `senha` BLOB NOT NULL,
+  `salt` BLOB NOT NULL,
   `chave` VARBINARY(16) NOT NULL,
   `ativo` TINYINT(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `login_UNIQUE` (`login` ASC))
+  UNIQUE INDEX `login_UNIQUE` (`login` ASC),
+  UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 

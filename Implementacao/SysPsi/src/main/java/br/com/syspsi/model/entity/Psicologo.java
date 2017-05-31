@@ -1,10 +1,8 @@
 package br.com.syspsi.model.entity;
 
 import java.io.Serializable;
-import java.util.Base64;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,10 +17,13 @@ public class Psicologo implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	private String nome;
-	private String sobrenome;
+	@Column(name="nomecompleto")
+	private String nomeCompleto;	
+	private String cpf;
+	private String crp;
 	private String login;
 	private String senha;
+	private String salt;
 	private byte[] chave;
 	private boolean ativo;
 
@@ -43,29 +44,43 @@ public class Psicologo implements Serializable {
 	/**
 	 * @return the nome
 	 */
-	public String getNome() {
-		return nome;
+	public String getNomeCompleto() {
+		return nomeCompleto;
 	}
 	
 	/**
 	 * @param nome the nome to set	
 	 */
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setNomeCompleto(String nome) {
+		this.nomeCompleto = nome;
 	}
 	
 	/**
-	 * @return the sobrenome
+	 * @return the cpf
 	 */
-	public String getSobrenome() {
-		return sobrenome;
+	public String getCpf() {
+		return cpf;
 	}
-	
+
 	/**
-	 * @param sobrenome the sobrenome to set
+	 * @param cpf the cpf to set
 	 */
-	public void setSobrenome(String sobrenome) {
-		this.sobrenome = sobrenome;
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
+	/**
+	 * @return the crp
+	 */
+	public String getCrp() {
+		return crp;
+	}
+
+	/**
+	 * @param crp the crp to set
+	 */
+	public void setCrp(String crp) {
+		this.crp = crp;
 	}
 
 	/**
@@ -98,6 +113,21 @@ public class Psicologo implements Serializable {
 	}
 
 	/**
+	 * @return the salt
+	 */
+	@JsonIgnore
+	public String getSalt() {
+		return salt;
+	}
+
+	/**
+	 * @param salt the salt to set
+	 */
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+
+	/**
 	 * @return the chave
 	 */
 	@JsonIgnore
@@ -124,17 +154,5 @@ public class Psicologo implements Serializable {
 	 */
 	public void setAtivo(boolean ativo) {
 		this.ativo = ativo;
-	}
-	
-	/**
-	 * @return a chave de criptografia para criptografar os prontuários
-	 * @throws Exception caso algum problema ocorra
-	 */
-	public String gerarChave() throws Exception {
-		// create new key
-		SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();	
-		
-		// get base64 encoded version of the key
-		return Base64.getEncoder().encodeToString(secretKey.getEncoded()).substring(0, 16);
-	}
+	}		
 }

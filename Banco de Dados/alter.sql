@@ -17,3 +17,14 @@ CHANGE COLUMN `valorConsultaCasal` `valorConsultaCasal` DECIMAL(10,2) NULL DEFAU
 CHANGE COLUMN `valorConsultaFamilia` `valorConsultaFamilia` DECIMAL(10,2) NULL DEFAULT '0.00' ,
 ADD COLUMN `numero` VARCHAR(10) NULL AFTER `logradouro`,
 ADD COLUMN `observacoes` TEXT NULL AFTER `valorConsultaFamilia`;
+
+ALTER TABLE `syspsi`.`psicologo` 
+
+ADD COLUMN `crp` VARCHAR(20) NOT NULL AFTER `sobrenome`,
+ADD COLUMN `cpf` VARCHAR(11) NOT NULL AFTER `nomeCompleto`,
+
+DROP COLUMN `sobrenome`,
+
+CHANGE COLUMN `nome` `nomeCompleto` VARCHAR(130) NOT NULL,
+CHANGE COLUMN `salt` `salt` BLOB NOT NULL,
+ADD UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC);

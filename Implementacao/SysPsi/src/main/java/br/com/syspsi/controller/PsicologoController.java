@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.syspsi.model.Util;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.PsicologoRepositorio;
 
@@ -40,7 +41,7 @@ public class PsicologoController {
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}
 		
-		String key = psicologo.gerarChave();
+		String key = Util.gerarChave();
 		psicologo.setChave(key.getBytes());
 		this.psicologoRepositorio.save(psicologo);
 	}

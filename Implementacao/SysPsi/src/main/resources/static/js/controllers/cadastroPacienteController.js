@@ -5,10 +5,10 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', '$route', 
-	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'NgTableParams', 
-	'utilService', function ($mdDialog, $uibModal,	$scope,	$http, $location, $route, convenioFactory, pacienteFactory,	cadastroPacienteFactory, 
-	consultaPacienteFactory, agendamentoFactory, NgTableParams, utilService) {	
+angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', 'convenioFactory', 
+	'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'NgTableParams',	'utilService', 
+	function ($mdDialog, $uibModal,	$scope,	$http, $location, convenioFactory, pacienteFactory,	cadastroPacienteFactory, consultaPacienteFactory, 
+			agendamentoFactory, NgTableParams, utilService) {	
 	
 	var ctrl = this;
 		
@@ -33,10 +33,9 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	// pacientes ativos
 	ctrl.pesquisa.tipoPesquisa = "1";
 	
+	ctrl.paciente = {};
 	if (cadastroPacienteFactory.isEditandoPaciente()) {
 		ctrl.paciente = cadastroPacienteFactory.getPaciente();		
-	} else {
-		ctrl.paciente = {};
 	}
 	
 	ctrl.lstAgendamentosComConsulta = {};

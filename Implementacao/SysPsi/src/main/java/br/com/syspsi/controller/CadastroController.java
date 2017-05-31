@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.syspsi.model.Util;
 import br.com.syspsi.model.entity.Convenio;
 import br.com.syspsi.model.entity.GrupoPaciente;
 import br.com.syspsi.model.entity.Paciente;
@@ -110,18 +111,30 @@ public class CadastroController {
 		logMessage("CadastroController.salvarPaciente: cadastro do paciente " + paciente.getNomeExibicao(), false);		
 		
 		paciente.setPsicologo(LoginController.getPsicologoLogado());
-		if (paciente.getPsicologo() != null) {
+		if (paciente.getPsicologo() != null) {			
+			if (paciente.getCpf() != null && !paciente.getCpf().trim().isEmpty()) {
+				try {
+					Util.validarCPF(paciente.getCpf());
+				} catch(Exception ex) {
+					logMessage("CPF " + paciente.getCpf() + " do paciente é inválido", true);
+					throw new Exception("O CPF do paciente é inválido!");
+				}
+			}
+			
+			if (paciente.getCpfResponsavel() != null && !paciente.getCpfResponsavel().trim().isEmpty()) {
+				try {
+					Util.validarCPF(paciente.getCpfResponsavel());
+				} catch(Exception ex) {
+					logMessage("CPF " + paciente.getCpfResponsavel() + " do responsável é inválido", true);
+					throw new Exception("O CPF do responsável é inválido!");
+				}
+			}
+			
+			Paciente novoPaciente = (Paciente) this.pacienteRepositorio.save(paciente);
+			logMessage("CadastroController.salvarPaciente: cadastro do paciente " + novoPaciente.getNomeExibicao() + " realizado com sucesso!", false);
+			
 			try {
-				if (paciente.getCpf() != null && !paciente.getCpf().trim().isEmpty()) {
-					paciente.validarCPF(paciente.getCpf());
-				}
-				
-				if (paciente.getCpfResponsavel() != null && !paciente.getCpfResponsavel().trim().isEmpty()) {
-					paciente.validarCPF(paciente.getCpfResponsavel());
-				}
-				
-				logMessage("CadastroController.salvarPaciente: cadastro do paciente " + paciente.getNomeExibicao() + " realizado com sucesso!", false);				
-				return (Paciente) this.pacienteRepositorio.save(paciente);
+				return novoPaciente;
 			} catch (DataIntegrityViolationException e) {
 				if (e.getMessage().toLowerCase().contains("cpf")) {
 					logMessage("salvarPaciente: CPF já cadastrado!", true);
@@ -196,14 +209,20 @@ public class CadastroController {
 			)
 	public Convenio salvarConvenio(@RequestBody Convenio convenio) throws Exception {
 		logMessage("CadastroController.salvarConvenio: cadastro do convenio " + convenio.getNome(), false);
-		
-		try {
-			if (convenio.getCnpj() != null && !convenio.getCnpj().trim().isEmpty()) {
-				convenio.validarCNPJ(convenio.getCnpj());
+				
+		if (convenio.getCnpj() != null && !convenio.getCnpj().trim().isEmpty()) {
+			try {
+				Util.validarCNPJ(convenio.getCnpj());
+			} catch(Exception ex) {
+				logMessage("CNPJ " + convenio.getCnpj() + " inválido", true);
+				throw new Exception(ex.getMessage());
 			}
+		}
+			
+		try {
 			convenio = (Convenio) this.convenioRepositorio.save(convenio);
 			
-			logMessage("salvarConvenio: cadastro do convenio " + convenio.getNome() + " realizado com sucesso!", false);				
+			logMessage("cadastro do convenio " + convenio.getNome() + " realizado com sucesso!", false);				
 			return convenio;
 		} catch (DataIntegrityViolationException e) {
 			if (e.getMessage().toLowerCase().contains("cnpj")) {

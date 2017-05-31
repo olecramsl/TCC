@@ -5,12 +5,12 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location',  
-	'convenioFactory', 'cadastroConvenioFactory', 'NgTableParams', 
-	'utilService', function ($mdDialog, $uibModal,	$scope,	$http, $location, convenioFactory, cadastroConvenioFactory, NgTableParams, utilService) {	
+angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', 'convenioFactory', 
+	'cadastroConvenioFactory', 'NgTableParams',	'utilService', function ($mdDialog, $uibModal,	$scope,	$http, $location, convenioFactory, 
+			cadastroConvenioFactory, NgTableParams, utilService) {	
 	
 	var ctrl = this;
-		
+			
 	$scope.$watch(function () { return ctrl.lstConvenios; }, function (newValue, oldValue) {
 		ctrl.tableParams = new NgTableParams({ count: 10, sorting: { nomeCompleto: "asc" } }, { counts: [], dataset: ctrl.lstConvenios });
 	});
@@ -23,11 +23,10 @@ angular.module('syspsi').controller('CadastroConvenioCtrl', ['$mdDialog', '$uibM
 	ctrl.pesquisa = {};
 	// pacientes ativos
 	ctrl.pesquisa.tipoPesquisa = "1";
-		
+	
+	ctrl.convenio = {};
 	if (cadastroConvenioFactory.isEditandoConvenio()) {
 		ctrl.convenio = cadastroConvenioFactory.getConvenio();		
-	} else {
-		ctrl.convenio = {};
 	}
 	
 	// Busca CEP
