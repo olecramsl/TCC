@@ -93,7 +93,7 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 	@Configuration
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-		private static final String USUARIO_POR_LOGIN = "SELECT login, senha, ativo, nome FROM psicologo "
+		private static final String USUARIO_POR_LOGIN = "SELECT login, senha, ativo FROM psicologo "
 	            + "WHERE login = ?";
 		
 		private static final String PERMISSAO_POR_USUARIO = "SELECT u.login, p.nome FROM psicologo_tem_permissao up "
@@ -108,18 +108,18 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 		protected void configure(HttpSecurity http) throws Exception {			
 			// Para qualquer requisição (anyRequest) é preciso estar 
 	        // autenticado (authenticated).
-			http
-				//.httpBasic().and()
+			http							
+				.httpBasic().and()
 				.authorizeRequests()
-					.antMatchers("/lib/**", "/js/**", "/", "/index.html", "/login").permitAll()
-					.anyRequest().authenticated().and()
-				.formLogin().loginPage("/index.html").and()
-				//.usernameParameter("login")
-				//.passwordParameter("senha").and()
-				//.logout().and()				
+					.antMatchers("/lib/**", "/js/**", "/", "/index.html").permitAll()
+					.anyRequest().authenticated().and()								
+				.formLogin().loginPage("/index.html")					
+					.usernameParameter("login")
+					.passwordParameter("senha").and()				 
+				.logout().and()								
 				.requiresChannel()
 					.anyRequest()
-					.requiresSecure().and()
+					.requiresSecure().and()				
 				.csrf()
 		        	.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());	
 				

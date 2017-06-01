@@ -36,13 +36,13 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
   `cpf` VARCHAR(11) NOT NULL,
   `crp` VARCHAR(20) NOT NULL,
   `login` VARCHAR(90) NOT NULL,
-  `senha` BLOB NOT NULL,
-  `salt` BLOB NOT NULL,
-  `chave` VARBINARY(16) NOT NULL,
+  `senha` BINARY(60) NOT NULL,
+  `chave` BINARY(16) NOT NULL,
   `ativo` TINYINT(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `login_UNIQUE` (`login` ASC),
-  UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC))
+  UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC),
+  UNIQUE INDEX `crp_UNIQUE` (`crp` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 

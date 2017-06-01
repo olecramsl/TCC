@@ -448,11 +448,11 @@ public class AgendaController {
 			throw new Exception("Erro ao listar agendamentos: formato de data inválido.");
 		}		
 		
-		Psicologo psicologo = LoginController.getPsicologoLogado();		
+		Psicologo psicologo = LoginController.getPsicologoLogado();			
 		if (psicologo == null) {
 			logMessage("Psicólogo nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
+		}		
 					
 		// Cria os agendamentos futuros para a view, caso necessário
 		for (Agendamento ag : this.agendamentoRepositorio.listarEventosPrincipaisPorPeriodo(df, LoginController.getPsicologoLogado())) {					

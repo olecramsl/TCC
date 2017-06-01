@@ -8,8 +8,8 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 		'REMOVER_EVENTO': 4,
 		'REMOVER_EVENTOS_GRUPO': 5
 	}
-}).config(['$routeProvider', '$mdDateLocaleProvider', 'IdleProvider', 'KeepaliveProvider', 'consts', function($routeProvider, 
-		$mdDateLocaleProvider, IdleProvider, KeepaliveProvider, consts) {
+}).config(['$routeProvider', '$mdDateLocaleProvider', '$httpProvider', 'IdleProvider', 'KeepaliveProvider', 'consts', function($routeProvider, 
+		$mdDateLocaleProvider, $httpProvider, IdleProvider, KeepaliveProvider, consts) {
 		
 		// configure Idle settings
 		IdleProvider.idle(1800); // in seconds - 30min
@@ -85,6 +85,8 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 			var m = moment(dateString, 'DD/MM/YYYY', true);
 			return m.isValid() ? m.toDate() : new Date(NaN);
 		};
+		
+		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 		
 	}]).run(['$rootScope', '$location', 'loginFactory', 'Idle', 'idleService', function($rootScope, 
 			$location, loginFactory, Idle, idleService){

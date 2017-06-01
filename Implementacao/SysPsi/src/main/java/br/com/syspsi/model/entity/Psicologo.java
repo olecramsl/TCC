@@ -22,8 +22,7 @@ public class Psicologo implements Serializable {
 	private String cpf;
 	private String crp;
 	private String login;
-	private String senha;
-	private String salt;
+	private byte[] senha;	
 	private byte[] chave;
 	private boolean ativo;
 
@@ -101,30 +100,15 @@ public class Psicologo implements Serializable {
 	 * @return the senha
 	 */
 	@JsonIgnore
-	public String getSenha() {
+	public byte[] getSenha() {
 		return senha;
 	}
 
 	/**
 	 * @param senha the senha to set
 	 */
-	public void setSenha(String senha) {
+	public void setSenha(byte[] senha) {
 		this.senha = senha;
-	}
-
-	/**
-	 * @return the salt
-	 */
-	@JsonIgnore
-	public String getSalt() {
-		return salt;
-	}
-
-	/**
-	 * @param salt the salt to set
-	 */
-	public void setSalt(String salt) {
-		this.salt = salt;
 	}
 
 	/**

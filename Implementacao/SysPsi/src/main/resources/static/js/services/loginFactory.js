@@ -1,7 +1,6 @@
 angular.module('syspsi').factory('loginFactory', ['$http', 'consts', function($http, consts) {		
-	var _login = function(credentials) {			
-		//return $http.get(consts.BASE_URL + '/user', {headers : headers});		
-		return $http.post(consts.BASE_URL + '/login', credentials);
+	var _login = function(headers) {			
+		return $http.get(consts.BASE_URL + '/user', {headers : headers});				
 	};
 	
 	var _logout = function() {

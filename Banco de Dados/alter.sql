@@ -2,9 +2,7 @@ USE `syspsi`;
 
 ALTER TABLE `syspsi`.`convenio` 
 CHANGE COLUMN `nome` `nome` VARCHAR(60) NOT NULL ,
-CHANGE COLUMN `cnpj` `cnpj` VARCHAR(14) NOT NULL ;
-
-ALTER TABLE `syspsi`.`convenio` 
+CHANGE COLUMN `cnpj` `cnpj` VARCHAR(14) NOT NULL ,
 CHANGE COLUMN `email` `email` VARCHAR(90) NULL ,
 CHANGE COLUMN `telefoneContato` `telefoneContato` VARCHAR(11) NULL ,
 CHANGE COLUMN `logradouro` `logradouro` VARCHAR(150) NULL ,
@@ -19,12 +17,13 @@ ADD COLUMN `numero` VARCHAR(10) NULL AFTER `logradouro`,
 ADD COLUMN `observacoes` TEXT NULL AFTER `valorConsultaFamilia`;
 
 ALTER TABLE `syspsi`.`psicologo` 
-
-ADD COLUMN `crp` VARCHAR(20) NOT NULL AFTER `sobrenome`,
+CHANGE COLUMN `nome` `nomeCompleto` VARCHAR(130) NOT NULL ,
+CHANGE COLUMN `senha` `senha` BINARY(60) NOT NULL ,
+CHANGE COLUMN `chave` `chave` BINARY(16) NOT NULL ,
 ADD COLUMN `cpf` VARCHAR(11) NOT NULL AFTER `nomeCompleto`,
-
-DROP COLUMN `sobrenome`,
-
-CHANGE COLUMN `nome` `nomeCompleto` VARCHAR(130) NOT NULL,
-CHANGE COLUMN `salt` `salt` BLOB NOT NULL,
+ADD COLUMN `crp` VARCHAR(20) NOT NULL AFTER `cpf`,
+ADD UNIQUE INDEX `crp_UNIQUE` (`crp` ASC),
 ADD UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC);
+
+ALTER TABLE `syspsi`.`psicologo` 
+DROP COLUMN `sobrenome`;
