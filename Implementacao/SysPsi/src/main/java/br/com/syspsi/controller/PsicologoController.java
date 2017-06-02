@@ -29,6 +29,7 @@ public class PsicologoController {
     	}
     }	
 	
+	/*
 	@RequestMapping(
 			value = "/gerarChave", 
 			method={RequestMethod.GET}					
@@ -45,4 +46,5 @@ public class PsicologoController {
 		psicologo.setChave(key.getBytes());
 		this.psicologoRepositorio.save(psicologo);
 	}
+	*/
 }

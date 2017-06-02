@@ -1,5 +1,6 @@
 package br.com.syspsi.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,9 +17,11 @@ import br.com.syspsi.model.Util;
 import br.com.syspsi.model.entity.Convenio;
 import br.com.syspsi.model.entity.GrupoPaciente;
 import br.com.syspsi.model.entity.Paciente;
+import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.ConvenioRepositorio;
 import br.com.syspsi.repository.GrupoPacienteRepositorio;
 import br.com.syspsi.repository.PacienteRepositorio;
+import br.com.syspsi.repository.PsicologoRepositorio;
 
 @RestController
 public class CadastroController {
@@ -27,6 +30,9 @@ public class CadastroController {
 	
 	@Autowired
 	private PacienteRepositorio pacienteRepositorio;
+	
+	@Autowired
+	private PsicologoRepositorio psicologoRepositorio;
 	
 	@Autowired
 	private GrupoPacienteRepositorio grupoPacienteRepositorio;
@@ -107,10 +113,17 @@ public class CadastroController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public Paciente salvarPaciente(@RequestBody Paciente paciente) throws Exception {
+	public Paciente salvarPaciente(@RequestBody Paciente paciente, Principal user) throws Exception {
 		logMessage("CadastroController.salvarPaciente: cadastro do paciente " + paciente.getNomeExibicao(), false);		
 		
-		paciente.setPsicologo(LoginController.getPsicologoLogado());
+		if (user == null) {
+			logMessage("user null!", true);
+			throw new Exception("Erro ao salvar o paciente: psicólogo não informado.");
+		}
+		
+		//paciente.setPsicologo(LoginController.getPsicologoLogado());
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+		paciente.setPsicologo(psicologo);
 		if (paciente.getPsicologo() != null) {			
 			if (paciente.getCpf() != null && !paciente.getCpf().trim().isEmpty()) {
 				try {
@@ -155,8 +168,17 @@ public class CadastroController {
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
-	public List<Paciente> listarPacientesAtivosInativos(@RequestParam("ativo") Boolean ativo) throws Exception {		
-		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByAtivoAndPsicologoOrderByNomeCompletoAsc(ativo, LoginController.getPsicologoLogado());
+	public List<Paciente> listarPacientesAtivosInativos(@RequestParam("ativo") Boolean ativo, 
+			Principal user) throws Exception {
+		logMessage("CadastroController.listarPacientesAtivosInativos: início", false);
+		if (user == null) {
+			logMessage("user null!", true);
+			throw new Exception("Erro ao listar pacientes: psicólogo não informado.");
+		}
+		
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByAtivoAndPsicologoOrderByNomeCompletoAsc(ativo, psicologo);
+		logMessage("CadastroController.listarPacientesAtivosInativos: fim", false);
 		return lstPacientes;
 	}
 	
@@ -165,8 +187,16 @@ public class CadastroController {
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
-	public List<Paciente> listarPacientes() throws Exception {		
-		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByPsicologoOrderByNomeCompletoAsc(LoginController.getPsicologoLogado());
+	public List<Paciente> listarPacientes(Principal user) throws Exception {		
+		logMessage("CadastroController.listarPacientes: início", false);
+		if (user == null) {
+			logMessage("user null!", true);
+			throw new Exception("Erro ao listar pacientes: psicólogo não informado.");
+		}
+		
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+		List<Paciente> lstPacientes = (List<Paciente>) this.pacienteRepositorio.findByPsicologoOrderByNomeCompletoAsc(psicologo);
+		logMessage("CadastroController.listarPacientes: fim", false);
 		return lstPacientes;
 	}
 	

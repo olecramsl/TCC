@@ -1,6 +1,7 @@
 package br.com.syspsi.controller;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -23,6 +24,7 @@ import br.com.syspsi.model.entity.Despesa;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.DespesaRepositorio;
+import br.com.syspsi.repository.PsicologoRepositorio;
 
 @RestController
 public class FinanceiroController {
@@ -33,6 +35,9 @@ public class FinanceiroController {
 	
 	@Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
+	
+	@Autowired
+	private PsicologoRepositorio psicologoRepositorio;
 	
 	
 	private static void logMessage(String msg, boolean error) {
@@ -52,9 +57,17 @@ public class FinanceiroController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public OutDespesaDTO salvarDespesa(@RequestBody InDespesaDTO inDespesaDTO) throws Exception {
+	public OutDespesaDTO salvarDespesa(@RequestBody InDespesaDTO inDespesaDTO, Principal user) 
+			throws Exception {
 		logMessage("FinanceiroController.salvarDespesa: início", false);
-		Psicologo psicologo = LoginController.getPsicologoLogado();
+		
+		if (user == null) {
+			logMessage("user nulo", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}
+		
+		//Psicologo psicologo = LoginController.getPsicologoLogado();
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
 		if (psicologo == null) {
 			logMessage("Psicólogo nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
@@ -80,7 +93,8 @@ public class FinanceiroController {
 		
 		try {
 			this.despesaRepositorio.save(despesa);
-			OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(inDespesaDTO.getDataInicial(), inDespesaDTO.getDataFinal());
+			OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(inDespesaDTO.getDataInicial(), 
+					inDespesaDTO.getDataFinal(), psicologo);
 			
 			logMessage("FinanceiroController.salvarDespesa: fim", false);
 			return outDespesaDTO;
@@ -96,8 +110,15 @@ public class FinanceiroController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public OutDespesaDTO excluirDespesa(@RequestBody InDespesaDTO inDespesaDTO) throws Exception {
+	public OutDespesaDTO excluirDespesa(@RequestBody InDespesaDTO inDespesaDTO, Principal user) 
+			throws Exception {
 		logMessage("FinanceiroController.excluirDespesa: início", false);
+		
+		if (user == null) {
+			logMessage("user nulo", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
 		
 		Despesa despesa = inDespesaDTO.getDespesa();		
 		if (despesa == null) {
@@ -117,7 +138,8 @@ public class FinanceiroController {
 		
 		try {			
 			this.despesaRepositorio.delete(despesa);
-			OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(inDespesaDTO.getDataInicial(), inDespesaDTO.getDataFinal());
+			OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(inDespesaDTO.getDataInicial(), 
+					inDespesaDTO.getDataFinal(), psicologo);
 			logMessage("FinanceiroController.excluirDespesa: fim", false);
 			
 			return outDespesaDTO;
@@ -133,9 +155,15 @@ public class FinanceiroController {
 			produces = MediaType.APPLICATION_JSON_VALUE
 			)
 	public OutDespesaDTO listarDespesas(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal) throws Exception {
+			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {
 		
 		logMessage("FinanceitoController.listarDespesas: início", false);
+		
+		if (user == null) {
+			logMessage("user nulo", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
 		
 		Calendar di = Calendar.getInstance();
 		Calendar df = Calendar.getInstance();				
@@ -148,7 +176,7 @@ public class FinanceiroController {
 			throw new Exception("Erro ao listar despesas: formato de data inválido.");
 		}				
 				
-		OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(di, df);
+		OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(di, df, psicologo);
 		logMessage("FinanceitoController.listarDespesas: fim", false);
 		return outDespesaDTO;
 	}
@@ -159,8 +187,14 @@ public class FinanceiroController {
 			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
 	public OutReceitaDTO listarConsultasPorPeriodo(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal) throws Exception {
+			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {
 		logMessage("ConsultaController.listarConsultasPorPeriodo: início", false);
+		
+		if (user == null) {
+			logMessage("user nulo", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}						
+		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar di = Calendar.getInstance();
 		Calendar df = Calendar.getInstance();		
@@ -173,7 +207,8 @@ public class FinanceiroController {
 			throw new Exception("Erro ao listar agendamentos: formato de data inválido.");
 		}		
 		
-		Psicologo psicologo = LoginController.getPsicologoLogado();		
+		//Psicologo psicologo = LoginController.getPsicologoLogado();
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
 		if (psicologo == null) {
 			logMessage("Psicólogo nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
@@ -201,9 +236,9 @@ public class FinanceiroController {
 		}
 	}
 	
-	private OutDespesaDTO prepararOutDespesaDTO(Calendar dataInicial, Calendar dataFinal) throws Exception {
+	private OutDespesaDTO prepararOutDespesaDTO(Calendar dataInicial, Calendar dataFinal, Psicologo psicologo) throws Exception {
 		logMessage("FinanceitoController.prepararDespesaDTO: início", false);
-		Psicologo psicologo = LoginController.getPsicologoLogado();		
+		//Psicologo psicologo = LoginController.getPsicologoLogado();		
 		if (psicologo == null) {
 			logMessage("Psicólogo nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");

@@ -3,6 +3,7 @@ package br.com.syspsi.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.model.entity.TmpGCalendarEvent;
 import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.PacienteRepositorio;
+import br.com.syspsi.repository.PsicologoRepositorio;
 import br.com.syspsi.repository.TmpGCalendarEventRepositorio;
 
 @RestController
@@ -96,6 +98,9 @@ public class AgendaController {
     
     @Autowired
     private PacienteRepositorio pacienteRepositorio;
+    
+    @Autowired
+    private PsicologoRepositorio psicologoRepositorio;
     
     private static void logMessage(String msg, boolean error) {
     	if(!error && logger.isDebugEnabled()){
@@ -218,10 +223,11 @@ public class AgendaController {
      * Acessa o Google Calendar para buscar os eventos de um determinado período
      * @param di a data inicial do período
      * @param df a data final do período
+     * @param psicologo o psicologo logado no sistema
      * @return uma lista de objetos TmpGCalendarEvent
      * @throws Exception caso algum erro ocorra
-     */
-    public List<TmpGCalendarEvent> listarAgendamentosGCalendar(Calendar di, Calendar df) throws GCalendarException {    	
+     */    
+    public List<TmpGCalendarEvent> listarAgendamentosGCalendar(Calendar di, Calendar df, Psicologo psicologo) throws GCalendarException {    	
         try {
         	logMessage("listarAgendamentosGCalendar: início", false);
         	List<TmpGCalendarEvent> lstAgendamentosGCalendar = new ArrayList<>();
@@ -315,7 +321,8 @@ public class AgendaController {
 	            	 * Já importados anteriormente
 	            	 * all-day: Quando event.getEnd().getDate() != null
 	            	 * Recorrentes: recurringEventId != null	            	
-	            	 */	            	
+	            	 */
+    
 	            	if (!lstGCalendarIds_TmpGCalendarTable.contains(event.getId()) &&
 	            	   (!lstGCalendarIds_AgendamentoTable.contains(event.getId())) &&
 	            	   (event.getEnd().getDate() == null) && (event.getRecurringEventId() == null)) {		            		
@@ -326,10 +333,15 @@ public class AgendaController {
 		                Calendar startEvent = Calendar.getInstance();
 		                Calendar endEvent = Calendar.getInstance();			                
 		                startEvent.setTimeInMillis(event.getStart().getDateTime().getValue());		                
-		                endEvent.setTimeInMillis(event.getEnd().getDateTime().getValue());		                
+		                endEvent.setTimeInMillis(event.getEnd().getDateTime().getValue());
+		                /*
 		                tmpGCalendarEvent = new TmpGCalendarEvent(LoginController.getPsicologoLogado(), 
 		                		event.getId(), event.getRecurringEventId(), startEvent, endEvent, 
-		                		event.getSummary(), event.getDescription());		                
+		                		event.getSummary(), event.getDescription());
+		                */		                
+		                tmpGCalendarEvent = new TmpGCalendarEvent(psicologo, event.getId(), 
+		                		event.getRecurringEventId(), startEvent, endEvent, event.getSummary(), 
+		                		event.getDescription());
 		                lstAgendamentosGCalendar.add(tmpGCalendarEvent);		                
 	            	} else if ((lstGCalendarIds_TmpGCalendarTable.contains(event.getId())) && 
 	            			   (event.getEnd().getDate() == null)) {
@@ -420,7 +432,7 @@ public class AgendaController {
         	logMessage("listarAgendamentosGCalendar: " + ex.getMessage(), true);
         	throw new GCalendarException("Problemas ao carregar os eventos do Google Calendar");
         }
-    }
+    }    
 	
 	/**
 	 * @param dataInicial A data inicial dos agendamentos
@@ -434,7 +446,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE					
 			)		
 	public List<Agendamento> listarAgendamentos(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal) throws Exception {
+			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {
 		logMessage("listarAgendamentos: início", false);
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar di = Calendar.getInstance();
@@ -448,14 +460,22 @@ public class AgendaController {
 			throw new Exception("Erro ao listar agendamentos: formato de data inválido.");
 		}		
 		
-		Psicologo psicologo = LoginController.getPsicologoLogado();			
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
+		Psicologo psicologo;
+		if (user != null) {			
+			//Psicologo psicologo = LoginController.getPsicologoLogado();
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}		
+		} else {
+			logMessage("User nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}		
+		}
 					
 		// Cria os agendamentos futuros para a view, caso necessário
-		for (Agendamento ag : this.agendamentoRepositorio.listarEventosPrincipaisPorPeriodo(df, LoginController.getPsicologoLogado())) {					
+		//for (Agendamento ag : this.agendamentoRepositorio.listarEventosPrincipaisPorPeriodo(df, LoginController.getPsicologoLogado())) {					
+		for (Agendamento ag : this.agendamentoRepositorio.listarEventosPrincipaisPorPeriodo(df, psicologo)) {
 			if (ag.isAtivo()) {												
 				di.set(Calendar.HOUR_OF_DAY, ag.getStart().get(Calendar.HOUR_OF_DAY));
 				di.set(Calendar.MINUTE, ag.getStart().get(Calendar.MINUTE));
@@ -485,7 +505,7 @@ public class AgendaController {
 		// AGENDAMENTOS CALENDAR	
 		boolean usingGcal = false;
 		if (usingGcal) {
-			for (TmpGCalendarEvent gcal : listarAgendamentosGCalendar(di, df)) {
+			for (TmpGCalendarEvent gcal : listarAgendamentosGCalendar(di, df, psicologo)) {
 				lstAgendamentos.add(new Agendamento(null, gcal.getIdGCalendar(), gcal.getIdRecurring(), 
 						gcal.getStart(), gcal.getEnd(), 0L, gcal.getSummary(), COR_AGENDAMENTO_GOOGLE_CALENDAR, false, true));			
 			}
@@ -507,13 +527,20 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public Agendamento salvarAgendamento(@RequestBody InAgendamentoDTO agendamentoDTO) throws Exception {
+	public Agendamento salvarAgendamento(@RequestBody InAgendamentoDTO agendamentoDTO, Principal user) throws Exception {
 		logMessage("salvarAgendamento: início", false);		
 		Agendamento agendamento = agendamentoDTO.getAgendamento();
 		
-		Psicologo psicologo = LoginController.getPsicologoLogado();		
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
+		Psicologo psicologo;
+		if (user != null) {
+			//Psicologo psicologo = LoginController.getPsicologoLogado();
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+		} else {
+			logMessage("user nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}
 		
@@ -613,7 +640,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void removerAgendamento(@RequestBody Agendamento agendamento) throws Exception {
+	public void removerAgendamento(@RequestBody Agendamento agendamento, Principal user) throws Exception {
 		logMessage("removerAgendamento: início", false);
 		if (agendamento == null) {
 			logMessage("Agendamento recebido nulo", true);
@@ -635,15 +662,21 @@ public class AgendaController {
 		}
 		
 		if (agendamento.getConsulta() != null) {
-			Psicologo psicologo = LoginController.getPsicologoLogado();		
-			if (psicologo == null) {
-				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+			if (user != null) {
+				//Psicologo psicologo = LoginController.getPsicologoLogado();		
+				Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+				if (psicologo == null) {
+					logMessage("Psicólogo nulo em getPsicologoLogado", true);
+					throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+				}
+				
+				agendamento.setAtivo(false);
+				agendamento.getConsulta().setProntuario(Util.encrypt(agendamento.getConsulta().getProntuario(), psicologo));
+				this.agendamentoRepositorio.save(agendamento);
+			} else {
+				logMessage("user nulo em getPsicologoLogado", true);
 				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 			}
-			
-			agendamento.setAtivo(false);
-			agendamento.getConsulta().setProntuario(Util.encrypt(agendamento.getConsulta().getProntuario(), psicologo));
-			this.agendamentoRepositorio.save(agendamento);
 		}
 		
 		logMessage("removerAgendamento: fim", false);
@@ -695,7 +728,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void moverAgendamentosFuturos(@RequestBody Agendamento agendamento) throws Exception {
+	public void moverAgendamentosFuturos(@RequestBody Agendamento agendamento, Principal user) throws Exception {
 		logMessage("moverAgendamentosFuturos: início", false);
 		
 		if (agendamento == null) {
@@ -703,12 +736,19 @@ public class AgendaController {
 			throw new Exception("Não foi possível mover os agendamentos futuros.");
 		}
 		
-		Psicologo psicologo = LoginController.getPsicologoLogado();
-		
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
+		Psicologo psicologo;
+		//Psicologo psicologo = LoginController.getPsicologoLogado();
+		if (user != null) {
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+		} else {
+			logMessage("user nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}
+						
 		
 		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), 
 				agendamento.getGrupo(), psicologo);
@@ -753,7 +793,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void atualizarAgendamentosFuturos(@RequestBody Agendamento agendamento) throws Exception {
+	public void atualizarAgendamentosFuturos(@RequestBody Agendamento agendamento, Principal user) throws Exception {
 		logMessage("atualizarAgendamentosFuturos: início", false);
 		
 		if (agendamento == null) {
@@ -761,10 +801,16 @@ public class AgendaController {
 			throw new Exception("Não foi possível atualizar os agendamentos futuros.");
 		}
 		
-		Psicologo psicologo = LoginController.getPsicologoLogado();
-		
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
+		//Psicologo psicologo = LoginController.getPsicologoLogado();
+		Psicologo psicologo;
+		if (user != null) {
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+		} else {
+			logMessage("user nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}
 		
@@ -809,7 +855,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public void atribuirNovoEventoPrincipal(@RequestBody Agendamento agendamento) throws Exception {
+	public void atribuirNovoEventoPrincipal(@RequestBody Agendamento agendamento, Principal user) throws Exception {
 		logMessage("atribuirNovoEventoPrincipal: início", false);
 		
 		if (agendamento == null) {
@@ -817,9 +863,16 @@ public class AgendaController {
 			throw new Exception("Não foi possível configurar agendamento principal.");
 		}
 		
-		Psicologo psicologo = LoginController.getPsicologoLogado();		
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
+		//Psicologo psicologo = LoginController.getPsicologoLogado();
+		Psicologo psicologo;
+		if (user != null) {	
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+		} else {
+			logMessage("user nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}
 		
@@ -852,7 +905,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public List<Agendamento> listarAgendamentosComConsulta(@RequestBody Paciente paciente) throws Exception {		
+	public List<Agendamento> listarAgendamentosComConsulta(@RequestBody Paciente paciente, Principal user) throws Exception {		
 		logMessage("listarAgendamentosComConsulta: início", false);		
 		
 		if (paciente == null) {
@@ -860,9 +913,16 @@ public class AgendaController {
 			throw new Exception("Não foi possível listar agendamentos.");
 		}
 						
-		Psicologo psicologo = LoginController.getPsicologoLogado();		
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
+		//Psicologo psicologo = LoginController.getPsicologoLogado();
+		Psicologo psicologo;
+		if (user != null) {
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+		} else {
+			logMessage("user nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}
 				
@@ -884,7 +944,7 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE
 			)
 	public List<Agendamento> listarAgendamentosComConsultaPeriodo(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal, @RequestParam("idPaciente") Long idPaciente) throws Exception {		
+			@RequestParam("dataFinal") String dataFinal, @RequestParam("idPaciente") Long idPaciente, Principal user) throws Exception {		
 		logMessage("AgendaController.listarAgendamentosComConsultaPeriodo: início", false);		
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -904,9 +964,16 @@ public class AgendaController {
 			throw new Exception("Não foi possível listar os prontuários.");
 		}
 						
-		Psicologo psicologo = LoginController.getPsicologoLogado();		
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
+		//Psicologo psicologo = LoginController.getPsicologoLogado();
+		Psicologo psicologo;
+		if (user != null) {
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+		} else {
+			logMessage("user nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}
 		

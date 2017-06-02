@@ -1,5 +1,7 @@
 package br.com.syspsi.controller;
 
+import java.security.Principal;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,11 +14,15 @@ import br.com.syspsi.model.Util;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
+import br.com.syspsi.repository.PsicologoRepositorio;
 
 @RestController
 public class ConsultaController {
 	@Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
+	
+	@Autowired
+	private PsicologoRepositorio psicologoRepositorio;
 	
 	private final static Logger logger = Logger.getLogger(CadastroController.class);
 	
@@ -42,10 +48,17 @@ public class ConsultaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public Agendamento salvarConsultaPaciente(@RequestBody Agendamento agendamento) throws Exception {
+	public Agendamento salvarConsultaPaciente(@RequestBody Agendamento agendamento, Principal user) 
+			throws Exception {
 		logMessage("ConsultaController.salvarConsultaPaciente: início", false);
 		
-		Psicologo psicologo = LoginController.getPsicologoLogado();
+		if (user == null) {
+			logMessage("user nulo", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}
+		
+		//Psicologo psicologo = LoginController.getPsicologoLogado();
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
 		
 		if (psicologo == null) {
 			logMessage("Psicólogo nulo", true);
