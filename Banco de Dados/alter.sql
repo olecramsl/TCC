@@ -22,8 +22,7 @@ CHANGE COLUMN `senha` `senha` BINARY(60) NOT NULL ,
 CHANGE COLUMN `chave` `chave` BINARY(16) NOT NULL ,
 ADD COLUMN `cpf` VARCHAR(11) NOT NULL AFTER `nomeCompleto`,
 ADD COLUMN `crp` VARCHAR(20) NOT NULL AFTER `cpf`,
+ADD COLUMN `vinculadoGCal` TINYINT NOT NULL DEFAULT 0 AFTER `chave`,
+DROP COLUMN `sobrenome`,
 ADD UNIQUE INDEX `crp_UNIQUE` (`crp` ASC),
 ADD UNIQUE INDEX `cpf_UNIQUE` (`cpf` ASC);
-
-ALTER TABLE `syspsi`.`psicologo` 
-DROP COLUMN `sobrenome`;

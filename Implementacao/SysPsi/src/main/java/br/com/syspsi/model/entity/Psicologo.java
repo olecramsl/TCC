@@ -24,6 +24,8 @@ public class Psicologo implements Serializable {
 	private String login;
 	private byte[] senha;	
 	private byte[] chave;
+	@Column(name="vinculadogcal")
+	private boolean vinculadoGCal;
 	private boolean ativo;
 
 	/**
@@ -124,6 +126,20 @@ public class Psicologo implements Serializable {
 	 */
 	public void setChave(byte[] chave) {
 		this.chave = chave;
+	}
+
+	/**
+	 * @return the vinculadoGCal
+	 */
+	public boolean isVinculadoGCal() {
+		return vinculadoGCal;
+	}
+
+	/**
+	 * @param vinculadoGCal the vinculadoGCal to set
+	 */
+	public void setVinculadoGCal(boolean vinculadoGCal) {
+		this.vinculadoGCal = vinculadoGCal;
 	}
 
 	/**

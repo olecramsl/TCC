@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo` (
   `login` VARCHAR(90) NOT NULL,
   `senha` BINARY(60) NOT NULL,
   `chave` BINARY(16) NOT NULL,
+  `vinculadoGCal` TINYINT(1) NOT NULL DEFAULT 0,
   `ativo` TINYINT(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `login_UNIQUE` (`login` ASC),

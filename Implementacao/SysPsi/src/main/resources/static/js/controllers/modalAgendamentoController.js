@@ -97,10 +97,16 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 * Salva/atualiza as informações de um agendamento
 	 */
 	ctrl.salvar = function (agendamento, agendamentoCarregado) {
-		// Agendamento carregado da tebela temporária gCalendar
-		if (agendamentoCarregado && !agendamentoCarregado.paciente) {
-			//var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento);
-			agendamentoFactory.salvarAgendamentoTemporarioGCalendar(agendamento).then();			
+		// Agendamento carregado da tebela temporária gCalendar		
+		if (agendamentoCarregado && !agendamentoCarregado.paciente) {			
+			agendamentoFactory.salvarAgendamentoTemporarioGCalendar(agendamento).then(
+					successCallback = function(response) {
+						atualizarViewFC();
+					},
+					errorCallback = function(error) {
+						utilService.tratarExcecao(error);
+					}
+			);			
 		// Edicao	
 		} else if (agendamento.id) {	
 			var horas = agendamento.formatedStart.split(":")[0];
@@ -108,7 +114,6 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			agendamento.start = moment(agendamento.start).hour(horas).minute(minutos);
 			agendamento.end = moment(agendamento.start).add(ctrl.tempoSessao, 'm');			
 
-			//var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento); 
 			agendamentoFactory.salvarAgendamento(agendamento).then(
 					successCallback = function(response) {	  				   					
 						var event = angular.element('.calendar').fullCalendar('clientEvents',agendamento.id);																								
@@ -164,10 +169,9 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			agendamento.grupo = 0;
 					
 			
-			//var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(agendamento);
 			agendamentoFactory.salvarAgendamento(agendamento).then(
 					successCallback = function(response) {							
-						atualizarViewFC();
+						angular.element('.calendar').fullCalendar('renderEvent', response.data);
 					},
 					errorCallBack = function(error) {
 						utilService.tratarExcecao(error);

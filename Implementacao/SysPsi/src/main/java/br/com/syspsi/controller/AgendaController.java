@@ -33,6 +33,9 @@ import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventAttendee;
+import com.google.api.services.calendar.model.EventDateTime;
+import com.google.api.services.calendar.model.EventReminder;
 import com.google.api.services.calendar.model.Events;
 
 import br.com.syspsi.exception.GCalendarException;
@@ -264,14 +267,15 @@ public class AgendaController {
 	        logMessage("Qtd itens encontrados lstGCalendarIds_AgendamentoTable: " + 
 	        		(lstGCalendarIds_AgendamentoTable!=null?lstGCalendarIds_AgendamentoTable.size():0), false);
 	        	     
-	        int qtdEventosRemovidosGCalendar_TmpGCalendarTable = 0;
-	        int qtdEventosRemovidosGCalendar_AgendamentoTable = 0;
+	        //int qtdEventosRemovidosGCalendar_TmpGCalendarTable = 0;
+	        //int qtdEventosRemovidosGCalendar_AgendamentoTable = 0;
 	        int qtdItemsGCal = 0;
 	        
 	        if (items != null) {
 	        	qtdItemsGCal = items.size();
 	        }
 	        
+	        /*
 	        if (lstGCalendarIds_TmpGCalendarTable != null) {
 	        	qtdEventosRemovidosGCalendar_TmpGCalendarTable = lstGCalendarIds_TmpGCalendarTable.size() - qtdItemsGCal;
 	        }
@@ -311,17 +315,16 @@ public class AgendaController {
             		}
             	}
             } 
-            	        
+            */
+            	        	        
 	        if (qtdItemsGCal > 0) {	                        
 	            TmpGCalendarEvent tmpGCalendarEvent;	            	            
 	            
-	            for (Event event : items) {	            		            		            	
-	            	/*
-	            	 * Não serão importados eventos:
-	            	 * Já importados anteriormente
-	            	 * all-day: Quando event.getEnd().getDate() != null
-	            	 * Recorrentes: recurringEventId != null	            	
-	            	 */
+	            for (Event event : items) {	            		            		            		            	
+	            	 // Não serão importados eventos:
+	            	 // Já importados anteriormente
+	            	 // all-day: Quando event.getEnd().getDate() != null
+	            	 // Recorrentes: recurringEventId != null	            		            	 
     
 	            	if (!lstGCalendarIds_TmpGCalendarTable.contains(event.getId()) &&
 	            	   (!lstGCalendarIds_AgendamentoTable.contains(event.getId())) &&
@@ -334,11 +337,7 @@ public class AgendaController {
 		                Calendar endEvent = Calendar.getInstance();			                
 		                startEvent.setTimeInMillis(event.getStart().getDateTime().getValue());		                
 		                endEvent.setTimeInMillis(event.getEnd().getDateTime().getValue());
-		                /*
-		                tmpGCalendarEvent = new TmpGCalendarEvent(LoginController.getPsicologoLogado(), 
-		                		event.getId(), event.getRecurringEventId(), startEvent, endEvent, 
-		                		event.getSummary(), event.getDescription());
-		                */		                
+
 		                tmpGCalendarEvent = new TmpGCalendarEvent(psicologo, event.getId(), 
 		                		event.getRecurringEventId(), startEvent, endEvent, event.getSummary(), 
 		                		event.getDescription());
@@ -486,7 +485,16 @@ public class AgendaController {
 			}			
 		}				
 		
-		List<Agendamento> lstAgendamentos = new ArrayList<>();
+		List<Agendamento> lstAgendamentos = new ArrayList<>();		
+		// AGENDAMENTOS CALENDAR	
+		boolean usingGcal = psicologo.isVinculadoGCal();
+		if (usingGcal) {
+			for (TmpGCalendarEvent gcal : listarAgendamentosGCalendar(di, df, psicologo)) {				
+				lstAgendamentos.add(new Agendamento(null, gcal.getIdGCalendar(), gcal.getIdRecurring(), 
+						gcal.getStart(), gcal.getEnd(), 0L, gcal.getSummary(), COR_AGENDAMENTO_GOOGLE_CALENDAR, false, true));			
+			}
+		}
+		
 		for (Agendamento ag : this.agendamentoRepositorio.listarPorPeriodo(di, df, psicologo)) {
 			if (ag.isAtivo()) {
 				if (ag.getColor().equals(COR_AGENDAMENTO_NAO_COMPARECEU)) {
@@ -500,16 +508,7 @@ public class AgendaController {
 				
 				lstAgendamentos.add(ag);
 			}
-		}			
-		
-		// AGENDAMENTOS CALENDAR	
-		boolean usingGcal = false;
-		if (usingGcal) {
-			for (TmpGCalendarEvent gcal : listarAgendamentosGCalendar(di, df, psicologo)) {
-				lstAgendamentos.add(new Agendamento(null, gcal.getIdGCalendar(), gcal.getIdRecurring(), 
-						gcal.getStart(), gcal.getEnd(), 0L, gcal.getSummary(), COR_AGENDAMENTO_GOOGLE_CALENDAR, false, true));			
-			}
-		}						
+		}												
 		
 		logMessage("listarAgendamentos: fim", false);
 		return lstAgendamentos;		
@@ -569,6 +568,14 @@ public class AgendaController {
 			!agendamento.getConsulta().getProntuario().isEmpty()) {						
 			agendamento.getConsulta().setProntuario(Util.encrypt(agendamento.getConsulta().getProntuario(), psicologo));
 		}
+		
+		boolean erroGCal = false;
+		if (psicologo.isVinculadoGCal()) {
+			agendamento.setIdGCalendar(this.salvarAgendamentoNoGoogleCalendar(agendamento));
+			if (agendamento.getIdGCalendar() == null) {
+				erroGCal = true;
+			}
+		}
 				
 		agendamento = this.agendamentoRepositorio.save(agendamento);
 		
@@ -583,7 +590,8 @@ public class AgendaController {
 		
 		if (agendamento.getConsulta() != null) {
 			agendamento.getConsulta().setProntuario(Util.decrypt(agendamento.getConsulta().getProntuario(), psicologo));
-		}
+		}				
+		
 		logMessage("salvarAgendamento: fim", false);
 
 		return agendamento;
@@ -993,5 +1001,63 @@ public class AgendaController {
 		
 		logMessage("AgendaController.listarAgendamentosComConsultaPeriodo: fim", false);		
 		return lstAgendamento;
+	}
+	
+	private String salvarAgendamentoNoGoogleCalendar(Agendamento agendamento) throws GCalendarException {
+		logMessage("AgendaController.salvarAgendamentoNoGoogleCalendar: início", false);    	    							
+		try {
+			// Build a new authorized API client service.
+	        // Note: Do not confuse this class with the
+	        // com.google.api.services.calendar.model.Calendar class.
+	    	logMessage("getCalendarService", false);
+	        com.google.api.services.calendar.Calendar service =
+	            getCalendarService();
+	        logMessage("getCalendarService: OK", false);
+	        
+			Event event = new Event()
+				    .setSummary(agendamento.getPaciente().getNomeExibicao())			    
+				    .setDescription(agendamento.getDescription());
+
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-03:00");
+			DateTime startDateTime = new DateTime(format.format(agendamento.getStart().getTime()));
+			EventDateTime start = new EventDateTime()
+				    .setDateTime(startDateTime);
+				    //.setTimeZone("America/Sao_Paulo");
+			event.setStart(start);
+
+			DateTime endDateTime = new DateTime(format.format(agendamento.getEnd().getTime()));
+			EventDateTime end = new EventDateTime()
+				    .setDateTime(endDateTime);
+				    //.setTimeZone("America/Sao_Paulo");
+			event.setEnd(end);
+
+			/*
+			String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
+			event.setRecurrence(Arrays.asList(recurrence));
+
+			EventAttendee[] attendees = new EventAttendee[] {
+			    new EventAttendee().setEmail("lpage@example.com"),
+			    new EventAttendee().setEmail("sbrin@example.com"),
+			};		
+			event.setAttendees(Arrays.asList(attendees));
+			
+			EventReminder[] reminderOverrides = new EventReminder[] {
+				    new EventReminder().setMethod("email").setMinutes(24 * 60),
+				    new EventReminder().setMethod("popup").setMinutes(10),
+			};
+			Event.Reminders reminders = new Event.Reminders()
+			    .setUseDefault(false)
+			    .setOverrides(Arrays.asList(reminderOverrides));
+			event.setReminders(reminders);
+			*/
+
+			String calendarId = "primary";
+			event = service.events().insert(calendarId, event).execute();			
+			logMessage("AgendaController.salvarAgendamentoNoGoogleCalendar: fim", false);
+			return event.getId();
+		} catch (IOException e) {
+			logMessage("Erro ao salvar no google calendar. Id agendamento: " + agendamento.getId() + " erro: " + e.getMessage(), true);
+			return null; 
+		}					
 	}
 }

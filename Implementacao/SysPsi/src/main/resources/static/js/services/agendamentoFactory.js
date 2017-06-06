@@ -20,8 +20,8 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'consts', funct
 	
 	var _salvarAgendamentoTemporarioGCalendar = function(ag) {
 		var agendamentoDTO = {
-				agendamento        : agendamento,
-				repetirSemanalmente: agendamento.repetirSemanalmente				
+				agendamento        : ag,
+				repetirSemanalmente: ag.repetirSemanalmente				
 		};
 		
 		return $http.post(consts.BASE_URL + '/salvarAgendamentoTemporarioGCalendar', angular.copy(agendamentoDTO));

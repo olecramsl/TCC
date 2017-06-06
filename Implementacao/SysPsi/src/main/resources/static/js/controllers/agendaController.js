@@ -49,7 +49,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	  modalAgendamentoService.openEventModal();
   };
 	
-  var eventClick = function(event, jsEvent, view) {
+  var eventClick = function(event, jsEvent, view) {	  
 	  event.formatedStart = event.start.format('HH:mm');							
 	  agendamentoFactory.setAgendamento(angular.copy(event));
 	  agendamentoFactory.setAgendamentoCarregado(angular.copy(event));	  	  
