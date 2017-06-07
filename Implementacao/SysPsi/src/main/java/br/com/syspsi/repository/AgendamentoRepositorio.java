@@ -47,7 +47,8 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 	@Transactional
 	public void deleteByPaciente(Paciente paciente);
 	@Query("SELECT idGCalendar FROM Agendamento "
-			+ "WHERE DATE(start) BETWEEN DATE(?1) AND DATE(?2)")
+			+ "WHERE DATE(start) BETWEEN DATE(?1) AND DATE(?2) "
+			+ "AND idGCalendar IS NOT NULL")
 	public List<String> listarIdGCalendarPorPeriodo(Calendar start, Calendar end);
 	@Transactional
 	public void deleteByIdGCalendar(String idGCalendar);
