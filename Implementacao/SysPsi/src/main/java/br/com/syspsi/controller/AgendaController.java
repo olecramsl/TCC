@@ -33,11 +33,10 @@ import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
-import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
-import com.google.api.services.calendar.model.EventReminder;
 import com.google.api.services.calendar.model.Events;
 
+import br.com.syspsi.exception.GCalendarEvtNotChangeException;
 import br.com.syspsi.exception.GCalendarException;
 import br.com.syspsi.model.Util;
 import br.com.syspsi.model.dto.InAgendamentoDTO;
@@ -333,7 +332,7 @@ public class AgendaController {
 	            	 // Já importados anteriormente
 	            	 // all-day: Quando event.getEnd().getDate() != null
 	            	 // Recorrentes: recurringEventId != null	            		            	 
-    
+	            	
 	            	if (!lstGCalendarIds_TmpGCalendarTable.contains(event.getId()) &&
 	            	   (!lstGCalendarIds_AgendamentoTable.contains(event.getId())) &&
 	            	   (event.getEnd().getDate() == null) && (event.getRecurringEventId() == null)) {		            		
@@ -353,77 +352,18 @@ public class AgendaController {
 	            	} else if ((lstGCalendarIds_TmpGCalendarTable.contains(event.getId())) && 
 	            			   (event.getEnd().getDate() == null)) {
 	            		tmpGCalendarEvent = this.gCalendarEventRepositorio.findByIdGCalendar(event.getId());
-	            		// criar um hash das informações de eventos do google e outro dos eventos
-	            		// da tabela do sistema para verificar se houve alteração
-	            		boolean change = false;
-	            		// Recorrência?
-	            		if (event.getRecurringEventId() != null) {
-	            			// what now?
-	            		} 
 	            		
-	            		if (event.getStart().getDateTime().getValue() != 
-	            			tmpGCalendarEvent.getStart().getTimeInMillis()) {
-	            			Calendar startEvent = Calendar.getInstance();
-	            			startEvent.setTimeInMillis(event.getStart().getDateTime().getValue());
-	            			tmpGCalendarEvent.setStart(startEvent);
-	            			change = true;
-	            		}	            		
+	             		try {	            			
+	            			this.gCalendarEventRepositorio.save(this.verificarAlteracoesGCal(event, tmpGCalendarEvent));
+	            		} catch(GCalendarEvtNotChangeException ex) {}
 	            		
-	            		if (event.getEnd().getDateTime().getValue() != 
-		            			tmpGCalendarEvent.getEnd().getTimeInMillis()) {
-		            			Calendar endEvent = Calendar.getInstance();
-		            			endEvent.setTimeInMillis(event.getStart().getDateTime().getValue());
-		            			tmpGCalendarEvent.setStart(endEvent);
-		            			change = true;
-		            	}	            		
-	            			            		
-	            		if (event.getSummary() != null && 
-	            			!event.getSummary().equals(tmpGCalendarEvent.getSummary())) {
-	            			tmpGCalendarEvent.setSummary(event.getSummary());
-	            			change = true;
-	            		}
-	            			            		
-	            		if (change) {
-	            			this.gCalendarEventRepositorio.save(tmpGCalendarEvent);	            			
-	            		}
-	            			            		
 	            		lstAgendamentosGCalendar.add(tmpGCalendarEvent);
 	            	}  else if ((lstGCalendarIds_AgendamentoTable.contains(event.getId())) && 
 	            			   (event.getEnd().getDate() == null)) {
 	            		Agendamento agendamento = this.agendamentoRepositorio.findByIdGCalendar(event.getId());
-	            		// criar um hash das informações de eventos do google e outro dos eventos
-	            		// da tabela do sistema para verificar se houve alteração
-	            		boolean change = false;
-	            		// Recorrência?
-	            		if (event.getRecurringEventId() != null) {
-	            			// what now?
-	            		} 
-	            		if (event.getStart().getDateTime().getValue() != 
-	            			agendamento.getStart().getTimeInMillis()) {
-	            			Calendar startEvent = Calendar.getInstance();
-	            			startEvent.setTimeInMillis(event.getStart().getDateTime().getValue());
-	            			agendamento.setStart(startEvent);
-	            			change = true;
-	            		}
-	            		
-	            		if (event.getEnd().getDateTime().getValue() != 
-	            			agendamento.getEnd().getTimeInMillis()) {
-		            		Calendar endEvent = Calendar.getInstance();
-		            		endEvent.setTimeInMillis(event.getStart().getDateTime().getValue());
-		            		agendamento.setStart(endEvent);
-		            		change = true;
-		            	}	            			            		
-	            		
-	            		if (event.getDescription() != null && 
-		            		!event.getDescription().equals(agendamento.getDescription())) {
-		            		agendamento.setDescription(event.getDescription());
-		            		change = true;
-		            	}
-	            		
-	            		if (change) {	            			
-	            			this.agendamentoRepositorio.save(agendamento);
-	            		}
-	            		
+	            		try {	            			
+	            			this.agendamentoRepositorio.save(this.verificarAlteracoesGCal(event, agendamento));
+	            		} catch (GCalendarEvtNotChangeException ex){}
 	            	}
 	            }
 	        }
@@ -1126,4 +1066,78 @@ public class AgendaController {
 			throw new GCalendarException("Erro ao excluir agendamento no Google Calendar");
 		}		
 	}
+	
+	private TmpGCalendarEvent verificarAlteracoesGCal(Event event, TmpGCalendarEvent tmpGCalendarEvent) 
+		throws GCalendarEvtNotChangeException {
+		boolean change = false;
+		
+		// Recorrência?
+		if (event.getRecurringEventId() != null) {
+			// what now?
+		} 
+		
+		if (event.getStart().getDateTime().getValue() != 
+			tmpGCalendarEvent.getStart().getTimeInMillis()) {
+			Calendar startEvent = Calendar.getInstance();
+			startEvent.setTimeInMillis(event.getStart().getDateTime().getValue());
+			tmpGCalendarEvent.setStart(startEvent);
+			change = true;
+		}	            		
+		
+		if (event.getEnd().getDateTime().getValue() != 
+    		tmpGCalendarEvent.getEnd().getTimeInMillis()) {
+    		Calendar endEvent = Calendar.getInstance();
+    		endEvent.setTimeInMillis(event.getEnd().getDateTime().getValue());
+    		tmpGCalendarEvent.setEnd(endEvent);
+    		change = true;
+    	}	            		
+			            		
+		if (event.getSummary() != null && 
+			!event.getSummary().equals(tmpGCalendarEvent.getSummary())) {
+			tmpGCalendarEvent.setSummary(event.getSummary());
+			change = true;
+		}
+			            		
+		if (!change) {
+			throw new GCalendarEvtNotChangeException();
+		}
+		
+		return tmpGCalendarEvent;
+	}
+	
+	private Agendamento verificarAlteracoesGCal(Event event, Agendamento agendamento) 
+			throws GCalendarEvtNotChangeException {
+		boolean change = false;
+		// Recorrência?
+		if (event.getRecurringEventId() != null) {
+			// what now?
+		} 
+		if (event.getStart().getDateTime().getValue() != 
+			agendamento.getStart().getTimeInMillis()) {
+			Calendar startEvent = Calendar.getInstance();
+			startEvent.setTimeInMillis(event.getStart().getDateTime().getValue());
+			agendamento.setStart(startEvent);
+			change = true;
+		}
+		
+		if (event.getEnd().getDateTime().getValue() != 
+			agendamento.getEnd().getTimeInMillis()) {
+    		Calendar endEvent = Calendar.getInstance();
+    		endEvent.setTimeInMillis(event.getEnd().getDateTime().getValue());
+    		agendamento.setEnd(endEvent);
+    		change = true;
+    	}	            			            		
+		
+		if (event.getDescription() != null && 
+    		!event.getDescription().equals(agendamento.getDescription())) {
+    		agendamento.setDescription(event.getDescription());
+    		change = true;
+    	}
+		
+		if (!change) {	            			
+			throw new GCalendarEvtNotChangeException();
+		}
+		
+		return agendamento;
+	}	
 }
