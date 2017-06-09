@@ -78,4 +78,10 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "AND a.consulta.valor > 0 "
 			+ "AND ps = ?3")
 	public List<Agendamento> listarConsultasPorPeriodo(Calendar dataInicial, Calendar dataFinal, Psicologo psicologo);
+	@Query("SELECT grupo FROM Agendamento "
+			+ "WHERE idRecurring = ?1 "
+			+ "AND eventoPrincipal = 1"
+			)
+	public Long getGrupoPorIdRecurring(String idRecurring);
+	public Agendamento findByStartAndIdRecurring(Calendar start, String idRecurring);
 }

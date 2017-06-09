@@ -170,7 +170,14 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 					
 			
 			agendamentoFactory.salvarAgendamento(agendamento).then(
-					successCallback = function(response) {							
+					successCallback = function(response) {
+						/*
+						if (agendamento.repetirSemanalmente) {
+							atualizarViewFC();
+						} else {
+							angular.element('.calendar').fullCalendar('renderEvent', response.data);
+						}
+						*/
 						angular.element('.calendar').fullCalendar('renderEvent', response.data);
 					},
 					errorCallBack = function(error) {
