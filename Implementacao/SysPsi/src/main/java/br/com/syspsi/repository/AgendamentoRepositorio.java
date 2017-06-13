@@ -83,5 +83,14 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "AND eventoPrincipal = 1"
 			)
 	public Long getGrupoPorIdRecurring(String idRecurring);
-	public Agendamento findByStartAndIdRecurring(Calendar start, String idRecurring);
+	@Query("SELECT a FROM Agendamento a "
+			+ "WHERE DATE(a.start) = DATE(?1) "
+			+ "AND a.idRecurring = ?2"
+			)
+	public Agendamento localizarAgendamentoRepetitivo(Calendar start, String idRecurring);
+	@Query("SELECT a FROM Agendamento a "
+			+ "WHERE a.idRecurring = ?1 AND "
+			+ "a.eventoPrincipal = true"
+			)
+	public Agendamento localizarAgendamentoPrincipalRepetitivo(String idRecurring);
 }

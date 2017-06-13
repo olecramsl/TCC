@@ -299,9 +299,20 @@ public class AgendaController {
 	            	if (event.getRecurringEventId() != null) {
 	            		Calendar inicio = Calendar.getInstance();	            		
 	            		inicio.setTime(new Date(event.getStart().getDateTime().getValue()));
-	            		Agendamento ag = this.agendamentoRepositorio.findByStartAndIdRecurring(inicio, event.getRecurringEventId()); 
-	            		if (ag == null) {	            			
+	            		Agendamento ag = this.agendamentoRepositorio.localizarAgendamentoRepetitivo(inicio, event.getRecurringEventId());	            		
+	            		if (ag == null) {	            		            			
 	            			// gravar na base mudando o grupo
+	            			Agendamento agPrincipal = 
+	            					this.agendamentoRepositorio.localizarAgendamentoPrincipalRepetitivo(event.getRecurringEventId());	            			
+	            			Calendar start = Calendar.getInstance();
+	            			Calendar end = Calendar.getInstance(); 
+	            			start.setTimeInMillis(event.getStart().getDateTime().getValue());
+	            			end.setTimeInMillis(event.getEnd().getDateTime().getValue());
+	            			Agendamento novoAgendamento = new Agendamento(agPrincipal.getPaciente(), 
+	            					agPrincipal.getConvenio(), event.getId(), agPrincipal.getIdRecurring(), 
+	            					start, end, agPrincipal.getGrupo(),	null, agPrincipal.getColor(), false, true);
+	            			novoAgendamento = this.agendamentoRepositorio.save(novoAgendamento);
+	            			lstGCalendarIds_AgendamentoTable.add(novoAgendamento.getIdGCalendar());
 	            		}
 	            	}
 	            	
