@@ -57,8 +57,16 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	  modalAgendamentoService.openEventModal();											
   };
 	
-  var eventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {			
-	  var oldEvent = angular.copy(event); // evento dropado			  
+  var eventRender = function( event, element, view ) { 
+	  if (event.paciente == null) {			  
+		  event.editable = false;
+	  } else {
+		  event.editable = true;
+	  }
+  }
+  
+  var eventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {	
+  	  var oldEvent = angular.copy(event); // evento dropado			  
 	  
 	  var days = moment.duration(delta).days()*(-1);
 	  oldEvent.start.add(days, "d");
@@ -70,7 +78,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	  event.end  = moment(event.start);
 	  event.end  = moment(event.end).hours(horas).minutes(minutos);								
 		
-	  updateEventDroped(angular.copy(event), angular.copy(oldEvent));
+	  updateEventDroped(angular.copy(event), angular.copy(oldEvent));  
   };
 	
   var viewRender = function (view, element) {
@@ -100,6 +108,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 			  select : select,
 			  eventClick : eventClick,		
 			  eventDrop : eventDrop,
+			  eventRender: eventRender,
 			  viewRender: viewRender			
 		  })
   };        

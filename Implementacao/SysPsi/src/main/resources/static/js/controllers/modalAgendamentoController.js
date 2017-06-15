@@ -98,7 +98,10 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 */
 	ctrl.salvar = function (agendamento, agendamentoCarregado) {
 		// Agendamento carregado da tebela temporária gCalendar		
-		if (agendamentoCarregado && !agendamentoCarregado.paciente) {			
+		if (agendamentoCarregado && !agendamentoCarregado.paciente) {
+			if (agendamento.idRecurring) {
+				agendamento.repetirSemanalmente = false;
+			}
 			agendamentoFactory.salvarAgendamentoTemporarioGCalendar(agendamento).then(
 					successCallback = function(response) {
 						atualizarViewFC();

@@ -303,16 +303,18 @@ public class AgendaController {
 	            		if (ag == null) {	            		            			
 	            			// gravar na base mudando o grupo
 	            			Agendamento agPrincipal = 
-	            					this.agendamentoRepositorio.localizarAgendamentoPrincipalRepetitivo(event.getRecurringEventId());	            			
-	            			Calendar start = Calendar.getInstance();
-	            			Calendar end = Calendar.getInstance(); 
-	            			start.setTimeInMillis(event.getStart().getDateTime().getValue());
-	            			end.setTimeInMillis(event.getEnd().getDateTime().getValue());
-	            			Agendamento novoAgendamento = new Agendamento(agPrincipal.getPaciente(), 
-	            					agPrincipal.getConvenio(), event.getId(), agPrincipal.getIdRecurring(), 
-	            					start, end, agPrincipal.getGrupo(),	null, agPrincipal.getColor(), false, true);
-	            			novoAgendamento = this.agendamentoRepositorio.save(novoAgendamento);
-	            			lstGCalendarIds_AgendamentoTable.add(novoAgendamento.getIdGCalendar());
+	            					this.agendamentoRepositorio.localizarAgendamentoPrincipalRepetitivo(event.getRecurringEventId());
+	            			if (agPrincipal != null) {
+		            			Calendar start = Calendar.getInstance();
+		            			Calendar end = Calendar.getInstance(); 
+		            			start.setTimeInMillis(event.getStart().getDateTime().getValue());
+		            			end.setTimeInMillis(event.getEnd().getDateTime().getValue());
+		            			Agendamento novoAgendamento = new Agendamento(agPrincipal.getPaciente(), 
+		            					agPrincipal.getConvenio(), event.getId(), agPrincipal.getIdRecurring(), 
+		            					start, end, agPrincipal.getGrupo(),	null, agPrincipal.getColor(), false, true);
+		            			novoAgendamento = this.agendamentoRepositorio.save(novoAgendamento);
+		            			lstGCalendarIds_AgendamentoTable.add(novoAgendamento.getIdGCalendar());
+	            			}
 	            		}
 	            	}
 	            	
@@ -577,14 +579,69 @@ public class AgendaController {
 			throw new Exception("Não foi possível salvar o agendamento!");
 		}
 				
-		if (agendamentoDTO.isRepetirSemanalmente()) {						
+		if (agendamentoDTO.isRepetirSemanalmente()) {			
 			agendamento.setEventoPrincipal(true);			
 			gCalendarEventRepositorio.deleteByIdRecurring(agendamento.getIdRecurring());
 			logMessage("Evento repetido. Agendamento(s) apagado(s). idRecurring: " + agendamento.getIdRecurring(), false);
-		} else {
-			agendamento.setEventoPrincipal(false); 
-			gCalendarEventRepositorio.deleteByIdGCalendar(agendamento.getIdGCalendar());
-			logMessage("Agendamento apagado. idGCalendar: " + agendamento.getIdGCalendar(), false);
+		} else {			
+			if (agendamento.getIdRecurring() != null) {				
+				logMessage("getCalendarService", false);
+		        com.google.api.services.calendar.Calendar service =
+		            getCalendarService();
+		        logMessage("getCalendarService: OK", false);
+		        	
+				// Com IdRecurring pegamos o evento principal, para alterar todos os demais
+				Event evt = service.events()
+						.get("primary", agendamento.getIdRecurring())
+						.execute();
+				
+				// atualiza o título dos eventos no gcal
+				evt.setSummary(agendamento.getPaciente().getNomeExibicao());
+				evt.setDescription(agendamento.getDescription());
+				
+				/*
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-03:00");
+				DateTime startDateTime = new DateTime(format.format(agendamento.getStart().getTime()));
+				EventDateTime start = new EventDateTime()
+					    .setDateTime(startDateTime)
+					    .setTimeZone("America/Sao_Paulo");
+				evt.setStart(start);
+
+				DateTime endDateTime = new DateTime(format.format(agendamento.getEnd().getTime()));
+				EventDateTime end = new EventDateTime()
+					    .setDateTime(endDateTime)
+					    .setTimeZone("America/Sao_Paulo");
+				evt.setEnd(end);
+				*/
+				
+				service.events().update("primary", evt.getId(), evt).execute();
+
+				Events instances = service.events().instances("primary", evt.getId())
+						.setMaxResults(1)
+						.execute();
+				
+				if (instances.getItems() != null && instances.getItems().size() > 0) {
+					Event instance = instances.getItems().get(0);
+					
+					//Calendar start = Calendar.getInstance();
+					//Calendar end = Calendar.getInstance();																				
+					//start.setTimeInMillis(instance.getStart().getDateTime().getValue());
+					//end.setTimeInMillis(instance.getEnd().getDateTime().getValue());
+					agendamento.setEventoPrincipal(true);
+					agendamento.setIdGCalendar(instance.getId());
+					agendamento.setIdRecurring(instance.getRecurringEventId());
+					//agendamento.setStart(start);
+					//agendamento.setEnd(end);					
+					agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup());					
+					
+					this.gCalendarEventRepositorio.deleteByIdRecurring(agendamento.getIdRecurring());
+					logMessage("Agendamentos repetidos apagados. idRecurring: " + agendamento.getIdRecurring(), false);
+				}
+			} else {
+				agendamento.setEventoPrincipal(false); 
+				this.gCalendarEventRepositorio.deleteByIdGCalendar(agendamento.getIdGCalendar());
+				logMessage("Agendamento apagado. idGCalendar: " + agendamento.getIdGCalendar(), false);
+			}
 		}
 		
 		agendamento.setColor(COR_AGENDAMENTO_DEFAULT);		
