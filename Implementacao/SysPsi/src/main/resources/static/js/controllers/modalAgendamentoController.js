@@ -1,13 +1,12 @@
-angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModalInstance', '$location', '$mdDialog', 'agendamentoFactory', 
-	'convenioFactory', 'modalAgendamentoFactory', 'modalAgendamentoService', 'consultaPacienteFactory', 'utilService', 'consts', function ($scope, 
-			$uibModalInstance, $location, $mdDialog, agendamentoFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, 
-			consultaPacienteFactory, utilService, consts) {
+angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModalInstance', 
+	'$location', '$mdDialog', 'agendamentoFactory',	'convenioFactory', 'modalAgendamentoFactory', 
+	'modalAgendamentoService', 'consultaPacienteFactory', 'psicologoFactory', 'utilService', 'consts', 
+	function ($scope, $uibModalInstance, $location, $mdDialog, agendamentoFactory, convenioFactory, 
+			modalAgendamentoFactory, modalAgendamentoService, consultaPacienteFactory, 
+			psicologoFactory, utilService, consts) {
 	
 	var ctrl = this;	
-	
-	//$scope.$watch(function() { return agendamentoFactory.getLstPacientesAtivos(); }, function(newValue, oldValue) {
-	//	ctrl.lstPacientesAtivos = newValue;
-	//});
+		
 	ctrl.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();
 	ctrl.agendamento = agendamentoFactory.getAgendamento();
 	ctrl.agendamentoCarregado = agendamentoFactory.getAgendamentoCarregado();	
@@ -117,6 +116,10 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			agendamento.start = moment(agendamento.start).hour(horas).minute(minutos);
 			agendamento.end = moment(agendamento.start).add(ctrl.tempoSessao, 'm');			
 
+			if (psicologoFactory.isVinculadoGCal() && agendamentoCarregado.grupo > 0) {
+				agendamento.repetirSemanalmente = agendamentoCarregado.repetirSemanalmente;
+			}
+			
 			agendamentoFactory.salvarAgendamento(agendamento).then(
 					successCallback = function(response) {	  				   					
 						var event = angular.element('.calendar').fullCalendar('clientEvents',agendamento.id);																								
@@ -151,8 +154,9 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 							modalAgendamentoFactory.setTipoConfirmacao(consts.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS);
 							modalAgendamentoFactory.setMsgConfirmacao("Você optou por não repetir este evento semanalmente. Deseja excluir os eventos futuros associados a este agendamento?");				
 							modalAgendamentoService.openConfirmModal();
-						} else if ((agendamento.grupo > 0) && ((agendamento.formatedStart !== agendamentoCarregado.formatedStart) || 
-								  (agendamentoCarregado.paciente.id !== agendamento.paciente.id))) {
+						} else if ((agendamento.grupo > 0 && !psicologoFactory.isVinculadoGCal()) && 
+								((agendamento.formatedStart !== agendamentoCarregado.formatedStart) || 
+								(agendamentoCarregado.paciente.id !== agendamento.paciente.id))) {
 							modalAgendamentoFactory.setTipoConfirmacao(consts.TIPOS_CONFIRMACOES.ALTERAR_DADOS_FUTUROS);							
 							modalAgendamentoFactory.setMsgConfirmacao("Replicar alterações nos eventos futuros?");							
 							modalAgendamentoService.openConfirmModal();
@@ -205,7 +209,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	/**
 	 * Remove um evento
 	 */
-	var removerEvento = function(agendamento) {			
+	var removerEvento = function(agendamento) {					
 		agendamentoFactory.removerAgendamento(agendamento).then(
 				successCallback = function(response) {
 					if (agendamento.grupo > 0 && agendamento.eventoPrincipal) {
@@ -225,12 +229,12 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 				}
 			);				
 		$uibModalInstance.close();
-		
-		if (agendamento.grupo > 0) {
+						
+		if ((!psicologoFactory.isVinculadoGCal() && agendamento.grupo > 0) || agendamento.eventoPrincipal) {
 			modalAgendamentoFactory.setTipoConfirmacao(consts.TIPOS_CONFIRMACOES.REMOVER_EVENTOS_FUTUROS);
 			modalAgendamentoFactory.setMsgConfirmacao("Remover também os eventos futuros?");
 			modalAgendamentoService.openConfirmModal();
-		}		
+		}		 				
 	};
 	
 	ctrl.iniciarConsulta = function(agendamento) {		

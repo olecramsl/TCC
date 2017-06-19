@@ -1,12 +1,14 @@
 package br.com.syspsi.controller;
 
+import java.security.Principal;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.syspsi.model.Util;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.PsicologoRepositorio;
 
@@ -28,6 +30,16 @@ public class PsicologoController {
     		logger.error(msg);
     	}
     }	
+	
+	@RequestMapping(
+			value = "/isVinculadoGCal", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE
+			)
+	public boolean isVinculadoGCal(Principal user) {
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+		return psicologo.isVinculadoGCal();
+	}
 	
 	/*
 	@RequestMapping(

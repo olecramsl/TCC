@@ -5,9 +5,11 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 'pacienteFactory', 'convenioFactory', 
-	'modalAgendamentoFactory', 'modalAgendamentoService', 'utilService', 'consts', function ($scope, $mdDialog,	agendamentoFactory,	
-			pacienteFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, utilService, consts) {
+angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 
+	'pacienteFactory', 'convenioFactory', 'psicologoFactory', 'modalAgendamentoFactory', 
+	'modalAgendamentoService', 'utilService', 'consts', function ($scope, $mdDialog, 
+	agendamentoFactory,	pacienteFactory, convenioFactory, psicologoFactory, modalAgendamentoFactory, 
+	modalAgendamentoService, utilService, consts) {
 	
   var ctrl = this;
   
@@ -27,7 +29,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
    	  ctrl.agendamentoCarregado = newValue;
   });
     
-  var select = function(start, end) {
+  var select = function(start, end) {	  
 	  limparDadosAgendamento();	  
 	  agendamentoFactory.setAgendamentoCarregado(null);	  
 
@@ -45,6 +47,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	  agendamentoFactory.setStart(new Date(dataInicialAgendamento));
 	  agendamentoFactory.setEnd(new Date(dataFinalAgendamento));
 	  agendamentoFactory.setFormatedStart(start.format('HH:mm'));		
+	  agendamentoFactory.setEditable(true);
 	  
 	  modalAgendamentoService.openEventModal();
   };
@@ -57,12 +60,13 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	  modalAgendamentoService.openEventModal();											
   };
 	
-  var eventRender = function( event, element, view ) { 
-	  if (event.paciente == null) {			  
+  var eventRender = function( event, element, view ) { 	  
+	  if (psicologoFactory.isVinculadoGCal() && ((event.paciente == null && event.idGCalendar) ||
+		 (event.eventoPrincipal))) {		  
 		  event.editable = false;
 	  } else {
 		  event.editable = true;
-	  }
+	  }	  
   }
   
   var eventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {	
@@ -141,8 +145,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
    */
   var updateEventDroped = function(event, oldEvent) {	  
 	  event.repetirSemanalmente = false;
-	  event.grupo = 0;
-	  //var agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(event);	 
+	  event.grupo = 0;	  	
 	  agendamentoFactory.salvarAgendamento(event).then(
 		  successCallback = function(response) {
 			  angular.element('.calendar').fullCalendar('removeEvents', event.id);
@@ -150,12 +153,13 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 			  
 			  // Mantem o evento antigo no BD para evitar o save na view quando visualizada
 			  if (oldEvent.grupo > 0) {
-				  oldEvent.id = null;				  
+				  oldEvent.id = null;		
+				  oldEvent.idGCalendar = null;
+				  oldEvent.idRecurring = null;
 				  oldEvent.eventoPrincipal = false;
 				  oldEvent.ativo = false;
 				  oldEvent.repetirSemanalmente = false;
 				  
-				  //agendamentoDTO = agendamentoFactory.prepararAgendamentoDTO(oldEvent);
 				  agendamentoFactory.salvarAgendamento(oldEvent).then(
 						  successCallback = function(response) {
 							  agendamentoFactory.setAgendamento(angular.copy(event));
@@ -166,7 +170,8 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 								  agendamentoFactory.atribuirNovoEventoPrincipal(agendamentoFactory.getAgendamento());
 							  }
 							  
-							  if (agendamentoFactory.getStart().format("WW") === oldEvent.start.format("WW")) {								  							  
+							  if (agendamentoFactory.getStart().format("WW") === oldEvent.start.format("WW") && 
+								  !psicologoFactory.isVinculadoGCal()) {								  							  
 								  var diasDiferenca = oldEvent.start.dayOfYear() - event.start.dayOfYear();
 								  if ((diasDiferenca < 7) && (event.start.day() !== oldEvent.start.day())) {
 									  modalAgendamentoFactory.setTipoConfirmacao(consts.TIPOS_CONFIRMACOES.MOVER_EVENTOS);

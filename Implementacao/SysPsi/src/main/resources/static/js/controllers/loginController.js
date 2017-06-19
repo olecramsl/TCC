@@ -1,5 +1,6 @@
-angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', '$mdDialog', 'loginFactory', 'utilService',
-	function($scope, $rootScope, $http, $location, $mdDialog, loginFactory, utilService) {
+angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 
+	'$mdDialog', 'loginFactory', 'psicologoFactory', 'utilService',	function($scope, $rootScope, 
+			$http, $location, $mdDialog, loginFactory, psicologoFactory, utilService) {
 	var ctrl = this;
 		
 	var authenticate = function(credentials, callback) {		
@@ -9,7 +10,9 @@ angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http
 		
 		loginFactory.login(headers).then(function(response) {			
 			if (response.data.name) {				
-				$rootScope.authenticated = true;				
+				$rootScope.authenticated = true;	
+				psicologoFactory.setVinculadoGCal();
+				console.log();
 				loginFactory.realizarBackup().then(
 						successCallback = function(response) {},
 						errorCallback = function(error) {														
