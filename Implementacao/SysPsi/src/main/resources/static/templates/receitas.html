@@ -57,7 +57,10 @@
 					 </div> <!-- /#list -->
 					 
 					 <div class="form-group">
-	  					<button id="btnImprimir" name="btnImprimir" type="button" class="btn btn-primary" style="float: right;">Imprimir receitas do período</button>   						
+  					<button id="btnImprimir" name="btnImprimir" type="button" style="float: right;"
+	  						ng-disabled="ctrl.totalConsultasPeriodo == 0" 
+	  						class="btn btn-primary">
+	  						Imprimir receitas do período</button>   						
 	 				</div>                      		                                 																			                             		                                 																																	
 				</div>
 			</div>

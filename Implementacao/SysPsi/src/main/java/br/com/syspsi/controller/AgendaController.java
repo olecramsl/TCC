@@ -531,8 +531,8 @@ public class AgendaController {
 					agendamento = this.salvarAgendamentoNoGoogleCalendar(agendamento);										
 				} else {
 					Agendamento ag = this.editarAgendamentoNoGoogleCalendar(agendamento);					
-					agendamento.setIdGCalendar(ag.getIdGCalendar());
-					agendamento.setIdRecurring(ag.getIdRecurring());
+					agendamento.setIdGCalendar(ag.getIdGCalendar());					
+					agendamento.setIdRecurring(ag.getIdRecurring());				
 				}
 			} catch(GCalendarException ex) {
 				erroGCal = true;
@@ -580,19 +580,19 @@ public class AgendaController {
 			throw new Exception("Não foi possível salvar o agendamento!");
 		}
 				
+		// Agendamentos repetidos criados no GCal				
+		logMessage("getCalendarService", false);
+        com.google.api.services.calendar.Calendar service =
+            getCalendarService();
+        logMessage("getCalendarService: OK", false);
+		
 		if (agendamentoDTO.isRepetirSemanalmente()) {
 			// Agendamentos repetidos criados no sistema
 			agendamento.setEventoPrincipal(true);			
 			gCalendarEventRepositorio.deleteByIdRecurring(agendamento.getIdRecurring());
 			logMessage("Evento repetido. Agendamento(s) apagado(s). idRecurring: " + agendamento.getIdRecurring(), false);
 		} else {			
-			if (agendamento.getIdRecurring() != null) {
-				// Agendamentos repetidos criados no GCal				
-				logMessage("getCalendarService", false);
-		        com.google.api.services.calendar.Calendar service =
-		            getCalendarService();
-		        logMessage("getCalendarService: OK", false);
-		        	
+			if (agendamento.getIdRecurring() != null) {						        	
 				// Com IdRecurring pegamos o evento principal, para alterar todos os demais
 				Event evt = service.events()
 						.get("primary", agendamento.getIdRecurring())
@@ -630,6 +630,14 @@ public class AgendaController {
 				// Agendamentos simples
 				agendamento.setEventoPrincipal(false); 
 				this.gCalendarEventRepositorio.deleteByIdGCalendar(agendamento.getIdGCalendar());
+				
+				Event event = service.events().get("primary", agendamento.getIdGCalendar()).execute();
+				// atualiza o título dos eventos no gcal
+				event.setSummary(agendamento.getPaciente().getNomeExibicao());
+				event.setDescription(agendamento.getDescription());				
+				
+				service.events().update("primary", event.getId(), event).execute();
+				
 				logMessage("Agendamento apagado. idGCalendar: " + agendamento.getIdGCalendar(), false);
 			}
 		}
@@ -1062,12 +1070,12 @@ public class AgendaController {
 			if (agendamento.getGrupo() > 0 && agendamento.getIdRecurring() == null) {
 				String[] recurrence = new String[] {"RRULE:FREQ=WEEKLY"};
 				event.setRecurrence(Arrays.asList(recurrence));
-			}
-
-			String calendarId = "primary";
-			event = service.events().insert(calendarId, event).execute();
-			agendamento.setIdGCalendar(event.getId());
+			}					
 			
+			event = service.events().insert("primary", event).execute();
+			agendamento.setIdGCalendar(event.getId());						
+			
+			// Apenas para novos agendamentos
 			if (agendamento.getGrupo() > 0) {							
 				Calendar maxDateCal = Calendar.getInstance();
 				maxDateCal.setTime(agendamento.getStart().getTime());
@@ -1151,7 +1159,7 @@ public class AgendaController {
 						
 			event = service.events().update("primary", event.getId(), event).execute();
 			
-			if (agendamento.getGrupo() > 0) {							
+			if (agendamento.isEventoPrincipal()) {							
 				Calendar maxDateCal = Calendar.getInstance();
 				maxDateCal.setTime(agendamento.getStart().getTime());
 				maxDateCal.add(Calendar.DATE, 1);
@@ -1181,12 +1189,7 @@ public class AgendaController {
 	private TmpGCalendarEvent verificarAlteracoesGCal(Event event, TmpGCalendarEvent tmpGCalendarEvent) 
 		throws GCalendarEvtNotChangeException {
 		boolean change = false;
-		
-		// Recorrência?
-		if (event.getRecurringEventId() != null) {
-			// what now?
-		} 
-		
+				
 		if (event.getStart().getDateTime().getValue() != 
 			tmpGCalendarEvent.getStart().getTimeInMillis()) {
 			Calendar startEvent = Calendar.getInstance();
@@ -1218,11 +1221,7 @@ public class AgendaController {
 	
 	private Agendamento verificarAlteracoesGCal(Event event, Agendamento agendamento) 
 			throws GCalendarEvtNotChangeException {
-		boolean change = false;
-		// Recorrência?
-		if (event.getRecurringEventId() != null) {
-			// what now?
-		} 
+		boolean change = false;		
 		if (event.getStart().getDateTime().getValue() != 
 			agendamento.getStart().getTimeInMillis()) {
 			Calendar startEvent = Calendar.getInstance();
