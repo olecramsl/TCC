@@ -70,6 +70,10 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 				templateUrl: "templates/receitas.html",
 				controller: "FinanceiroCtrl",
 				controllerAs: "ctrl"
+			}).when('/configuracoes', { 
+				templateUrl: "templates/configuracoes.html",
+				controller: "ConfiguracaoCtrl",
+				controllerAs: "ctrl"
 			}).otherwise({redirectTo: '/'});
 	
 		$mdDateLocaleProvider.months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];

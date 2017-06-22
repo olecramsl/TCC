@@ -1,7 +1,27 @@
-angular.module('syspsi').controller('DashboardCtrl', ['$rootScope', '$scope', 'financeiroFactory', 'pacienteFactory', 'convenioFactory', 'agendamentoFactory',
-	'utilService', function($rootScope, $scope, financeiroFactory,	pacienteFactory, convenioFactory, agendamentoFactory, utilService) {
+angular.module('syspsi').controller('DashboardCtrl', ['$location', 'financeiroFactory', 
+	'pacienteFactory', 'convenioFactory', 'agendamentoFactory', 'configuracaoFactory', 'waitFactory', 
+	'utilService', 'consts', function($location, financeiroFactory, pacienteFactory, convenioFactory,
+			agendamentoFactory, configuracaoFactory, waitFactory, utilService, consts) {
 	var ctrl = this;	
 		
+	if ($location.absUrl().indexOf("?success") >= 0) {
+		$location.search({});
+		waitFactory.setMessage("Exportando eventos para o Google Calendar.");
+		utilService.showWait();
+		configuracaoFactory.exportarAgendamentoParaGoogleCalendar().then(
+				successCallback = function(response) {
+					utilService.hideWait();
+				},
+				errorCallback = function(error) {
+					utilService.hideWait();
+					utilService.tratarExcecao(error);
+				}
+		);
+	} else if ($location.absUrl().indexOf("?error") >= 0) {		
+		$location.search({});
+		utilService.tratarExcecao("Não foi possível vincular a agenda!");			
+	}
+	
 	var carregarPacientesAtivos = function() {
 		pacienteFactory.listarPacientesAtivosInativos(true).then(
 		      successCallback = function(response) {		    	  

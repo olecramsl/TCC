@@ -7,8 +7,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<title>Syspsi</title>
-	
-	<!-- <link href="lib/wro-css/angular-bootstrap.css" rel="stylesheet">  -->	
+		
 	<link href="lib/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css" >
 	<link href="lib/angular-material/angular-material-1.1.0.min.css" rel="stylesheet" type="text/css" >	 	
 	<link href="lib/clockpicker/bootstrap-clockpicker.min.css" rel="stylesheet" type="text/css" >
@@ -116,7 +115,7 @@
 						<ul class="dropdown-menu dropdown-user">
 							<li><a href="#"><i class="fa fa-user fa-fw"></i> Meu Perfil</a></li>									
 							<li class="divider"></li>
-							<li><a href="#"><i class="fa fa-cog fa-fw"></i> Configurações</a></li>
+							<li><a href="#/configuracoes"><i class="fa fa-cog fa-fw"></i> Configurações</a></li>
 							<li class="divider"></li>
 							<li><a href="" ng-click="ctrl.logout()"><i class="fa fa-sign-out fa-fw"></i>Sair</a></li>
 						</ul> <!-- /.dropdown-user --></li>
@@ -214,6 +213,8 @@
 	<script type="text/javascript" src='js/controllers/dialogController.js'></script>	
 	<script type="text/javascript" src='js/controllers/financeiroController.js'></script>
 	<script type="text/javascript" src='js/controllers/dashboardController.js'></script>
+	<script type="text/javascript" src='js/controllers/configuracaoController.js'></script>	
+	<script type="text/javascript" src='js/controllers/waitController.js'></script>
 	<script type="text/javascript" src='js/services/loginFactory.js'></script>		
 	<script type="text/javascript" src='js/services/agendamentoFactory.js'></script>
 	<script type="text/javascript" src='js/services/cadastroPsicologoFactory.js'></script>
@@ -225,9 +226,11 @@
 	<script type="text/javascript" src='js/services/cadastroPacienteFactory.js'></script>
 	<script type="text/javascript" src='js/services/cadastroConvenioFactory.js'></script>
 	<script type="text/javascript" src='js/services/financeiroFactory.js'></script>
+	<script type="text/javascript" src='js/services/configuracaoFactory.js'></script>
+	<script type="text/javascript" src='js/services/waitFactory.js'></script>
 	<script type="text/javascript" src='js/services/modalAgendamentoService.js'></script>	
 	<script type="text/javascript" src='js/services/idleService.js'></script>
-	<script type="text/javascript" src='js/services/utilService.js'></script>
+	<script type="text/javascript" src='js/services/utilService.js'></script>	
 	<script type="text/javascript" src='js/filters/cpfFilter.js'></script>
 	<script type="text/javascript" src='js/filters/cnpjFilter.js'></script>
 	<script type="text/javascript" src='js/filters/telefoneFilter.js'></script>

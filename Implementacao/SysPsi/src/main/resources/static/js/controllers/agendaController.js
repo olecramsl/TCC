@@ -6,10 +6,10 @@ angular.forEach(lazyModules, function(dependency) {
 });
 
 angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 
-	'pacienteFactory', 'convenioFactory', 'psicologoFactory', 'modalAgendamentoFactory', 
+	'pacienteFactory', 'convenioFactory', 'psicologoFactory', 'waitFactory', 'modalAgendamentoFactory', 
 	'modalAgendamentoService', 'utilService', 'consts', function ($scope, $mdDialog, 
-	agendamentoFactory,	pacienteFactory, convenioFactory, psicologoFactory, modalAgendamentoFactory, 
-	modalAgendamentoService, utilService, consts) {
+	agendamentoFactory,	pacienteFactory, convenioFactory, psicologoFactory, waitFactory, 
+	modalAgendamentoFactory, modalAgendamentoService, utilService, consts) {
 	
   var ctrl = this;
   
@@ -129,12 +129,16 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
    * na view atual, caso necessário
    */ 
   var listarAgendamento = function(dataInicial, dataFinal) {
+	  waitFactory.setMessage("Carregando agendamentos ...");
+	  utilService.showWait();
 	  agendamentoFactory.listarAgendamentos(dataInicial, dataFinal).then(
 			  successCallback = function (response) {				  
 				  angular.element('.calendar').fullCalendar('removeEvents');
 				  angular.element('.calendar').fullCalendar('renderEvents',response.data);
+				  utilService.hideWait();
 			  },
-			  errorCallback = function (error) {	  			  		  
+			  errorCallback = function (error) {
+				  utilService.hideWait();
 				  utilService.tratarExcecao(error);
 			  }
 	  );	  
@@ -146,6 +150,8 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   var updateEventDroped = function(event, oldEvent) {	  
 	  event.repetirSemanalmente = false;
 	  event.grupo = 0;	  	
+	  waitFactory.setMessage("Atualizando agendamentos ...");
+	  utilService.showWait();
 	  agendamentoFactory.salvarAgendamento(event).then(
 		  successCallback = function(response) {
 			  angular.element('.calendar').fullCalendar('removeEvents', event.id);
@@ -179,14 +185,19 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 									  modalAgendamentoService.openConfirmModal();	
 								  }
 							  }
+							  utilService.hideWait();
 						  },
-						  errorCallback = function (error){			  
+						  errorCallback = function (error){
+							  utilService.hideWait();
 							  utilService.tratarExcecao(error);			  						
 						  }
 				  );
+			  } else {
+				  utilService.hideWait();
 			  }
 		  },
-		  errorCallback = function (error){			  
+		  errorCallback = function (error){			 
+			  utilService.hideWait();
 			  utilService.tratarExcecao(error);			  						
 		  }
 	  );		  	 	 
