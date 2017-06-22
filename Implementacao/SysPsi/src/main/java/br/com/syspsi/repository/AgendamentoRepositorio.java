@@ -13,7 +13,7 @@ import br.com.syspsi.model.entity.Paciente;
 import br.com.syspsi.model.entity.Psicologo;
 
 public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long> {
-	public Agendamento findByGrupoAndEventoPrincipal(Long grupo, boolean eventoPrincipal);
+	public Agendamento findByGrupoAndEventoPrincipal(Long grupo, boolean eventoPrincipal);	
 	public List<Agendamento> findByGrupo(Long grupo);
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
@@ -93,4 +93,33 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "a.eventoPrincipal = true"
 			)
 	public Agendamento localizarAgendamentoPrincipalRepetitivo(String idRecurring);
+	@Query("SELECT a FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "
+			+ "WHERE a.idGCalendar IS NOT NULL "
+			+ "AND ps = ?1")
+	public List<Agendamento> listarAgendamentosVinculados(Psicologo psicologo);
+	@Query("SELECT a FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "
+			+ "WHERE (DATE(a.start) >= DATE(?2) "
+			+ "AND a.eventoPrincipal = false) "
+			+ "AND a.ativo = true "
+			+ "AND ps = ?1")
+	public List<Agendamento> listarAgendamentosSimplesAVincular(Psicologo psicologo, Calendar dataInicial);
+	@Query("SELECT a FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "
+			+ "WHERE a.eventoPrincipal = true "
+			+ "AND a.ativo = true "
+			+ "AND ps = ?1")
+	public List<Agendamento> listarAgendamentosRepetidosAVincular(Psicologo psicologo);
+	@Query("SELECT a FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "
+			+ "WHERE (DATE(a.start) < DATE(?2) "
+			+ "AND a.eventoPrincipal = false) "
+			+ "AND a.ativo = true "
+			+ "AND ps = ?1")
+	public List<Agendamento> listarAgendamentosRepetitivosParaNaoVincular(Psicologo psicologo, Calendar dataInicial);
 }

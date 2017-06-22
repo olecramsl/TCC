@@ -7,8 +7,13 @@ angular.module('syspsi').factory('configuracaoFactory', ['$http', 'consts', func
 		return $http.get(consts.BASE_URL + '/exportarAgendamentoParaGoogleCalendar');
 	};
 	
+	var _desvincularAgendamentosDoGoogleCalendar = function() {
+		return $http.get(consts.BASE_URL + '/desvincularAgendamentosDoGoogleCalendar');
+	};
+	
 	return {
 		isVinculadoGCal: _isVinculadoGCal,
-		exportarAgendamentoParaGoogleCalendar: _exportarAgendamentoParaGoogleCalendar
+		exportarAgendamentoParaGoogleCalendar: _exportarAgendamentoParaGoogleCalendar,
+		desvincularAgendamentosDoGoogleCalendar: _desvincularAgendamentosDoGoogleCalendar
 	};
 }]);

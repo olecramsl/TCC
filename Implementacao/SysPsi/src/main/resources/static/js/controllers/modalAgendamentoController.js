@@ -1,9 +1,9 @@
 angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModalInstance', 
 	'$location', '$mdDialog', 'agendamentoFactory',	'convenioFactory', 'modalAgendamentoFactory', 
-	'modalAgendamentoService', 'consultaPacienteFactory', 'psicologoFactory', 'waitFactory', 
-	'utilService', 'consts', function ($scope, $uibModalInstance, $location, $mdDialog, 
-			agendamentoFactory, convenioFactory, modalAgendamentoFactory, modalAgendamentoService, 
-			consultaPacienteFactory, psicologoFactory, waitFactory, utilService, consts) {
+	'modalAgendamentoService', 'consultaPacienteFactory', 'psicologoFactory', 'utilService', 'consts', 
+	function ($scope, $uibModalInstance, $location, $mdDialog,	agendamentoFactory, convenioFactory, 
+			modalAgendamentoFactory, modalAgendamentoService, consultaPacienteFactory, 
+			psicologoFactory, utilService, consts) {
 	
 	var ctrl = this;	
 		
@@ -44,7 +44,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	  * Remove os agendamentos futuros associados a um evento semanal
 	  */
 	 var removerEventosFuturos = function (agendamento) {		
-		 waitFactory.setMessage("Removendo eventos futuros ...");
+		 utilService.setMessage("Removendo eventos futuros ...");
 		 utilService.showWait();
 		 agendamentoFactory.removerAgendamentosFuturos(agendamento).then(
 				 successCallback = function(response) {
@@ -63,7 +63,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	  * Move os agendamentos futuros associados a um evento semanal
 	  */
 	 var moverEventosFuturos = function (agendamento) {
-		 waitFactory.setMessage("Movendo eventos futuros ...");
+		 utilService.setMessage("Movendo eventos futuros ...");
 		 utilService.showWait();
 		 agendamentoFactory.moverAgendamentosFuturos(agendamento).then(
 				 successCallback = function(response) {
@@ -82,7 +82,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	  * Atualizar os agendamentos futuros associados a um evento semanal
 	  */
 	 var atualizarEventosFuturos = function (agendamento) {
-		 waitFactory.setMessage("Atualizando eventos futuros ...");
+		 utilService.setMessage("Atualizando eventos futuros ...");
 		 utilService.showWait();
 		 agendamentoFactory.atualizarAgendamentosFuturos(agendamento).then(
 				 successCallback = function(response) {
@@ -110,7 +110,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	ctrl.salvar = function (agendamento, agendamentoCarregado) {
 		// Agendamento carregado da tebela temporária gCalendar		
 		if (agendamentoCarregado && !agendamentoCarregado.paciente) {
-			waitFactory.setMessage("Importanto agendamento ...");
+			utilService.setMessage("Importanto agendamento ...");
 			utilService.showWait();
 			 
 			if (agendamento.idRecurring) {
@@ -128,7 +128,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			);			
 		// Edicao	
 		} else if (agendamento.id) {
-			waitFactory.setMessage("Editando agendamento ...");
+			utilService.setMessage("Editando agendamento ...");
 			utilService.showWait();
 			
 			var horas = agendamento.formatedStart.split(":")[0];
@@ -190,7 +190,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			);			
 		// Novo agendamento
 		} else if (agendamento.paciente) {
-			waitFactory.setMessage("Salvando agendamento ...");
+			utilService.setMessage("Salvando agendamento ...");
 			utilService.showWait();
 			
 			agendamento.title = updateTitle(agendamento);
@@ -237,7 +237,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 * Remove um evento
 	 */
 	var removerEvento = function(agendamento) {
-		waitFactory.setMessage("Removendo agendamento ...");
+		utilService.setMessage("Removendo agendamento ...");
 		utilService.showWait();
 		agendamentoFactory.removerAgendamento(agendamento).then(
 				successCallback = function(response) {					

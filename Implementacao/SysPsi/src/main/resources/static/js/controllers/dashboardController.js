@@ -1,12 +1,12 @@
 angular.module('syspsi').controller('DashboardCtrl', ['$location', 'financeiroFactory', 
-	'pacienteFactory', 'convenioFactory', 'agendamentoFactory', 'configuracaoFactory', 'waitFactory', 
-	'utilService', 'consts', function($location, financeiroFactory, pacienteFactory, convenioFactory,
-			agendamentoFactory, configuracaoFactory, waitFactory, utilService, consts) {
+	'pacienteFactory', 'convenioFactory', 'agendamentoFactory', 'configuracaoFactory','utilService', 
+	'consts', function($location, financeiroFactory, pacienteFactory, convenioFactory, 
+			agendamentoFactory, configuracaoFactory, utilService, consts) {
 	var ctrl = this;	
 		
 	if ($location.absUrl().indexOf("?success") >= 0) {
 		$location.search({});
-		waitFactory.setMessage("Exportando eventos para o Google Calendar.");
+		utilService.setMessage("Exportando eventos para o Google Calendar.");
 		utilService.showWait();
 		configuracaoFactory.exportarAgendamentoParaGoogleCalendar().then(
 				successCallback = function(response) {

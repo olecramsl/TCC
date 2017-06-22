@@ -6,10 +6,10 @@ angular.forEach(lazyModules, function(dependency) {
 });
 
 angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agendamentoFactory', 
-	'pacienteFactory', 'convenioFactory', 'psicologoFactory', 'waitFactory', 'modalAgendamentoFactory', 
+	'pacienteFactory', 'convenioFactory', 'psicologoFactory', 'modalAgendamentoFactory', 
 	'modalAgendamentoService', 'utilService', 'consts', function ($scope, $mdDialog, 
-	agendamentoFactory,	pacienteFactory, convenioFactory, psicologoFactory, waitFactory, 
-	modalAgendamentoFactory, modalAgendamentoService, utilService, consts) {
+	agendamentoFactory,	pacienteFactory, convenioFactory, psicologoFactory, modalAgendamentoFactory, 
+	modalAgendamentoService, utilService, consts) {
 	
   var ctrl = this;
   
@@ -129,7 +129,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
    * na view atual, caso necessário
    */ 
   var listarAgendamento = function(dataInicial, dataFinal) {
-	  waitFactory.setMessage("Carregando agendamentos ...");
+	  utilService.setMessage("Carregando agendamentos ...");
 	  utilService.showWait();
 	  agendamentoFactory.listarAgendamentos(dataInicial, dataFinal).then(
 			  successCallback = function (response) {				  
@@ -150,7 +150,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   var updateEventDroped = function(event, oldEvent) {	  
 	  event.repetirSemanalmente = false;
 	  event.grupo = 0;	  	
-	  waitFactory.setMessage("Atualizando agendamentos ...");
+	  utilService.setMessage("Atualizando agendamentos ...");
 	  utilService.showWait();
 	  agendamentoFactory.salvarAgendamento(event).then(
 		  successCallback = function(response) {

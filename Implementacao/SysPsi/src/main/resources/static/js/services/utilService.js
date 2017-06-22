@@ -1,5 +1,7 @@
 angular.module('syspsi').service('utilService', ['$rootScope', '$mdDialog', function($rootScope, 
 		$mdDialog) {
+	var _message;
+	
 	/**
 	 * Trata eventuais excessoes que possam ocorrer
 	*/
@@ -22,16 +24,7 @@ angular.module('syspsi').service('utilService', ['$rootScope', '$mdDialog', func
 		);	
 	};  
 	
-	var _showWait = function() {
-		/*
-		$mdDialog.show({
-			controller: 'WaitCtrl',
-	        template: 'templates/waiting.html',
-	        parent: angular.element(document.body),
-	        clickOutsideToClose:false,
-	        fullscreen: false
-	    }).then(function(){});
-	    */
+	var _showWait = function() {		
 		$mdDialog.show({
 			controller: 'WaitCtrl',			
 		    templateUrl: 'templates/waiting.html',
@@ -46,6 +39,8 @@ angular.module('syspsi').service('utilService', ['$rootScope', '$mdDialog', func
 	};
 	
 	return {
+		getMessage: function() { return _message; },
+		setMessage: function(message) { _message = message; },	
 		tratarExcecao: _tratarExcecao,
 		hideWait: _hideWait,
 	    showWait: _showWait
