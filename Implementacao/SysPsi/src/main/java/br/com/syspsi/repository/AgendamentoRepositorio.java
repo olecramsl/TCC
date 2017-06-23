@@ -13,8 +13,19 @@ import br.com.syspsi.model.entity.Paciente;
 import br.com.syspsi.model.entity.Psicologo;
 
 public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long> {
-	public Agendamento findByGrupoAndEventoPrincipal(Long grupo, boolean eventoPrincipal);	
-	public List<Agendamento> findByGrupo(Long grupo);
+	@Query("SELECT a FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "					
+			+ "WHERE a.grupo = ?1 "
+			+ "AND a.eventoPrincipal = ?2 "
+			+ "AND ps = ?3")
+	public Agendamento listarPorGrupoEEventoPrincipalEPsicologo(Long grupo, boolean eventoPrincipal, Psicologo psicologo);	
+	@Query("SELECT a FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "					
+			+ "WHERE a.grupo = ?1 "
+			+ "AND ps = ?2")
+	public List<Agendamento> listarPorGrupoEPsicologo(Long grupo, Psicologo psicologo);
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "					
@@ -29,10 +40,12 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 	public List<Agendamento> listarEventosPrincipaisPorPeriodo(Calendar dataFinal, Psicologo psicologo);
 	@Query("SELECT DATE_FORMAT(a.start,'%Y-%m-%d') FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "			
 			+ "WHERE DATE(a.start) BETWEEN DATE(?1) AND DATE(?2) "
 			+ "AND a.grupo = ?3 "
-			+ "AND p.ativo = true")	
-	public List<String> listarDatasAgendamentoPeriodoPorGrupo(Calendar dataInicial, Calendar dataFinal, long grupo);
+			+ "AND p.ativo = true "
+			+ "AND ps = ?4")	
+	public List<String> listarDatasAgendamentoPeriodoPorGrupoEPsicologo(Calendar dataInicial, Calendar dataFinal, long grupo, Psicologo psicologo);
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "					
@@ -42,8 +55,11 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "AND p.ativo = true "
 			+ "ORDER BY a.start ASC")
 	public List<Agendamento> listarAgendamentosAposData(Calendar data, long grupo, Psicologo psicologo);
-	@Query("SELECT COALESCE(MAX(grupo),0)+1 FROM Agendamento a")
-	public Long getNextValueForGroup();
+	@Query("SELECT COALESCE(MAX(grupo),0)+1 FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "
+			+ "WHERE ps = ?1")
+	public Long getNextValueForGroup(Psicologo psicologo);
 	@Transactional
 	public void deleteByPaciente(Paciente paciente);
 	@Query("SELECT idGCalendar FROM Agendamento "
@@ -97,6 +113,7 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "
 			+ "WHERE a.idGCalendar IS NOT NULL "
+			+ "OR a.idRecurring IS NOT NULL "
 			+ "AND ps = ?1")
 	public List<Agendamento> listarAgendamentosVinculados(Psicologo psicologo);
 	@Query("SELECT a FROM Agendamento a "

@@ -1,5 +1,6 @@
 angular.module('syspsi').controller('ConfiguracaoCtrl', ['$mdDialog', 'configuracaoFactory', 
-	'utilService', function($mdDialog, configuracaoFactory, utilService) {	
+	'psicologoFactory', 'utilService', function($mdDialog, configuracaoFactory, psicologoFactory,
+			utilService) {	
 	var ctrl = this;		
 	
 	configuracaoFactory.isVinculadoGCal().then(
@@ -29,6 +30,7 @@ angular.module('syspsi').controller('ConfiguracaoCtrl', ['$mdDialog', 'configura
 				utilService.showWait();
 				configuracaoFactory.desvincularAgendamentosDoGoogleCalendar().then(
 						successCallback = function(response) {
+							psicologoFactory.setVinculadoGCal();
 							utilService.hideWait();
 						}, 
 						errorCallback = function(error) {

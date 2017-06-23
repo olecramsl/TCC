@@ -1,26 +1,38 @@
-angular.module('syspsi').controller('DashboardCtrl', ['$location', 'financeiroFactory', 
+angular.module('syspsi').controller('DashboardCtrl', ['$mdDialog', '$location', 'financeiroFactory', 
 	'pacienteFactory', 'convenioFactory', 'agendamentoFactory', 'configuracaoFactory','utilService', 
-	'consts', function($location, financeiroFactory, pacienteFactory, convenioFactory, 
+	'consts', function($mdDialog, $location, financeiroFactory, pacienteFactory, convenioFactory, 
 			agendamentoFactory, configuracaoFactory, utilService, consts) {
 	var ctrl = this;	
 		
 	if ($location.absUrl().indexOf("?success") >= 0) {
 		$location.search({});
-		utilService.setMessage("Exportando eventos para o Google Calendar.");
-		utilService.showWait();
-		configuracaoFactory.exportarAgendamentoParaGoogleCalendar().then(
-				successCallback = function(response) {
-					utilService.hideWait();
-				},
-				errorCallback = function(error) {
-					utilService.hideWait();
-					utilService.tratarExcecao(error);
-				}
-		);
+
+		var confirm = $mdDialog.confirm()
+	    	.title('Gostaria de exportar os agendamentos do sistema para o Google Calendar?')
+	    	.textContent('Serão exportados os agendamentos da data de hoje para frente.')
+	    	.ariaLabel('Exportar agendamentos para Google Calendar')
+	    	.ok('Sim')
+	    	.cancel('Não');
+	
+		$mdDialog.show(confirm).then(function() {
+			utilService.setMessage("Exportando eventos para o Google Calendar.");
+			utilService.showWait();
+			configuracaoFactory.exportarAgendamentoParaGoogleCalendar().then(
+					successCallback = function(response) {
+						utilService.hideWait();
+					},
+					errorCallback = function(error) {
+						utilService.hideWait();
+						utilService.tratarExcecao(error);
+					}
+			);			
+		}, function() {
+			
+		});
 	} else if ($location.absUrl().indexOf("?error") >= 0) {		
 		$location.search({});
 		utilService.tratarExcecao("Não foi possível vincular a agenda!");			
-	}
+	}	
 	
 	var carregarPacientesAtivos = function() {
 		pacienteFactory.listarPacientesAtivosInativos(true).then(

@@ -261,7 +261,6 @@ public class AgendaController {
 	        if (qtdItemsGCal > 0) {	                        
 	            TmpGCalendarEvent tmpGCalendarEvent;	      	            
 	            for (Event event : items) {	   	         
-	            	//String evtId = event.getId().split("_")[0];
 	            	// Exclui da lista de remoção eventos encontrados no GCal	            	
 	            	if (lstGCalendarIdsParaRemover_TmpGCalendarTable != null) {	            		
 	            		lstGCalendarIdsParaRemover_TmpGCalendarTable.remove(event.getId());	            		
@@ -313,13 +312,14 @@ public class AgendaController {
 		                		event.getDescription());
 		                lstAgendamentosGCalendar.add(tmpGCalendarEvent);		                
 	            	} else if ((lstGCalendarIds_TmpGCalendarTable.contains(event.getId())) && 
-	            			   (event.getEnd().getDate() == null)) {	            		
-	            		tmpGCalendarEvent = this.gCalendarEventRepositorio.findByIdGCalendar(event.getId());	            		
+	            			   (event.getEnd().getDate() == null)) {	            			            			            	
 	             		try {	            	             			
-	            			this.gCalendarEventRepositorio.save(this.verificarAlteracoesGCal(event, tmpGCalendarEvent));	            			
-	            		} catch(GCalendarEvtNotChangeException ex) {}
-	            			             		
-	            		lstAgendamentosGCalendar.add(tmpGCalendarEvent);	            		
+	             			tmpGCalendarEvent = this.gCalendarEventRepositorio.findByIdGCalendar(event.getId());
+	            			this.gCalendarEventRepositorio.save(this.verificarAlteracoesGCal(event, tmpGCalendarEvent));
+	            			lstAgendamentosGCalendar.add(tmpGCalendarEvent);
+	            		} catch(GCalendarEvtNotChangeException ex) {
+	            			logMessage("Erro: " + ex.getMessage(), true);
+	            		}	            			             			            			            
 	            	}  else if ((lstGCalendarIds_AgendamentoTable.contains(event.getId())) && 
 	            			   (event.getEnd().getDate() == null)) {	            		
 	            		Agendamento agendamento = this.agendamentoRepositorio.findByIdGCalendar(event.getId());
@@ -403,16 +403,47 @@ public class AgendaController {
 					
 		// Cria os agendamentos futuros para a view, caso necessário
 		if (!psicologo.isVinculadoGCal()) {
-		for (Agendamento ag : this.agendamentoRepositorio.listarEventosPrincipaisPorPeriodo(df, psicologo)) {
-			if (ag.isAtivo()) {												
-				di.set(Calendar.HOUR_OF_DAY, ag.getStart().get(Calendar.HOUR_OF_DAY));
-				di.set(Calendar.MINUTE, ag.getStart().get(Calendar.MINUTE));
-				df.set(Calendar.HOUR_OF_DAY, ag.getEnd().get(Calendar.HOUR_OF_DAY));
-				df.set(Calendar.MINUTE, ag.getEnd().get(Calendar.MINUTE));
+			for (Agendamento ag : this.agendamentoRepositorio.listarEventosPrincipaisPorPeriodo(df, psicologo)) {
+				if (ag.isAtivo()) {												
+					di.set(Calendar.HOUR_OF_DAY, ag.getStart().get(Calendar.HOUR_OF_DAY));
+					di.set(Calendar.MINUTE, ag.getStart().get(Calendar.MINUTE));
+					df.set(Calendar.HOUR_OF_DAY, ag.getEnd().get(Calendar.HOUR_OF_DAY));
+					df.set(Calendar.MINUTE, ag.getEnd().get(Calendar.MINUTE));
+						
+					this.salvarAgendamentosFuturos(di, df, ag, psicologo);
+				}			
+			}						
+		} else {
+			logMessage("getCalendarService", false);
+            com.google.api.services.calendar.Calendar service =
+                getCalendarService();
+            logMessage("getCalendarService: OK", false);		
+			for (Agendamento ag : this.agendamentoRepositorio.listarEventosPrincipaisPorPeriodo(df, psicologo)) {
+				if (ag.isAtivo()) {
+					// Evento repetido exportado para o GCal (quando da configuração da vinculação)
+					// com data anterior ao dia da exportação. O usuário, nesse caso, excluiu o
+					// agendamento repetitivo no GCal. Assim, no sistema, os eventos anteriores 
+					// ao dia da exportação ficam ainda configurados como repetidos. 
+					// Logo, precisamos desconfigurar esses eventos anteriores de modo que eles
+					// passem a ser eventos simples
+					Events events = service.events().instances("primary", ag.getIdRecurring())
+							.setPageToken(null)
+							.setMaxResults(1)
+							.execute();
 					
-				this.salvarAgendamentosFuturos(di, df, ag, psicologo);
-			}			
-		}						
+					List<Event> items = events.getItems();
+					if (items.isEmpty()) {						
+						List<Agendamento> lstAgendamento = 
+								this.agendamentoRepositorio.listarPorGrupoEPsicologo(ag.getGrupo(), psicologo); 					
+						for (Agendamento agendamento : lstAgendamento) {
+							agendamento.setEventoPrincipal(false);						
+							agendamento.setIdRecurring(null);	
+							agendamento.setGrupo(0L);
+						}
+						this.agendamentoRepositorio.save(lstAgendamento);
+					}
+				}
+			}
 		}
 		
 		List<Agendamento> lstAgendamentos = new ArrayList<>();		
@@ -487,7 +518,7 @@ public class AgendaController {
 				
 		if ((agendamentoDTO.isRepetirSemanalmente() &&				
 		   (agendamento.getGrupo() == null || agendamento.getGrupo() == 0))) {
-			agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup());			
+			agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(psicologo));			
 			agendamento.setEventoPrincipal(true);
 		} else {
 			agendamento.setEventoPrincipal(false);
@@ -543,13 +574,27 @@ public class AgendaController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public Agendamento salvarAgendamentoTemporarioGCalendar(@RequestBody InAgendamentoDTO agendamentoDTO) throws Exception {
+	public Agendamento salvarAgendamentoTemporarioGCalendar(@RequestBody InAgendamentoDTO agendamentoDTO,
+			Principal user) throws Exception {
 		logMessage("salvarAgendamentoTemporarioGCalendar: início", false);
 		Agendamento agendamento = agendamentoDTO.getAgendamento();
 		
 		if (agendamento == null) {
 			logMessage("Agendamento recebido nulo.", true);
 			throw new Exception("Não foi possível salvar o agendamento!");
+		}
+		
+		Psicologo psicologo;
+		if (user != null) {
+			try {
+				psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			} catch(Exception ex) {
+				logMessage("Erro ao obter psicologo: " + ex.getMessage(), true);
+				throw new Exception("Não foi possível salvar o agendamento!");
+			}
+		} else {
+			logMessage("User nulo.", true);
+			throw new Exception("Não foi possível salvar o agendamento! Psicólogo não logado. Faça login novamente!");
 		}
 				
 		// Agendamentos repetidos criados no GCal				
@@ -592,7 +637,7 @@ public class AgendaController {
 					agendamento.setIdRecurring(instance.getRecurringEventId());
 					agendamento.setStart(start);
 					agendamento.setEnd(end);					
-					agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup());					
+					agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(psicologo));					
 					
 					this.gCalendarEventRepositorio.deleteByIdRecurring(agendamento.getIdRecurring());
 					logMessage("Agendamentos repetidos apagados. idRecurring: " + agendamento.getIdRecurring(), false);
@@ -705,8 +750,9 @@ public class AgendaController {
 					ag.getStart(), ag.getEnd(), ag.getGrupo(), null,  ag.getColor(), false, true);
 						
 			// Dias já salvos no BD
-			List<String> lstDiasSalvos = this.agendamentoRepositorio.listarDatasAgendamentoPeriodoPorGrupo(di, df, 
-					agendamento.getGrupo());
+			List<String> lstDiasSalvos = 
+					this.agendamentoRepositorio.listarDatasAgendamentoPeriodoPorGrupoEPsicologo(
+							di, df,	agendamento.getGrupo(), psicologo);
 						
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");		
 			// percorre todos os dias constantes na view do calendário e repete o evento quando necessário		
@@ -768,7 +814,7 @@ public class AgendaController {
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}				
 		
-		for (Agendamento ag : this.agendamentoRepositorio.findByGrupo(agendamento.getGrupo())) {
+		for (Agendamento ag : this.agendamentoRepositorio.listarPorGrupoEPsicologo(agendamento.getGrupo(), psicologo)) {
 			if (ag.getStart().after(agendamento.getStart()) && ag.getConsulta() == null) {				
 				this.agendamentoRepositorio.delete(ag);
 			} else if (ag.getStart().after(agendamento.getStart()) && ag.getConsulta() != null) {
@@ -785,7 +831,7 @@ public class AgendaController {
 			this.excluirAgendamentoNoGoogleCalendar(agendamento, true);
 		} else {
 			// Desconfigura agendamento repetitivo para eventos anteriores
-			List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.findByGrupo(agendamento.getGrupo());
+			List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarPorGrupoEPsicologo(agendamento.getGrupo(), psicologo);
 			for	(Agendamento ag : lstAgendamentos) {
 				ag.setGrupo(0L);
 				ag.setEventoPrincipal(false);
@@ -832,14 +878,14 @@ public class AgendaController {
 		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), 
 				agendamento.getGrupo(), psicologo);
 		
-		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndEventoPrincipal(agendamento.getGrupo(), true);
+		Agendamento ag = this.agendamentoRepositorio.listarPorGrupoEEventoPrincipalEPsicologo(agendamento.getGrupo(), true, psicologo);
 				
 		if (ag != null) {
 			ag.setEventoPrincipal(false);			
 			this.agendamentoRepositorio.save(ag);
 		}
 		
-		Long novoGrupo = this.agendamentoRepositorio.getNextValueForGroup();		
+		Long novoGrupo = this.agendamentoRepositorio.getNextValueForGroup(psicologo);		
 		agendamento.setEventoPrincipal(true);
 		agendamento.setGrupo(novoGrupo);		
 		this.agendamentoRepositorio.save(agendamento);
@@ -901,7 +947,7 @@ public class AgendaController {
 		
 		List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAgendamentosAposData(agendamento.getStart(), agendamento.getGrupo(), psicologo);
 				
-		Agendamento ag = this.agendamentoRepositorio.findByGrupoAndEventoPrincipal(agendamento.getGrupo(), true);
+		Agendamento ag = this.agendamentoRepositorio.listarPorGrupoEEventoPrincipalEPsicologo(agendamento.getGrupo(), true, psicologo);
 				
 		if(ag != null) {
 			ag.setEventoPrincipal(false);			
@@ -1098,10 +1144,13 @@ public class AgendaController {
 				for (Agendamento ag : lstAgendamentosRepetidos) {
 					Calendar now = Calendar.getInstance();
 					Calendar start = (Calendar)ag.getStart().clone();
+					Calendar origStart = (Calendar)ag.getStart().clone();
 					Calendar end = (Calendar)ag.getEnd().clone();
 					
-					now.set(Calendar.HOUR, 0);
-					now.set(Calendar.MINUTE, 0);
+					now.set(Calendar.HOUR, start.get(Calendar.HOUR));
+					now.set(Calendar.MINUTE, start.get(Calendar.MINUTE));
+					now.set(Calendar.SECOND, 0);
+					now.set(Calendar.MILLISECOND, 0);
 					
 					if (start.before(now)) {
 						boolean naoEncontrou = true;
@@ -1121,8 +1170,13 @@ public class AgendaController {
 					Agendamento tmpAgendamento = new Agendamento(ag.getPaciente(), ag.getIdGCalendar(), 
 							ag.getIdRecurring(), start, end, ag.getGrupo(), ag.getDescription(), ag.getColor(), 
 							ag.isEventoPrincipal(), ag.isAtivo());
-					
+										
 					Agendamento agendamento = this.salvarAgendamentoNoGoogleCalendar(tmpAgendamento);
+					
+					// Agendamento repetido configurado no dia corrente.
+					if (!origStart.before(now) && !origStart.after(now)) {
+						ag.setIdGCalendar(agendamento.getIdGCalendar()); 
+					}
 					ag.setIdRecurring(agendamento.getIdRecurring());
 					mapAgRepetidos.put(ag.getGrupo(), ag.getIdRecurring());
 					
