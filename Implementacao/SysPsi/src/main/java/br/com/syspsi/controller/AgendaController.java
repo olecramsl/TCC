@@ -272,24 +272,42 @@ public class AgendaController {
 	            		            	
 	            	if (event.getRecurringEventId() != null) {
 	            		Calendar inicio = Calendar.getInstance();	            		
-	            		inicio.setTime(new Date(event.getStart().getDateTime().getValue()));
+	            		inicio.setTime(new Date(event.getStart().getDateTime().getValue()));	            		
 	            		Agendamento ag = this.agendamentoRepositorio.localizarAgendamentoRepetitivo(inicio, event.getRecurringEventId());	            		
-	            		if (ag == null) {	            		            			
-	            			// gravar na base mudando o grupo
+	            		if (ag == null) {	      
 	            			Agendamento agPrincipal = 
 	            					this.agendamentoRepositorio.localizarAgendamentoPrincipalRepetitivo(event.getRecurringEventId());
-	            			if (agPrincipal != null) {
+	            			if (agPrincipal != null) { 
+		            			// O usuário pode ter movido o evento de uma série no GCal. Como
+			            		// o calendar mantém o mesmo id para o evento movido, precisamos 
+			            		// tratar a duplicação desse id no sistema
+	            				boolean eventoPrincipal = false;
+			            		Agendamento agIdDuplicado = this.agendamentoRepositorio.findByIdGCalendarAndAtivo(event.getId(), true);
+			            		if (agIdDuplicado != null) {
+			            			// Para evitar o aparecimento do evento caso o usuário desvincule
+			            			// a agenda do GCal
+			            			if (agIdDuplicado.isEventoPrincipal()) {
+			            				eventoPrincipal = true;
+			            			}
+			            			agIdDuplicado.setIdGCalendar(null);
+			            			agIdDuplicado.setIdRecurring(null);
+			            			agIdDuplicado.setAtivo(false);
+			            			agIdDuplicado.setEventoPrincipal(false);
+			            			this.agendamentoRepositorio.save(agIdDuplicado);
+			            		}
+			            					            						            						            				
 		            			Calendar start = Calendar.getInstance();
 		            			Calendar end = Calendar.getInstance(); 
 		            			start.setTimeInMillis(event.getStart().getDateTime().getValue());
-		            			end.setTimeInMillis(event.getEnd().getDateTime().getValue());
+		            			end.setTimeInMillis(event.getEnd().getDateTime().getValue());		            					            			
+		            			
 		            			Agendamento novoAgendamento = new Agendamento(agPrincipal.getPaciente(), 
-		            					agPrincipal.getConvenio(), event.getId(), agPrincipal.getIdRecurring(), 
-		            					start, end, agPrincipal.getGrupo(),	null, agPrincipal.getColor(), false, true);
+		            					agPrincipal.getConvenio(), event.getId(), event.getRecurringEventId(), 
+		            					start, end, agPrincipal.getGrupo(),	null, agPrincipal.getColor(), eventoPrincipal, true);		            			
 		            			novoAgendamento = this.agendamentoRepositorio.save(novoAgendamento);
-		            			lstGCalendarIds_AgendamentoTable.add(novoAgendamento.getIdGCalendar());
+		            			lstGCalendarIds_AgendamentoTable.add(novoAgendamento.getIdGCalendar());			            						            	
 	            			}
-	            		}
+	            		} 
 	            	}
 	            	
 	            	// Não serão importados eventos:
@@ -321,11 +339,13 @@ public class AgendaController {
 	            			logMessage("Erro: " + ex.getMessage(), true);
 	            		}	            			             			            			            
 	            	}  else if ((lstGCalendarIds_AgendamentoTable.contains(event.getId())) && 
-	            			   (event.getEnd().getDate() == null)) {	            		
-	            		Agendamento agendamento = this.agendamentoRepositorio.findByIdGCalendar(event.getId());
-	            		try {	            			
-	            			this.agendamentoRepositorio.save(this.verificarAlteracoesGCal(event, agendamento));
-	            		} catch (GCalendarEvtNotChangeException ex){}	            		
+	            			   (event.getEnd().getDate() == null)) {	            			            		
+	            		try {	       	            			
+	            			Agendamento ag = this.agendamentoRepositorio.findByIdGCalendarAndAtivo(event.getId(), true);
+            				this.agendamentoRepositorio.save(this.verificarAlteracoesGCal(event, ag));
+	            		} catch (GCalendarEvtNotChangeException ex){
+	            				            		
+	            		} 
 	            	}
 	            }
 	        }
@@ -339,7 +359,7 @@ public class AgendaController {
                                 	
             // Remove da tabela Agendamento eventos removidos no gcal        	
         	for (String idGCalendar : lstGCalendarIdsParaRemover_AgendamentoTable) {            		
-    			Agendamento ag = this.agendamentoRepositorio.findByIdGCalendar(idGCalendar);
+    			Agendamento ag = this.agendamentoRepositorio.findByIdGCalendarAndAtivo(idGCalendar, true);
     			if (ag.getConsulta() == null) {            		
         			this.agendamentoRepositorio.deleteByIdGCalendar(idGCalendar);
     			} else {
@@ -356,9 +376,9 @@ public class AgendaController {
 	        	       	        
 	        logMessage("listarAgendamentosGCalendar: fim", false);
 	        return lstAgendamentosGCalendar;
-        } catch(Exception ex) {          	
+        } catch(Exception ex) {          	        	
         	logMessage("listarAgendamentosGCalendar: " + ex.getMessage(), true);
-        	throw new GCalendarException("Problemas ao carregar os eventos do Google Calendar");
+        	throw new GCalendarException("Problemas ao carregar os eventos do Google Calendar");        	
         }
     }    
 	
@@ -816,7 +836,7 @@ public class AgendaController {
 		
 		for (Agendamento ag : this.agendamentoRepositorio.listarPorGrupoEPsicologo(agendamento.getGrupo(), psicologo)) {
 			if (ag.getStart().after(agendamento.getStart()) && ag.getConsulta() == null) {				
-				this.agendamentoRepositorio.delete(ag);
+				this.agendamentoRepositorio.delete(ag);				
 			} else if (ag.getStart().after(agendamento.getStart()) && ag.getConsulta() != null) {
 				// Agendamento associado a uma consulta
 				ag.setAtivo(false);				
@@ -1335,7 +1355,7 @@ public class AgendaController {
 	        	if (!agendamento.isEventoPrincipal()) {
 	        		// Aguardar API com opção de excluir eventos futuros
 	        	} else {
-	        		service.events().delete("primary", agendamento.getIdRecurring()).execute();
+	        		service.events().delete("primary", agendamento.getIdRecurring()).execute();	        		
 	        	}
         	} else {
         		service.events().delete("primary", agendamento.getIdGCalendar()).execute();

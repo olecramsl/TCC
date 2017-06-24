@@ -64,11 +64,12 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 	public void deleteByPaciente(Paciente paciente);
 	@Query("SELECT idGCalendar FROM Agendamento "
 			+ "WHERE DATE(start) BETWEEN DATE(?1) AND DATE(?2) "
-			+ "AND idGCalendar IS NOT NULL")
+			+ "AND idGCalendar IS NOT NULL "
+			+ "AND ativo = true")
 	public List<String> listarIdGCalendarPorPeriodo(Calendar start, Calendar end);
 	@Transactional
 	public void deleteByIdGCalendar(String idGCalendar);
-	public Agendamento findByIdGCalendar(String idGCalendar);
+	public Agendamento findByIdGCalendarAndAtivo(String idGCalendar, boolean ativo);	
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "							
@@ -101,7 +102,8 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 	public Long getGrupoPorIdRecurring(String idRecurring);
 	@Query("SELECT a FROM Agendamento a "
 			+ "WHERE DATE(a.start) = DATE(?1) "
-			+ "AND a.idRecurring = ?2"
+			+ "AND a.idRecurring = ?2 "
+			+ "AND a.ativo = true"
 			)
 	public Agendamento localizarAgendamentoRepetitivo(Calendar start, String idRecurring);
 	@Query("SELECT a FROM Agendamento a "
