@@ -141,7 +141,6 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		var novaDespesa = angular.copy(despesa);	
 		novaDespesa.pago = true;
 		
-		//var despesaDTO = financeiroFactory.prepararDespesaDTO(novaDespesa);
 		financeiroFactory.salvarDespesa(novaDespesa).then(
 				successCallback = function(response) {
 					financeiroFactory.setLstDespesas(response.data.lstDespesas);

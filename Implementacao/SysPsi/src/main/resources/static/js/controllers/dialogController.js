@@ -10,14 +10,25 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 		$scope.despesa = {};
 	}
 	
-	if (financeiroFactory.getAgendamento() && financeiroFactory.getAgendamento().consulta) {
-		$scope.agendamento = angular.copy(financeiroFactory.getAgendamento());
-		var dataHora = moment($scope.agendamento.consulta.inicio).format("DD/MM/YYYY HH:mm");
-		$scope.dataConsulta = dataHora.split(' ')[0];
-		$scope.horaConsulta = dataHora.split(' ')[1];
+	if (financeiroFactory.getAgendamento()) {		
+		if (financeiroFactory.getAgendamento().convenio) {
+			var valor = financeiroFactory.getAgendamento().convenio.valorConsultaIndividual.toFixed(2).toString();
+			if (valor.split(".").length > 1 || valor.split(",").length > 1) {    			   
+    			$scope.valor = valor.replace('.',',');
+    		} else {    			   
+    			$scope.valor = valor + ",00";
+    		}					
+		}
 		
-		$scope.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();
-		$scope.lstConveniosAtivos = convenioFactory.getLstConveniosAtivos();		
+		if (financeiroFactory.getAgendamento().consulta) {
+			$scope.agendamento = angular.copy(financeiroFactory.getAgendamento());
+			var dataHora = moment($scope.agendamento.consulta.inicio).format("DD/MM/YYYY HH:mm");
+			$scope.dataConsulta = dataHora.split(' ')[0];
+			$scope.horaConsulta = dataHora.split(' ')[1];
+			
+			$scope.lstPacientesAtivos = agendamentoFactory.getLstPacientesAtivos();
+			$scope.lstConveniosAtivos = convenioFactory.getLstConveniosAtivos();		
+		}
 	}
 	
 	$scope.cancel = function() {
@@ -51,7 +62,6 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 				novaDespesa.vencimento = vencimento.local();		
 			}
 			
-			//var despesaDTO = financeiroFactory.prepararDespesaDTO(novaDespesa);
 			financeiroFactory.salvarDespesa(novaDespesa).then(
 					successCallback = function(response) {
 						financeiroFactory.setLstDespesas(response.data.lstDespesas);

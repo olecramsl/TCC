@@ -6,8 +6,9 @@ angular.forEach(lazyModules, function(dependency) {
 });
 
 angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog',
-	'consultaPacienteFactory','agendamentoFactory','utilService', function ($scope, $mdDialog, 
-			consultaPacienteFactory, agendamentoFactory, utilService) {	
+	'consultaPacienteFactory','agendamentoFactory', 'financeiroFactory', 'utilService', function (
+			$scope, $mdDialog, consultaPacienteFactory, agendamentoFactory, financeiroFactory, 
+			utilService) {	
 	var ctrl = this;
 		
 	ctrl.salvando = false;
@@ -145,7 +146,8 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 		);
 	};	
 	
-	ctrl.finalizarConsulta  = function(agendamento) {		
+	ctrl.finalizarConsulta  = function(agendamento) {	
+		financeiroFactory.setAgendamento(agendamento);
 		$mdDialog.show({
 			controller: 'DialogCtrl',			
 		    templateUrl: 'templates/finalizar_consulta_modal.html',
