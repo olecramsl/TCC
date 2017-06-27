@@ -27,11 +27,14 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	  * Remove os eventos da view e popula com eventos atualizados/salvos
 	  */
 	 var atualizarViewFC = function() {
+		 utilService.setMessage("Carergando agendamentos ...");
+		 utilService.showWait();
 		 angular.element('.calendar').fullCalendar('removeEvents');
 		 // Atualiza a view para o caso de haver algum evento semanal
 		 view = angular.element('.calendar').fullCalendar('getView');
 		 agendamentoFactory.listarAgendamentos(view.start, view.end).then(
 				 successCallback = function (response) {
+					 utilService.hideWait();
 					 angular.element('.calendar').fullCalendar('renderEvents',response.data);
 				 },
 				 errorCallback = function (error) {	  			  		  
@@ -110,7 +113,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	ctrl.salvar = function (agendamento, agendamentoCarregado) {
 		// Agendamento carregado da tebela temporária gCalendar		
 		if (agendamentoCarregado && !agendamentoCarregado.paciente) {
-			utilService.setMessage("Importanto agendamento ...");
+			utilService.setMessage("Importanto agendamentos ...");
 			utilService.showWait();
 			 
 			if (agendamento.idRecurring) {
@@ -119,7 +122,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			agendamentoFactory.salvarAgendamentoTemporarioGCalendar(agendamento).then(
 					successCallback = function(response) {
 						utilService.hideWait();
-						atualizarViewFC();
+						atualizarViewFC();						
 					},
 					errorCallback = function(error) {
 						utilService.hideWait();

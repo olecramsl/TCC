@@ -15,6 +15,11 @@ public interface TmpGCalendarEventRepositorio extends CrudRepository<TmpGCalenda
 			+ "WHERE DATE(start) BETWEEN DATE(?1) AND DATE(?2) "
 			+ "AND idGCalendar IS NOT NULL")
 	public List<String> listarIdGCalendarPorPeriodo(Calendar start, Calendar end);
+	@Query("SELECT a FROM TmpGCalendarEvent a "
+			+ "WHERE DATE(a.start) = DATE(?1) "
+			+ "AND a.idRecurring = ?2"
+			)
+	public TmpGCalendarEvent localizarAgendamentoRepetitivo(Calendar start, String idRecurring);
 	public List<TmpGCalendarEvent> findByStartBetween(Calendar start, Calendar end);
 	public TmpGCalendarEvent findByIdGCalendar(String idGCalendar);
 	@Transactional

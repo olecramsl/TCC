@@ -191,7 +191,6 @@ public class AgendaController {
     			redirectView = "#/dashboard?error";
     		}
     	} else if (error != null) {    		    		
-    		//return new ModelAndView(new RedirectView("#/dashboard?error=", true));
     		redirectView = "#/dashboard?error";
     	}    	    	
 
@@ -259,7 +258,7 @@ public class AgendaController {
 	        }
 	        
 	        if (qtdItemsGCal > 0) {	                        
-	            TmpGCalendarEvent tmpGCalendarEvent;	      	            
+	            TmpGCalendarEvent tmpGCalendarEvent;	            
 	            for (Event event : items) {	   	         
 	            	// Exclui da lista de remoção eventos encontrados no GCal	            	
 	            	if (lstGCalendarIdsParaRemover_TmpGCalendarTable != null) {	            		
@@ -269,12 +268,12 @@ public class AgendaController {
 	            	if (lstGCalendarIdsParaRemover_AgendamentoTable != null) {	            		
 	            		lstGCalendarIdsParaRemover_AgendamentoTable.remove(event.getId());
 	            	}	       
-	            		            	
-	            	if (event.getRecurringEventId() != null) {
+	            		            	            	
+	            	if (event.getRecurringEventId() != null) {	            			            			            			            		
 	            		Calendar inicio = Calendar.getInstance();	            		
 	            		inicio.setTime(new Date(event.getStart().getDateTime().getValue()));	            		
 	            		Agendamento ag = this.agendamentoRepositorio.localizarAgendamentoRepetitivo(inicio, event.getRecurringEventId());	            		
-	            		if (ag == null) {	      
+	            		if (ag == null) {	            				            		
 	            			Agendamento agPrincipal = 
 	            					this.agendamentoRepositorio.localizarAgendamentoPrincipalRepetitivo(event.getRecurringEventId());
 	            			if (agPrincipal != null) { 
@@ -306,6 +305,21 @@ public class AgendaController {
 		            					start, end, agPrincipal.getGrupo(),	null, agPrincipal.getColor(), eventoPrincipal, true);		            			
 		            			novoAgendamento = this.agendamentoRepositorio.save(novoAgendamento);
 		            			lstGCalendarIds_AgendamentoTable.add(novoAgendamento.getIdGCalendar());			            						            	
+	            			} else {
+	            				// Agendamentos que não foram configurados como semanais
+	            				Agendamento agendamento = this.agendamentoRepositorio.findTop1ByIdRecurringAndAtivo(event.getRecurringEventId(), true);
+	            				if (agendamento != null) {	            					
+		            				Calendar start = Calendar.getInstance();
+			            			Calendar end = Calendar.getInstance(); 
+			            			start.setTimeInMillis(event.getStart().getDateTime().getValue());
+			            			end.setTimeInMillis(event.getEnd().getDateTime().getValue());		            					            			
+			            			
+			            			Agendamento novoAgendamento = new Agendamento(agendamento.getPaciente(), 
+			            					agendamento.getConvenio(), event.getId(), event.getRecurringEventId(), 
+			            					start, end, agendamento.getGrupo(),	null, agendamento.getColor(), false, true);			            			
+			            			novoAgendamento = this.agendamentoRepositorio.save(novoAgendamento);
+			            			lstGCalendarIds_AgendamentoTable.add(novoAgendamento.getIdGCalendar());
+	            				}
 	            			}
 	            		} 
 	            	}
@@ -330,19 +344,19 @@ public class AgendaController {
 		                		event.getDescription());
 		                lstAgendamentosGCalendar.add(tmpGCalendarEvent);		                
 	            	} else if ((lstGCalendarIds_TmpGCalendarTable.contains(event.getId())) && 
-	            			   (event.getEnd().getDate() == null)) {	            			            			            	
-	             		try {	            	             			
-	             			tmpGCalendarEvent = this.gCalendarEventRepositorio.findByIdGCalendar(event.getId());
-	            			this.gCalendarEventRepositorio.save(this.verificarAlteracoesGCal(event, tmpGCalendarEvent));
-	            			lstAgendamentosGCalendar.add(tmpGCalendarEvent);
-	            		} catch(GCalendarEvtNotChangeException ex) {
-	            			logMessage("Erro: " + ex.getMessage(), true);
-	            		}	            			             			            			            
+	            			   (event.getEnd().getDate() == null)) {	            		
+	            		tmpGCalendarEvent = this.gCalendarEventRepositorio.findByIdGCalendar(event.getId());
+	             		try {	            	             				             			
+	             			this.gCalendarEventRepositorio.save(this.verificarAlteracoesGCal(event, tmpGCalendarEvent));	            			
+	            		} catch(GCalendarEvtNotChangeException ex) {	            			
+	            		
+	            		}
+	             		lstAgendamentosGCalendar.add(tmpGCalendarEvent);
 	            	}  else if ((lstGCalendarIds_AgendamentoTable.contains(event.getId())) && 
-	            			   (event.getEnd().getDate() == null)) {	            			            		
-	            		try {	       	            			
-	            			Agendamento ag = this.agendamentoRepositorio.findByIdGCalendarAndAtivo(event.getId(), true);
-            				this.agendamentoRepositorio.save(this.verificarAlteracoesGCal(event, ag));
+	            			   (event.getEnd().getDate() == null)) {
+	            		Agendamento ag = this.agendamentoRepositorio.findByIdGCalendarAndAtivo(event.getId(), true);
+	            		try {	       	            				            			
+            				this.agendamentoRepositorio.save(this.verificarAlteracoesGCal(event, ag, psicologo));
 	            		} catch (GCalendarEvtNotChangeException ex){
 	            				            		
 	            		} 
@@ -596,8 +610,8 @@ public class AgendaController {
 			)
 	public Agendamento salvarAgendamentoTemporarioGCalendar(@RequestBody InAgendamentoDTO agendamentoDTO,
 			Principal user) throws Exception {
-		logMessage("salvarAgendamentoTemporarioGCalendar: início", false);
-		Agendamento agendamento = agendamentoDTO.getAgendamento();
+		logMessage("salvarAgendamentoTemporarioGCalendar: início", false);		
+		Agendamento agendamento = agendamentoDTO.getAgendamento();				
 		
 		if (agendamento == null) {
 			logMessage("Agendamento recebido nulo.", true);
@@ -629,39 +643,90 @@ public class AgendaController {
 			gCalendarEventRepositorio.deleteByIdRecurring(agendamento.getIdRecurring());
 			logMessage("Evento repetido. Agendamento(s) apagado(s). idRecurring: " + agendamento.getIdRecurring(), false);
 		} else {			
-			if (agendamento.getIdRecurring() != null) {						        	
+			if (agendamento.getIdRecurring() != null) {				
 				// Com IdRecurring pegamos o evento principal, para alterar todos os demais
 				Event evt = service.events()
 						.get("primary", agendamento.getIdRecurring())
 						.execute();
-				
-				// atualiza o título dos eventos no gcal
-				evt.setSummary(agendamento.getPaciente().getNomeExibicao());
-				evt.setDescription(agendamento.getDescription());				
-				
-				service.events().update("primary", evt.getId(), evt).execute();
-
-				Events instances = service.events().instances("primary", evt.getId())
-						.setMaxResults(1)
-						.execute();
-				
-				if (instances.getItems() != null && instances.getItems().size() > 0) {
-					Event instance = instances.getItems().get(0);
-										
-					Calendar start = Calendar.getInstance();
-					Calendar end = Calendar.getInstance();																				
-					start.setTimeInMillis(instance.getStart().getDateTime().getValue());
-					end.setTimeInMillis(instance.getEnd().getDateTime().getValue());
-					agendamento.setEventoPrincipal(true);
-					agendamento.setIdGCalendar(instance.getId());
-					agendamento.setIdRecurring(instance.getRecurringEventId());
-					agendamento.setStart(start);
-					agendamento.setEnd(end);					
-					agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(psicologo));					
+				if (evt != null) {					
+					// atualiza o título dos eventos no gcal
+					evt.setSummary(agendamento.getPaciente().getNomeExibicao());
+					evt.setDescription(agendamento.getDescription());				
 					
-					this.gCalendarEventRepositorio.deleteByIdRecurring(agendamento.getIdRecurring());
-					logMessage("Agendamentos repetidos apagados. idRecurring: " + agendamento.getIdRecurring(), false);
-				}
+					service.events().update("primary", evt.getId(), evt).execute();
+					
+					Events instances = service.events().instances("primary", evt.getId())
+							.setMaxResults(1)
+							.execute();
+					
+					if (instances.getItems() != null && instances.getItems().size() > 0) {
+						Event instance = instances.getItems().get(0);
+											
+						Calendar start = Calendar.getInstance();
+						Calendar end = Calendar.getInstance();																				
+						start.setTimeInMillis(instance.getStart().getDateTime().getValue());
+						end.setTimeInMillis(instance.getEnd().getDateTime().getValue());
+						agendamento.setEventoPrincipal(true);
+						agendamento.setIdGCalendar(instance.getId());
+						agendamento.setIdRecurring(instance.getRecurringEventId());
+						agendamento.setStart(start);
+						agendamento.setEnd(end);					
+						agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(psicologo));					
+						
+						this.gCalendarEventRepositorio.deleteByIdRecurring(agendamento.getIdRecurring());
+						logMessage("Agendamentos repetidos apagados. idRecurring: " + agendamento.getIdRecurring(), false);
+					}
+					/*
+					if (evt.getRecurrence() != null && evt.getRecurrence().size() > 0) {						
+						String[] arrListType = evt.getRecurrence().get(0).split(":");
+						
+						if (arrListType.length > 0) {							
+							if (arrListType[0].equals("RRULE")) {								
+								String[] arrProperties = arrListType[1].split(";");
+								int idxFreq = 0;
+								for (String propertie : arrProperties) {
+									if (propertie.indexOf("FREQ") >= 0) {
+										break;
+									}									
+									idxFreq++;
+								}			        						        		
+								String[] arrRecurrence = arrProperties[idxFreq].split("=");
+			        			if (arrRecurrence != null && arrRecurrence.length > 1) {			        							        				        			
+			        				String recurrence = arrRecurrence[1];	        				
+			        				if (recurrence.equals("WEEKLY")) {	        					
+			        					Events instances = service.events().instances("primary", evt.getId())
+			        							.setMaxResults(1)
+			        							.execute();
+			        					
+			        					if (instances.getItems() != null && instances.getItems().size() > 0) {
+			        						Event instance = instances.getItems().get(0);
+			        											
+			        						Calendar start = Calendar.getInstance();
+			        						Calendar end = Calendar.getInstance();																				
+			        						start.setTimeInMillis(instance.getStart().getDateTime().getValue());
+			        						end.setTimeInMillis(instance.getEnd().getDateTime().getValue());
+			        						agendamento.setEventoPrincipal(true);
+			        						agendamento.setIdGCalendar(instance.getId());
+			        						agendamento.setIdRecurring(instance.getRecurringEventId());
+			        						agendamento.setStart(start);
+			        						agendamento.setEnd(end);					
+			        						agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(psicologo));					
+			        						
+			        						this.gCalendarEventRepositorio.deleteByIdRecurring(agendamento.getIdRecurring());
+			        						logMessage("Agendamentos repetidos apagados. idRecurring: " + agendamento.getIdRecurring(), false);
+			        					}
+			        				} else {
+			        					// Se não for agendamento semanal, trata como agendamento simples
+			        					agendamento.setEventoPrincipal(false);	        					
+			        					this.gCalendarEventRepositorio.deleteByIdRecurring(agendamento.getIdRecurring());	        					
+			        					logMessage("Agendamentos apagados. idRecurring: " + agendamento.getIdRecurring(), false);
+			        				}			        							        				
+			        			}
+							}
+						}
+	        		}
+	        		*/					
+				}				
 			} else {
 				// Agendamentos simples
 				agendamento.setEventoPrincipal(false); 
@@ -1459,9 +1524,10 @@ public class AgendaController {
 		return tmpGCalendarEvent;
 	}
 	
-	private Agendamento verificarAlteracoesGCal(Event event, Agendamento agendamento) 
-			throws GCalendarEvtNotChangeException {
+	private Agendamento verificarAlteracoesGCal(Event event, Agendamento agendamento, Psicologo psicologo) 
+			throws GCalendarEvtNotChangeException, IOException, GCalendarException {
 		boolean change = false;		
+		
 		if (event.getStart().getDateTime().getValue() != 
 			agendamento.getStart().getTimeInMillis()) {
 			Calendar startEvent = Calendar.getInstance();

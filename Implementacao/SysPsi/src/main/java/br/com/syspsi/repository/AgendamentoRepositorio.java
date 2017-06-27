@@ -68,8 +68,9 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "AND ativo = true")
 	public List<String> listarIdGCalendarPorPeriodo(Calendar start, Calendar end);
 	@Transactional
-	public void deleteByIdGCalendar(String idGCalendar);
-	public Agendamento findByIdGCalendarAndAtivo(String idGCalendar, boolean ativo);	
+	public void deleteByIdGCalendar(String idGCalendar);	
+	public Agendamento findByIdGCalendarAndAtivo(String idGCalendar, boolean ativo);
+	public Agendamento findTop1ByIdRecurringAndAtivo(String idRecurring, boolean ativo);
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "							
@@ -105,10 +106,11 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "AND a.idRecurring = ?2 "
 			+ "AND a.ativo = true"
 			)
-	public Agendamento localizarAgendamentoRepetitivo(Calendar start, String idRecurring);
+	public Agendamento localizarAgendamentoRepetitivo(Calendar start, String idRecurring);	
 	@Query("SELECT a FROM Agendamento a "
 			+ "WHERE a.idRecurring = ?1 AND "
-			+ "a.eventoPrincipal = true"
+			+ "a.eventoPrincipal = true "
+			+ "AND a.ativo = true"
 			)
 	public Agendamento localizarAgendamentoPrincipalRepetitivo(String idRecurring);
 	@Query("SELECT a FROM Agendamento a "
@@ -141,4 +143,11 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "AND a.ativo = true "
 			+ "AND ps = ?1")
 	public List<Agendamento> listarAgendamentosRepetitivosParaNaoVincular(Psicologo psicologo, Calendar dataInicial);
+	@Query("SELECT a FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "
+			+ "WHERE a.idRecurring = ?1 "
+			+ "AND a.ativo = true "
+			+ "AND ps = ?3")
+	public List<Agendamento> listarAgendamentoPorIdRecurringEAtivoEPsicologo(String idRecurring, boolean ativo, Psicologo psicologo);
 }
