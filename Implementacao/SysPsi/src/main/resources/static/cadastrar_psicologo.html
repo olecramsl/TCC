@@ -1,0 +1,138 @@
+<html ng-app="syspsi">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Syspsi - Cadastro de Psicólogo</title>
+		
+	<link href="lib/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css" >
+	<link href="lib/angular-material/angular-material-1.1.0.min.css" rel="stylesheet" type="text/css" >	 			 
+</head>
+<body ng-controller="CadastroPsicologoCtrl as ctrl">
+	<div class="row">
+		<div class="col-lg-12">
+			<h1 class="page-header">Cadastro de Psicólogo</h1>
+		</div>
+		<!-- /.col-lg-12 -->
+	</div>
+	<div class="row">
+		<div class="col-lg-12">
+			<!-- <div class="panel panel-default">  -->
+				<!-- <div class="panel-body">  -->
+					<form novalidate name="cadastroPsicologoForm" 
+						ng-submit="cadastroPsicologoForm.$valid?ctrl.salvarPsicologo(ctrl.psicologo):false"
+						role="form">
+						<div class="form-group">
+							<div class="form-group row">
+								<div class="col-lg-6"
+									ng-class="cadastroPsicologoForm.nome.$error.required?'form-group has-error has-feedback' : ''">
+									<label for="nome">Nome Completo</label> 
+									<input name="nome" class="form-control" maxlength="130" ng-model="ctrl.psicologo.nomeCompleto" 
+										ng-required="true" autofocus>											
+								</div>
+								<div class="col-lg-3"
+									ng-class="cadastroPsicologoForm.cpf.$error.required || cadastroPsicologoForm.cpf.$error.pattern?'form-group has-error has-feedback' : ''">
+									<label for="cpf">CPF</label>									
+									<input name="cpf" class="form-control" onKeyPress="mascara(this, '###.###.###-##')" 
+										maxlength="14" ng-model="ctrl.psicologo.cpf" ng-pattern="/^[0-9]{3}[\.][0-9]{3}[\.][0-9]{3}[\-][0-9]{2}$/"										
+										formatted-cpf>
+								</div>																																																									
+								<div class="col-lg-3"
+									ng-class="cadastroPsicologoForm.crp.$error.required?'form-group has-error has-feedback' : ''">
+									<label for="crp">CRP</label>									
+									<input name="crp" class="form-control" maxlength="20" 
+										ng-model="ctrl.psicologo.crp">
+								</div>
+							</div>
+							
+							<div class="form-group row">								
+								<div class="col-lg-6"
+									ng-class="cadastroPsicologoForm.email.$error.pattern?'form-group has-error has-feedback' : ''">
+									<label for="email">Email</label>
+									<input name="email" class="form-control" maxlength="90" ng-model="ctrl.psicologo.login" ng-pattern="/^\w+([-\.]\w+)*@\w+([-.]\w+)+$/">	
+								</div>																																																									
+								<div class="col-lg-6">									
+									<label for="senha">Senha</label>									
+									<input name="senha" class="form-control" type="password" 
+										ng-model="ctrl.psicologo.senha">
+								</div>
+							</div>																									
+																								
+							<div class="form-group row">
+								<button id="btnSalvarDados" type="submit" style="float: right;width: 100px;" class="btn btn-success">
+									Salvar</button>
+								<a href="/" style="float: right;width: 100px;" class="btn btn-primary">Voltar</a>
+							</div>
+						</div>						
+					</form>																							    			  						  						  							  					  							  						  														
+				<!-- </div>  -->
+			<!-- </div>  -->
+		</div>
+	</div>
+	
+	<script type="text/javascript" src='lib/jquery-3.2.1.min.js'></script>
+	<script type="text/javascript" src='lib/angular-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/angular-route-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/angular-animate-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/angular-aria-1.5.9.min.js'></script>	
+	<script type="text/javascript" src='lib/angular-messages-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/bootstrap/bootstrap.min.js'></script>		 	
+	<script type="text/javascript" src='lib/angular-material/angular-material-1.1.0.min.js'></script>  	   	
+	<script type="text/javascript" src='lib/moment/moment-2.17.1.min.js'></script>	
+	<script type="text/javascript" src='lib/fullcalendar/fullcalendar-3.1.0.min.js'></script>
+	<script type="text/javascript" src='lib/fullcalendar/calendar.js'></script>
+	<script type="text/javascript" src='lib/fullcalendar/locale-all.js'></script>		
+	<script type="text/javascript" src='lib/ui-bootstrap/ui-bootstrap-tpls-2.3.2.min.js'></script>
+	<script type="text/javascript" src="lib/clockpicker/bootstrap-clockpicker.min.js"></script>
+	<script type="text/javascript" src='lib/ckeditor/ckeditor.js'></script>		
+	<script type="text/javascript" src='lib/angular-ckeditor/angular-ckeditor.min.js'></script>
+	<script type="text/javascript" src='lib/angular-idle.min.js'></script>	
+	<script type="text/javascript" src='lib/angular-table/ng-table.min.js'></script>
+	<script type="text/javascript" src='js/app.js'></script>	
+	<script type="text/javascript" src='js/controllers/loginController.js'></script>
+	<script type="text/javascript" src='js/controllers/agendaController.js'></script>				
+	<script type="text/javascript" src='js/controllers/modalAgendamentoController.js'></script>
+	<script type="text/javascript" src='js/controllers/cadastroPsicologoController.js'></script>		
+	<script type="text/javascript" src='js/controllers/consultaPacienteController.js'></script>
+	<script type="text/javascript" src='js/controllers/cadastroPacienteController.js'></script>
+	<script type="text/javascript" src='js/controllers/cadastroConvenioController.js'></script>
+	<script type="text/javascript" src='js/controllers/psicologoController.js'></script>
+	<script type="text/javascript" src='js/controllers/dialogController.js'></script>	
+	<script type="text/javascript" src='js/controllers/financeiroController.js'></script>
+	<script type="text/javascript" src='js/controllers/dashboardController.js'></script>
+	<script type="text/javascript" src='js/controllers/configuracaoController.js'></script>	
+	<script type="text/javascript" src='js/controllers/waitController.js'></script>
+	<script type="text/javascript" src='js/services/loginFactory.js'></script>		
+	<script type="text/javascript" src='js/services/agendamentoFactory.js'></script>
+	<script type="text/javascript" src='js/services/cadastroPsicologoFactory.js'></script>
+	<script type="text/javascript" src='js/services/psicologoFactory.js'></script>
+	<script type="text/javascript" src='js/services/pacienteFactory.js'></script>		
+	<script type="text/javascript" src='js/services/convenioFactory.js'></script>
+	<script type="text/javascript" src='js/services/modalAgendamentoFactory.js'></script>
+	<script type="text/javascript" src='js/services/consultaPacienteFactory.js'></script>
+	<script type="text/javascript" src='js/services/cadastroPacienteFactory.js'></script>
+	<script type="text/javascript" src='js/services/cadastroConvenioFactory.js'></script>
+	<script type="text/javascript" src='js/services/financeiroFactory.js'></script>
+	<script type="text/javascript" src='js/services/configuracaoFactory.js'></script>	
+	<script type="text/javascript" src='js/services/modalAgendamentoService.js'></script>	
+	<script type="text/javascript" src='js/services/idleService.js'></script>
+	<script type="text/javascript" src='js/services/utilService.js'></script>	
+	<script type="text/javascript" src='js/filters/cpfFilter.js'></script>
+	<script type="text/javascript" src='js/filters/cnpjFilter.js'></script>
+	<script type="text/javascript" src='js/filters/telefoneFilter.js'></script>
+	<script type="text/javascript" src='js/filters/cepFilter.js'></script>
+	<script type="text/javascript" src='js/filters/monetarioFilter.js'></script>
+	<script type="text/javascript" src='js/filters/booleanFilter.js'></script>
+	<script type="text/javascript" src='js/directives/cpfDirective.js'></script>
+	<script type="text/javascript" src='js/directives/cnpjDirective.js'></script>
+	<script type="text/javascript" src='js/directives/telefoneDirective.js'></script>
+	<script type="text/javascript" src='js/directives/cepDirective.js'></script>
+	<script type="text/javascript" src='js/directives/dataNascimentoDirective.js'></script>
+	<script type="text/javascript" src='js/directives/exitCadastroPacientePageDirective.js'></script>
+	<script type="text/javascript" src='js/directives/exitConsultaPacientePageDirective.js'></script>	
+	<script type="text/javascript" src='js/directives/monetarioDirective.js'></script>
+	<script type="text/javascript" src="js/util.js"></script>
+</body>
+</html>

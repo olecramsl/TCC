@@ -1,9 +1,20 @@
 angular.module('syspsi').factory('cadastroPsicologoFactory', ['$http', 'consts', function($http, consts) {
 	var _psicologo;	
 	
-	var _salvarPsicologo = function(psicologo) {	
-		psicologo.ativo = true;
-		return $http.post(consts.BASE_URL + '/salvarPsicologo', psicologo);
+	var _salvarPsicologo = function(psicologo) {
+		var novoPsicologo = angular.copy(psicologo);				
+		
+		if (novoPsicologo.cpf) {
+			novoPsicologo.cpf = novoPsicologo.cpf.replace(/[^0-9]/g,'');
+		}
+		novoPsicologo.ativo = true;
+		
+		InPsicologoDTO = {
+				psicologo: novoPsicologo,
+				senha: novoPsicologo.senha
+		}
+		
+		return $http.post(consts.BASE_URL + '/salvarPsicologo', InPsicologoDTO);
 	};
 	
 	var _excluirPsicologo = function(psicologo) {

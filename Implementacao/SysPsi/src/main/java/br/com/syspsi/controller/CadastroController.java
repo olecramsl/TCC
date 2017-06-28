@@ -1,12 +1,14 @@
 package br.com.syspsi.controller;
 
 import java.security.Principal;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,14 +16,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.syspsi.model.Util;
+import br.com.syspsi.model.dto.InPsicologoDTO;
 import br.com.syspsi.model.entity.Convenio;
 import br.com.syspsi.model.entity.GrupoPaciente;
 import br.com.syspsi.model.entity.Paciente;
+import br.com.syspsi.model.entity.Permissao;
 import br.com.syspsi.model.entity.Psicologo;
+import br.com.syspsi.model.entity.PsicologoTemPermissao;
 import br.com.syspsi.repository.ConvenioRepositorio;
 import br.com.syspsi.repository.GrupoPacienteRepositorio;
 import br.com.syspsi.repository.PacienteRepositorio;
+import br.com.syspsi.repository.PermissaoRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
+import br.com.syspsi.repository.PsicologoTemPermissaoRepositorio;
 
 @RestController
 public class CadastroController {
@@ -36,6 +43,12 @@ public class CadastroController {
 	
 	@Autowired
 	private GrupoPacienteRepositorio grupoPacienteRepositorio;
+	
+	@Autowired
+	private PsicologoTemPermissaoRepositorio psicologoTemPermissaoRepositorio;
+	
+	@Autowired
+	private PermissaoRepositorio permissaoRepositorio;
 	
 	private final static Logger logger = Logger.getLogger(CadastroController.class);
 	
@@ -224,6 +237,68 @@ public class CadastroController {
 			)
 	public void atualizarPaciente(@RequestBody Paciente paciente) throws Exception {
 		this.pacienteRepositorio.save(paciente);
+	}
+	
+	/**
+	 * Salva um psicologo no BD
+	 * @param psicologo o psicologo a ser persistido no BD
+	 * @throws Exception caso algum problema ocorra
+	 */
+	@RequestMapping(
+			value = "/salvarPsicologo", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public Psicologo salvarPsicologo(@RequestBody InPsicologoDTO inPsicologoDTO) throws Exception {
+		logMessage("CadastroController.salvarPsicologo: cadastro do psicologo " + inPsicologoDTO.getPsicologo().getLogin(), false);
+		
+		Psicologo psicologo = inPsicologoDTO.getPsicologo();
+		psicologo.setSenha((new BCryptPasswordEncoder().encode(inPsicologoDTO.getSenha())).getBytes());
+				
+		Psicologo psi = this.psicologoRepositorio.findByLogin(psicologo.getLogin());
+		if (psi != null) {
+			logMessage("Psicólogo já cadastrador", true);
+			throw new Exception("Usuário já cadastrado!");
+		}
+		
+		if (psicologo.getCpf() != null && !psicologo.getCpf().trim().isEmpty()) {
+			try {
+				Util.validarCPF(psicologo.getCpf());
+			} catch(Exception ex) {
+				logMessage("CPF " + psicologo.getCpf() + " do psicólogo é inválido", true);
+				throw new Exception("O CPF é inválido!");
+			}
+		}
+				
+		psicologo.setChave(Util.gerarChave().getBytes());		
+		psicologo.setId(this.psicologoRepositorio.getNextId());		
+			
+		try {
+			Permissao permissao = this.permissaoRepositorio.findByNome("PSICOLOGO".toUpperCase());
+			if (permissao != null) {			
+				Psicologo novoPsicologo = (Psicologo) this.psicologoRepositorio.save(psicologo);
+				logMessage("Cadastro do psicologo " + novoPsicologo.getLogin() + " realizado com sucesso!", false);						
+				
+				PsicologoTemPermissao psicologoTemPermissao = new PsicologoTemPermissao(novoPsicologo, permissao, Calendar.getInstance());
+				this.psicologoTemPermissaoRepositorio.save(psicologoTemPermissao);
+				
+				return novoPsicologo;
+			} 
+			logMessage("Permissao não encontrada!", true);
+			throw new Exception("Não foi possível cadastrar o psicólogo.");
+		} catch (DataIntegrityViolationException e) {
+			if (e.getMessage().toLowerCase().contains("cpf")) {
+				logMessage("CPF já cadastrado!", true);
+				throw new Exception("O CPF informado já está cadastrado.");
+			} else if (e.getMessage().toLowerCase().contains("crp")) {
+				logMessage("CRP já cadastrado!", true);
+				throw new Exception("O CRP informado já está cadastrado.");
+			} else {
+				logMessage("erro ao salvar o psicologo: " + e.getMessage(), true);
+				throw new Exception("Erro ao salvar o psicologo.");
+			}
+		} 		
 	}
 	
 	/**

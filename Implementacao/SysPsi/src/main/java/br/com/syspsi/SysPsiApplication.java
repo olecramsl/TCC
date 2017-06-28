@@ -111,7 +111,8 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 			http							
 				.httpBasic().and()
 				.authorizeRequests()
-					.antMatchers("/lib/**", "/js/**", "/", "/index.html").permitAll()
+					.antMatchers("/lib/**", "/js/**", "/", "/index.html", 
+							"/cadastrar_psicologo.html", "/salvarPsicologo").permitAll()
 					.anyRequest().authenticated().and()								
 				.formLogin().loginPage("/index.html")					
 					.usernameParameter("login")

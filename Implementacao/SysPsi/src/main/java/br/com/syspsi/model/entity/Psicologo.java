@@ -15,7 +15,6 @@ public class Psicologo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	@Column(name="nomecompleto")
 	private String nomeCompleto;	

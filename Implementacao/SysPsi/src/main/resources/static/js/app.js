@@ -1,5 +1,5 @@
 angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts", {
-	//BASE_URL: "http://localhost:8080",
+	//BASE_URL: "https://192.168.0.5:8443",
 	BASE_URL: "https://localhost:8443",
 	TIPOS_CONFIRMACOES: {
 		'REMOVER_EVENTOS_FUTUROS': 1,
@@ -34,11 +34,12 @@ angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts",
 				templateUrl: "templates/prontuarios.html",
 				controller: "ConsultaPacienteCtrl",
 				controllerAs: "ctrl"
+					/*
 			}).when('/cadastrarPsicologo', { 
 				templateUrl: "templates/cadastrar_psicologo.html",
 				controller: "CadastroPsicologoCtrl",
 				controllerAs: "ctrl"			
-			}).when('/cadastrarPaciente', { 
+			*/}).when('/cadastrarPaciente', { 
 				templateUrl: "templates/cadastrar_pacientes.html",
 				controller: "CadastroPacienteCtrl",
 				controllerAs: "ctrl"			

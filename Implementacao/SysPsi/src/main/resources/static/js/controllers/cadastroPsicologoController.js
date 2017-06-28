@@ -1,18 +1,10 @@
-// Modulos desta controller
-/*
-var lazyModules = ['ui.bootstrap'];
-  
-angular.forEach(lazyModules, function(dependency) {
-	angular.module('syspsi').requires.push(dependency);
-});
-*/
+angular.module('syspsi').controller('CadastroPsicologoCtrl', ['$mdDialog', '$scope', '$http', '$location', 
+	'cadastroPsicologoFactory','utilService', function ($mdDialog, $scope, $http, $location, 
+			cadastroPsicologoFactory, utilService) {	
 
-angular.module('syspsi').controller('CadastroPsicologoCtrl', ['$mdDialog', '$scope', '$http', '$location', 'cadastroPsicologoFactory','utilService', 
-	function ($mdDialog, $scope, $http, $location, cadastroPsicologoFactory, utilService) {	
-	
-	var ctrl = this;
-		
-	ctrl.salvarPsicologo = function(psicologo) {
+	var ctrl = this;		
+
+	ctrl.salvarPsicologo = function(psicologo) {		
 		cadastroPsicologoFactory.salvarPsicologo(psicologo).then(
 			successCallback = function(response) {																									
 				$mdDialog.show(
@@ -34,7 +26,7 @@ angular.module('syspsi').controller('CadastroPsicologoCtrl', ['$mdDialog', '$sco
 		);		
 	};	
 	
-	
+	/*
 	ctrl.editarPaciente = function(paciente) {
 		if (paciente.dataNascimento) {
 			var dataFormatada = new Date(paciente.dataNascimento);			
@@ -74,5 +66,6 @@ angular.module('syspsi').controller('CadastroPsicologoCtrl', ['$mdDialog', '$sco
 				}
 			);
 		}, function() {});				
-	}			
+	}
+	*/			
 }]);
