@@ -8,9 +8,15 @@
 	<title>Syspsi - Cadastro de Psicólogo</title>
 		
 	<link href="lib/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css" >
-	<link href="lib/angular-material/angular-material-1.1.0.min.css" rel="stylesheet" type="text/css" >	 			 
+	<link href="lib/angular-material/angular-material-1.1.0.min.css" rel="stylesheet" type="text/css" >
+	
+	<style type="text/css">
+		[ng\:cloak], [ng-cloak], .ng-cloak {
+			display: none !important;
+		}
+	</style>	 			 
 </head>
-<body ng-controller="CadastroPsicologoCtrl as ctrl">
+<body ng-cloak class="ng-cloak" ng-controller="CadastroPsicologoCtrl as ctrl">
 	<div class="row">
 		<div class="col-lg-12">
 			<h1 class="page-header">Cadastro de Psicólogo</h1>
@@ -20,7 +26,7 @@
 	<div class="row">
 		<div class="col-lg-12">
 			<!-- <div class="panel panel-default">  -->
-				<!-- <div class="panel-body">  -->
+				<div class="panel-body"> 
 					<form novalidate name="cadastroPsicologoForm" 
 						ng-submit="cadastroPsicologoForm.$valid?ctrl.salvarPsicologo(ctrl.psicologo):false"
 						role="form">
@@ -37,37 +43,47 @@
 									<label for="cpf">CPF</label>									
 									<input name="cpf" class="form-control" onKeyPress="mascara(this, '###.###.###-##')" 
 										maxlength="14" ng-model="ctrl.psicologo.cpf" ng-pattern="/^[0-9]{3}[\.][0-9]{3}[\.][0-9]{3}[\-][0-9]{2}$/"										
-										formatted-cpf>
+										ng-required="true" formatted-cpf>
 								</div>																																																									
 								<div class="col-lg-3"
 									ng-class="cadastroPsicologoForm.crp.$error.required?'form-group has-error has-feedback' : ''">
 									<label for="crp">CRP</label>									
-									<input name="crp" class="form-control" maxlength="20" 
-										ng-model="ctrl.psicologo.crp">
+									<input name="crp" class="form-control" maxlength="20"  
+										ng-required="true" ng-model="ctrl.psicologo.crp">
 								</div>
 							</div>
 							
 							<div class="form-group row">								
 								<div class="col-lg-6"
-									ng-class="cadastroPsicologoForm.email.$error.pattern?'form-group has-error has-feedback' : ''">
+									ng-class="cadastroPsicologoForm.email.$error.pattern||cadastroPsicologoForm.email.$error.required?'form-group has-error has-feedback' : ''">
 									<label for="email">Email</label>
-									<input name="email" class="form-control" maxlength="90" ng-model="ctrl.psicologo.login" ng-pattern="/^\w+([-\.]\w+)*@\w+([-.]\w+)+$/">	
+									<input name="email" class="form-control" maxlength="90" 
+										ng-model="ctrl.psicologo.login" ng-required="true" 
+										ng-pattern="/^\w+([-\.]\w+)*@\w+([-.]\w+)+$/">	
 								</div>																																																									
-								<div class="col-lg-6">									
+								<div class="col-lg-3"
+									ng-class="cadastroPsicologoForm.senha.$error.required?'form-group has-error has-feedback' : ''">									
 									<label for="senha">Senha</label>									
 									<input name="senha" class="form-control" type="password" 
-										ng-model="ctrl.psicologo.senha">
+										ng-required="true" ng-model="ctrl.psicologo.senha">
 								</div>
+								<div class="col-lg-3"
+									ng-class="cadastroPsicologoForm.repetirSenha.$error.required?'form-group has-error has-feedback' : ''">									
+									<label for="repetirSenha">Repita a senha</label>									
+									<input name="repetirSenha" class="form-control" type="password" 
+										ng-required="true" ng-model="ctrl.repetirSenha">
+									<p class="help-block" ng-show="ctrl.psicologo.senha!=ctrl.repetirSenha">As senhas são diferentes</p>									
+								</div>								
 							</div>																									
 																								
-							<div class="form-group row">
-								<button id="btnSalvarDados" type="submit" style="float: right;width: 100px;" class="btn btn-success">
-									Salvar</button>
+							<div class="form-group">
+								<button id="btnSalvarDados" ng-disabled="cadastroPsicologoForm.$invalid||ctrl.psicologo.senha!=ctrl.repetirSenha" type="submit" 
+									style="float: right;width: 100px;" class="btn btn-success">Salvar</button>
 								<a href="/" style="float: right;width: 100px;" class="btn btn-primary">Voltar</a>
 							</div>
 						</div>						
 					</form>																							    			  						  						  							  					  							  						  														
-				<!-- </div>  -->
+				</div>
 			<!-- </div>  -->
 		</div>
 	</div>
