@@ -70,7 +70,15 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 	@Transactional
 	public void deleteByIdGCalendar(String idGCalendar);	
 	public Agendamento findByIdGCalendarAndAtivo(String idGCalendar, boolean ativo);
-	public Agendamento findTop1ByIdRecurringAndAtivo(String idRecurring, boolean ativo);
+	/*
+	@Query("SELECT a FROM Agendamento a "							
+			+ "WHERE a.idRecurring = ?1 "
+			+ "AND p.ativo = true "
+			+ "ORDER BY a.start ASC "
+			+ "LIMIT 1")	
+	public Agendamento listarPorIdRecurringEAtivo(String idRecurring);
+	*/
+	public Agendamento findFirstByIdRecurringAndAtivo(String idRecurring, boolean ativo);
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "							
@@ -150,4 +158,11 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "AND a.ativo = true "
 			+ "AND ps = ?3")
 	public List<Agendamento> listarAgendamentoPorIdRecurringEAtivoEPsicologo(String idRecurring, boolean ativo, Psicologo psicologo);
+	@Query("SELECT a FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "
+			+ "WHERE a.grupo = ?1 "
+			+ "AND ps = ?2 "			
+			+ "AND a.ativo = false")
+	public List<Agendamento> listarAgendamentosParaExcluirNoGoogleCalendarDuranteExportacao(Long grupo, Psicologo psicologo);	
 }

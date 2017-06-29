@@ -1,6 +1,6 @@
 angular.module('syspsi').controller('CadastroPsicologoCtrl', ['$mdDialog', '$scope', '$http', '$location', 
-	'cadastroPsicologoFactory','utilService', function ($mdDialog, $scope, $http, $location, 
-			cadastroPsicologoFactory, utilService) {	
+	'cadastroPsicologoFactory','utilService', 'consts', function ($mdDialog, $scope, $http, $location, 
+			cadastroPsicologoFactory, utilService, consts) {	
 
 	var ctrl = this;		
 
@@ -13,12 +13,12 @@ angular.module('syspsi').controller('CadastroPsicologoCtrl', ['$mdDialog', '$sco
 						.title('Cadastro de Psicologo')
 						.textContent('Psicólogo cadastrado com sucesso!')
 						.ariaLabel('Alerta')
-						.ok('Ok')						
-				);												
-				
-					
-				ctrl.psicologo = {};				
-				$scope.cadastroPsicologoForm.$setPristine();					
+						.ok('Ok')	
+				).then(function() {			
+					ctrl.psicologo = {};				
+					$scope.cadastroPsicologoForm.$setPristine();
+					window.location.href = consts.BASE_URL;
+				});																									
 			},
 			errorCallback = function (error, status){						
 				utilService.tratarExcecao(error); 
