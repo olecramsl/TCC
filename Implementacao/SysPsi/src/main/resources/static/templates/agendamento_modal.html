@@ -44,9 +44,8 @@
 				</script>													 					
 			</div>	
 			<label for="observacao">Observação: </label> 
-			<input id="observacao"	ng-disabled="!ctrl.agendamento.editable" 
-				type="text" maxlength="50" class="form-control" 
-				ng-model="ctrl.agendamento.description"></input>					
+			<textarea id="observacao" ng-disabled="!ctrl.agendamento.editable" 
+				class="form-control" ng-model="ctrl.agendamento.description"></textarea>
 			<div class="checkbox">
 				<label><input type="checkbox" ng-disabled="!ctrl.agendamento.editable" 
 					value="true" 
