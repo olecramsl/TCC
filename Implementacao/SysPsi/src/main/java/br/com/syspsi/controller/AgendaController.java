@@ -1227,59 +1227,62 @@ public class AgendaController {
 						this.agendamentoRepositorio.listarAgendamentosRepetidosAVincular(psicologo);
 				Map<Long, String> mapAgRepetidos = new HashMap<Long, String>();
 				for (Agendamento ag : lstAgendamentosRepetidos) {
-					Calendar now = Calendar.getInstance();
-					Calendar start = (Calendar)ag.getStart().clone();
-					Calendar origStart = (Calendar)ag.getStart().clone();
-					Calendar end = (Calendar)ag.getEnd().clone();
-					
-					now.set(Calendar.HOUR, start.get(Calendar.HOUR));
-					now.set(Calendar.MINUTE, start.get(Calendar.MINUTE));
-					now.set(Calendar.SECOND, 0);
-					now.set(Calendar.MILLISECOND, 0);
-					
-					if (start.before(now)) {
-						boolean naoEncontrou = true;
-						for (Calendar dia = now; naoEncontrou; dia.add(Calendar.DATE, 1)) {			
-							if ((dia.get(Calendar.DAY_OF_WEEK) == ag.getStart().get(Calendar.DAY_OF_WEEK))) {
-								start.set(Calendar.DATE, now.get(Calendar.DATE));
-								start.set(Calendar.MONTH, now.get(Calendar.MONTH));
-								start.set(Calendar.YEAR, now.get(Calendar.YEAR));
-								end.set(Calendar.DATE, now.get(Calendar.DATE));
-								end.set(Calendar.MONTH, now.get(Calendar.MONTH));
-								end.set(Calendar.YEAR, now.get(Calendar.YEAR));
-								break;
+					if (ag.getIdGCalendar() == null && ag.getIdRecurring() == null) {
+						Calendar now = Calendar.getInstance();
+						Calendar start = (Calendar)ag.getStart().clone();
+						Calendar origStart = (Calendar)ag.getStart().clone();
+						Calendar end = (Calendar)ag.getEnd().clone();
+						
+						now.set(Calendar.HOUR, start.get(Calendar.HOUR));
+						now.set(Calendar.MINUTE, start.get(Calendar.MINUTE));
+						now.set(Calendar.SECOND, 0);
+						now.set(Calendar.MILLISECOND, 0);
+						
+						if (start.before(now)) {
+							boolean naoEncontrou = true;
+							for (Calendar dia = now; naoEncontrou; dia.add(Calendar.DATE, 1)) {			
+								if ((dia.get(Calendar.DAY_OF_WEEK) == ag.getStart().get(Calendar.DAY_OF_WEEK))) {
+									start.set(Calendar.DATE, now.get(Calendar.DATE));
+									start.set(Calendar.MONTH, now.get(Calendar.MONTH));
+									start.set(Calendar.YEAR, now.get(Calendar.YEAR));
+									end.set(Calendar.DATE, now.get(Calendar.DATE));
+									end.set(Calendar.MONTH, now.get(Calendar.MONTH));
+									end.set(Calendar.YEAR, now.get(Calendar.YEAR));
+									break;
+								}
 							}
 						}
+						
+						Agendamento tmpAgendamento = new Agendamento(ag.getPaciente(), ag.getIdGCalendar(), 
+								ag.getIdRecurring(), start, end, ag.getGrupo(), ag.getDescription(), ag.getColor(), 
+								ag.isEventoPrincipal(), ag.isAtivo());
+											
+						Agendamento agendamento = this.salvarAgendamentoNoGoogleCalendar(tmpAgendamento, psicologo);
+						
+						// Agendamento repetido configurado no dia corrente.
+						if ((!origStart.before(now) && !origStart.after(now)) || 
+							(origStart.after(now) && ag.getIdGCalendar() == null)) {
+							ag.setIdGCalendar(agendamento.getIdGCalendar()); 
+						} 
+																
+						ag.setIdRecurring(agendamento.getIdRecurring());
+						mapAgRepetidos.put(ag.getGrupo(), ag.getIdRecurring());
+						
+						List<Agendamento> lstAgendamentosAnteriores = 
+								this.agendamentoRepositorio.listarAgendamentosRepetitivosParaNaoVincular(psicologo, now);
+						
+						for (Agendamento agend : lstAgendamentosAnteriores) {
+							agend.setIdRecurring(ag.getIdRecurring());
+						}
+						this.agendamentoRepositorio.save(lstAgendamentosAnteriores);
+						
+						this.excluirAgendamentosNoGoogleCalendarDuranteExportacao(agendamento, psicologo);
 					}
-					
-					Agendamento tmpAgendamento = new Agendamento(ag.getPaciente(), ag.getIdGCalendar(), 
-							ag.getIdRecurring(), start, end, ag.getGrupo(), ag.getDescription(), ag.getColor(), 
-							ag.isEventoPrincipal(), ag.isAtivo());
-										
-					Agendamento agendamento = this.salvarAgendamentoNoGoogleCalendar(tmpAgendamento, psicologo);
-					
-					// Agendamento repetido configurado no dia corrente.
-					if ((!origStart.before(now) && !origStart.after(now)) || 
-						(origStart.after(now) && ag.getIdGCalendar() == null)) {
-						ag.setIdGCalendar(agendamento.getIdGCalendar()); 
-					} 
-															
-					ag.setIdRecurring(agendamento.getIdRecurring());
-					mapAgRepetidos.put(ag.getGrupo(), ag.getIdRecurring());
-					
-					List<Agendamento> lstAgendamentosAnteriores = 
-							this.agendamentoRepositorio.listarAgendamentosRepetitivosParaNaoVincular(psicologo, now);
-					
-					for (Agendamento agend : lstAgendamentosAnteriores) {
-						agend.setIdRecurring(ag.getIdRecurring());
-					}
-					this.agendamentoRepositorio.save(lstAgendamentosAnteriores);
-					
-					this.excluirAgendamentosNoGoogleCalendarDuranteExportacao(agendamento, psicologo);
-					
 				}
-				logMessage("Salvando lista eventos repetidos", false);
-				this.agendamentoRepositorio.save(lstAgendamentosRepetidos);
+				if (lstAgendamentosRepetidos != null && !lstAgendamentosRepetidos.isEmpty()) {
+					logMessage("Salvando lista eventos repetidos", false);
+					this.agendamentoRepositorio.save(lstAgendamentosRepetidos);
+				}
 								
 				List<Agendamento> lstAgendamentosSimples = 
 						this.agendamentoRepositorio.listarAgendamentosSimplesAVincular(psicologo, 
@@ -1291,37 +1294,41 @@ public class AgendaController {
 		        logMessage("getCalendarService: OK", false);
 				String idRecurring;
 				for (Agendamento ag : lstAgendamentosSimples) {
-					if (ag.getGrupo() > 0) {
-						idRecurring = mapAgRepetidos.get(ag.getGrupo());
-						
-						if (idRecurring != null) {
-							SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-03:00");
-							DateTime startDateTime = new DateTime(format.format(ag.getStart().getTime()));						
+					if (ag.getIdGCalendar() == null && ag.getIdRecurring() == null) {
+						if (ag.getGrupo() > 0) {
+							idRecurring = mapAgRepetidos.get(ag.getGrupo());
 							
-							Events events = service.events().instances("primary", idRecurring)
-								      	.setPageToken(null)
-								      	.setTimeMin(startDateTime)
-								      	.setMaxResults(1)
-								      	.execute();
-							List<Event> items = events.getItems();
-							if (items != null && items.size() > 0) {
-								ag.setIdGCalendar(items.get(0).getId());
-								ag.setIdRecurring(items.get(0).getRecurringEventId());
-								this.editarAgendamentoNoGoogleCalendar(ag);
+							if (idRecurring != null) {
+								SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-03:00");
+								DateTime startDateTime = new DateTime(format.format(ag.getStart().getTime()));						
+								
+								Events events = service.events().instances("primary", idRecurring)
+									      	.setPageToken(null)
+									      	.setTimeMin(startDateTime)
+									      	.setMaxResults(1)
+									      	.execute();
+								List<Event> items = events.getItems();
+								if (items != null && items.size() > 0) {
+									ag.setIdGCalendar(items.get(0).getId());
+									ag.setIdRecurring(items.get(0).getRecurringEventId());
+									this.editarAgendamentoNoGoogleCalendar(ag);
+								}
+							} else {
+								Agendamento agendamento = this.salvarAgendamentoNoGoogleCalendar(ag, psicologo);
+								ag.setIdGCalendar(agendamento.getIdGCalendar());
+								ag.setIdRecurring(agendamento.getIdRecurring());
 							}
 						} else {
 							Agendamento agendamento = this.salvarAgendamentoNoGoogleCalendar(ag, psicologo);
 							ag.setIdGCalendar(agendamento.getIdGCalendar());
 							ag.setIdRecurring(agendamento.getIdRecurring());
 						}
-					} else {
-						Agendamento agendamento = this.salvarAgendamentoNoGoogleCalendar(ag, psicologo);
-						ag.setIdGCalendar(agendamento.getIdGCalendar());
-						ag.setIdRecurring(agendamento.getIdRecurring());
 					}
 				}
-				logMessage("Salvando lista eventos simples", false);
-				this.agendamentoRepositorio.save(lstAgendamentosSimples);								
+				if (lstAgendamentosSimples != null && !lstAgendamentosSimples.isEmpty()) {
+					logMessage("Salvando lista eventos simples", false);
+					this.agendamentoRepositorio.save(lstAgendamentosSimples);						
+				}
 			}
 		} catch (Exception ex) {	
 			logMessage("Erro ao vincular: " + ex.getMessage(), true);
