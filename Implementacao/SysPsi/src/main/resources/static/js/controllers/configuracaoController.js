@@ -15,8 +15,9 @@ angular.module('syspsi').controller('ConfiguracaoCtrl', ['$mdDialog', 'configura
 	
 	ctrl.onChange = function(cbState, ev) {
 		if (cbState) {
-			window.location.href = "https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=627696234751-220l8b06g00manskl4a3q2tjujt61v1o.apps.googleusercontent.com&redirect_uri=https://localhost:8443/gCalendarCallBack&response_type=code&scope=https://www.googleapis.com/auth/calendar.readonly";
+			window.location.href = "https://accounts.google.com/o/oauth2/auth?access_type=offline&client_id=627696234751-220l8b06g00manskl4a3q2tjujt61v1o.apps.googleusercontent.com&redirect_uri=https://localhost:8443/gCalendarCallBack&response_type=code&scope=https://www.googleapis.com/auth/calendar";								    
 		} else {			
+			ctrl.isVinculadoGCal = false;
 			var confirm = $mdDialog.confirm()
 	        	.title('Você tem certeza que deseja desvincular a agenda?')
 	        	.textContent('Todos os agendamentos serão desvinculados!')
@@ -38,8 +39,8 @@ angular.module('syspsi').controller('ConfiguracaoCtrl', ['$mdDialog', 'configura
 							util.service.tratarExcecao(error);
 						}
 				);				
-			}, function() {
-				ctrl.isVinculadoGCal = false;
+			}, function() {				
+				ctrl.isVinculadoGCal = true;
 			});
 		}
 	};

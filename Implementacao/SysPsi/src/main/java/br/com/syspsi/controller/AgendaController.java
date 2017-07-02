@@ -80,15 +80,14 @@ public class AgendaController {
      * at ~/.credentials/syspsi
      */
     private static final List<String> SCOPES =
-        Arrays.asList(CalendarScopes.CALENDAR_READONLY);
+        Arrays.asList(CalendarScopes.CALENDAR);
 
     static {
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
+        } catch (Throwable t) {        	
+            t.printStackTrace();            
         }
     }       
     
@@ -163,7 +162,7 @@ public class AgendaController {
         Credential credential = authorize();
         logMessage("getCalendarService: authorize sem erros", false);    	
         return new com.google.api.services.calendar.Calendar.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, credential)
+                HTTP_TRANSPORT, JSON_FACTORY, credential) 
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
@@ -258,7 +257,7 @@ public class AgendaController {
 	        	qtdItemsGCal = items.size();
 	        }
 	        
-	        if (qtdItemsGCal > 0) {	                        
+	        if (qtdItemsGCal > 0) {	        	
 	            TmpGCalendarEvent tmpGCalendarEvent;	            
 	            for (Event event : items) {	   	         
 	            	// Exclui da lista de remoção eventos encontrados no GCal	            	
@@ -325,8 +324,8 @@ public class AgendaController {
 	            		} 
 	            	}
 	            	
-	            	// Não serão importados eventos:
-	            	// Já importados anteriormente
+	            	// Não serão importados eventos: 
+	            	// Já importados anteriormente 
 	            	// all-day: Quando event.getEnd().getDate() != null	            	
 	            	if (!lstGCalendarIds_TmpGCalendarTable.contains(event.getId()) &&
 	            	   (!lstGCalendarIds_AgendamentoTable.contains(event.getId())) &&
@@ -363,14 +362,14 @@ public class AgendaController {
 	            		} 
 	            	}
 	            }
-	        }
+	        }	        
 	        	        	        
 	        // Remove da tabela TmpGCalendarEvents eventos removidos no gcal	        
         	for (String idGCalendar : lstGCalendarIdsParaRemover_TmpGCalendarTable) {
        			// Remove da tabela temporária os eventos removidos no GCalendar
        			this.gCalendarEventRepositorio.deleteByIdGCalendar(idGCalendar);
        			logMessage("Evento " + idGCalendar + " removido de lstGCalendarIds_TmpGCalendarTable", false);
-        	}        	
+        	}        	        	
                                 	
             // Remove da tabela Agendamento eventos removidos no gcal        	
         	for (String idGCalendar : lstGCalendarIdsParaRemover_AgendamentoTable) {        		
@@ -382,12 +381,12 @@ public class AgendaController {
     				this.agendamentoRepositorio.save(ag);
     			}             			           		            		
     			logMessage("Evento " + idGCalendar + " removido de lstGCalendarIds_AgendamentoTable", false);
-        	}        	
-	               	
+        	}        	        	       
+        	
 	        if (lstAgendamentosGCalendar != null && !lstAgendamentosGCalendar.isEmpty()) {
 	        	logMessage("Qtd items salvos em tmpGCalendar: " + lstAgendamentosGCalendar.size(), false);
 	        	gCalendarEventRepositorio.save(lstAgendamentosGCalendar);
-	        }	        	        
+	        }	        	     	        
 	        	       	        
 	        logMessage("listarAgendamentosGCalendar: fim", false);
 	        return lstAgendamentosGCalendar;
@@ -454,7 +453,7 @@ public class AgendaController {
                 getCalendarService();
             logMessage("getCalendarService: OK", false);		
 			for (Agendamento ag : this.agendamentoRepositorio.listarEventosPrincipaisPorPeriodo(df, psicologo)) {
-				if (ag.isAtivo()) {
+				if (ag.isAtivo() && ag.getIdRecurring() != null) {
 					// Evento repetido exportado para o GCal (quando da configuração da vinculação)
 					// com data anterior ao dia da exportação. O usuário, nesse caso, excluiu o
 					// agendamento repetitivo no GCal. Assim, no sistema, os eventos anteriores 
