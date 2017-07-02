@@ -40,8 +40,7 @@
 									ng-class="cadastroPacienteForm.cpf.$error.required || cadastroPacienteForm.cpf.$error.pattern?'form-group has-error has-feedback' : ''">
 									<label for="cpf">CPF</label>									
 									<input name="cpf" class="form-control" onKeyPress="mascara(this, '###.###.###-##')" 
-										maxlength="14" ng-model="ctrl.paciente.cpf" ng-pattern="/^[0-9]{3}[\.][0-9]{3}[\.][0-9]{3}[\-][0-9]{2}$/"
-										ng-required="ctrl.maiorIdade?true:false" 
+										maxlength="14" ng-model="ctrl.paciente.cpf" ng-pattern="/^[0-9]{3}[\.][0-9]{3}[\.][0-9]{3}[\-][0-9]{2}$/"									
 										formatted-cpf>
 								</div>
 								<div class="col-lg-4"
