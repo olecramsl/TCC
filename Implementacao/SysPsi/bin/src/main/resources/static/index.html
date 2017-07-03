@@ -1,10 +1,262 @@
-<!DOCTYPE html>
-<html>
+<html ng-app="syspsi">
 <head>
-<meta charset="UTF-8">
-<title>Bem vindo ao SysPsi</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Syspsi</title>
+		
+	<link href="lib/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css" >
+	<link href="lib/angular-material/angular-material-1.1.0.min.css" rel="stylesheet" type="text/css" >	 	
+	<link href="lib/clockpicker/bootstrap-clockpicker.min.css" rel="stylesheet" type="text/css" >
+	<link href='lib/fullcalendar/fullcalendar-3.1.0.min.css' rel='stylesheet' type="text/css" />
+	<link href='lib/fullcalendar/fullcalendar.print-3.1.0.min.css' rel='stylesheet' type="text/css" media='print' />				
+	<link href='lib/angular-table/ng-table.min.css' rel='stylesheet' type="text/css" />
+	
+	<!-- MetisMenu CSS -->
+	<link href="lib/metisMenu/metisMenu.min.css" rel="stylesheet">
+			
+	<!-- Custom Fonts -->
+    <link href="lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	
+	<!-- Custom CSS -->
+	<link href="lib/sb-admin/css/sb-admin-2.css" rel="stylesheet">
+
+	<!-- Morris Charts CSS -->
+	<!-- <link href="lib/morrisjs/morris.css" rel="stylesheet">  -->
+	
+	<style type="text/css">
+		[ng\:cloak], [ng-cloak], .ng-cloak {
+			display: none !important;
+		}
+	</style>
 </head>
-<body>
-	<p>Agenda <a href="/agenda.html">here</a></p>
+<body ng-cloak class="ng-cloak">
+	<!-- 
+	<div ng-controller="navigation" class="container">
+		<ul class="nav nav-pills" role="tablist">
+			<li class="active"><a href="#/dashboard">home</a></li>
+			<li><a href="#/login">login</a></li>
+			<li ng-show="authenticated"><a href="" ng-click="logout()">logout</a></li>
+		</ul>
+	</div>
+	 -->	
+	<div ng-controller="LoginCtrl as ctrl">		
+		<div ng-show="!authenticated">
+		    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
+		        <div class="container">		 
+		            <div class="navbar-header page-scroll">
+		                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+		                    <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+		                </button>
+		                <a class="navbar-brand" href="#page-top">Bem vindo ao Syspsi</a>
+		            </div>	
+		        </div>		       
+		    </nav>
+		    
+		        <div class="container" id="maincontent" tabindex="-1">
+		            <div class="row">
+		                <div class="col-lg-12">                    		                    		                       
+	            			<div class="col-md-4 col-md-offset-4">    			
+						        <div class="login-panel panel panel-default">
+						            <div class="panel-heading">
+						                <h3 class="panel-title">Informe nome de usuário e senha</h3>
+						            </div>
+						            <div class="panel-body">
+						            	<div class="alert alert-danger" ng-show="ctrl.error">
+											Houve um problema no login. Por favor, tente novamente.					
+										</div>
+						                <form role="form" ng-submit="ctrl.login()">
+						                    <!-- <fieldset>  -->
+						                        <div class="form-group">
+						                            <input class="form-control" placeholder="Usuário" id="username" name="username" 
+						                            	ng-model="ctrl.credentials.username" autofocus>
+						                        </div>
+						                        <div class="form-group">
+						                            <input class="form-control" placeholder="Senha" id="password" name="password" type="password" 
+						                            	ng-model="ctrl.credentials.password" value="">
+						                        </div>      							                                          							                        							                                                                                                              
+						                        <button type="submit" class="btn btn-lg btn-success btn-block">Entrar</button>
+						                    <!-- </fieldset>  -->
+						                </form>							                
+						            </div>
+						            <div style="float: right;">							                           
+						            	<a href="cadastrar_psicologo.html" >Cadastre-se</a>							                           
+						            </div>							            
+						        </div>							        
+						    </div>							              		                    
+		                </div>
+		            </div>
+		        </div>		   		   
+		</div>				
+			
+		<div id="wrapper" ng-show="authenticated">
+			<!-- Navigation -->
+			<nav class="navbar navbar-default navbar-static-top" role="navigation"
+				style="margin-bottom: 0">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse"
+						data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="home.html">Syspsi</a>
+				</div>
+				<!-- /.navbar-header -->
+	
+				<ul class="nav navbar-top-links navbar-right">
+					<!-- /.dropdown -->
+					<li class="dropdown"><a class="dropdown-toggle"	data-toggle="dropdown"> <i class="fa fa-user fa-fw"></i>
+							<i class="fa fa-caret-down"></i>
+					</a>
+						<ul class="dropdown-menu dropdown-user">
+							<li><a href="#"><i class="fa fa-user fa-fw"></i> Meu Perfil</a></li>									
+							<li class="divider"></li>
+							<li><a href="#/configuracoes"><i class="fa fa-cog fa-fw"></i> Configurações</a></li>
+							<li class="divider"></li>
+							<li><a href="" ng-click="ctrl.logout()"><i class="fa fa-sign-out fa-fw"></i>Sair</a></li>
+						</ul> <!-- /.dropdown-user --></li>
+					<!-- /.dropdown -->
+				</ul>
+				<!-- /.navbar-top-links -->
+	
+				<div class="navbar-default sidebar" role="navigation">
+					<div class="sidebar-nav navbar-collapse">
+						<ul class="nav" id="side-menu">
+							<li>							
+								<a href="#/dashboard"><i class="fa fa-dashboard fa-fw"></i>Início</a>
+							</li>
+							
+							<li>
+								<a href="#/agenda/"><i class="fa fa-table fa-fw"></i> Agenda</a>
+							</li>
+													
+							<li>
+	                            <a href="#"><i class="fa fa-user-o fa-fw"></i> Pacientes<span class="fa arrow"></span></a>
+	                            <ul class="nav nav-second-level">
+	                                <li>
+	                                    <a href="#/cadastrarPaciente"><i class="fa fa-user-plus fa-fw"></i>Cadastrar</a>
+	                                </li>
+	                                <li>
+	                                    <a href="#/consultarPacientes"><i class="fa fa-search fa-fw"></i>Consultar</a>
+	                                </li>
+	                            </ul>
+	                            <!-- /.nav-second-level -->
+	                        </li>
+							
+							<li>								
+	                            <a href="#/financeiro"><i class="fa fa-money fa-fw"></i> Financeiro<span class="fa arrow"></span></a>
+	                            <ul class="nav nav-second-level">
+	                                <li>
+	                                    <a href="#/despesas"><i class="fa fa-arrow-down fa-fw"></i>Despesas</a>
+	                                </li>
+	                                <li>
+	                                    <a href="#/receitas"><i class="fa fa-arrow-up fa-fw"></i>Receitas</a>
+	                                </li>
+	                            </ul>
+	                            <!-- /.nav-second-level -->
+	                        </li>
+							
+							<li>
+	                            <a href="#"><i class="fa fa-handshake-o fa-fw"></i> Convênios<span class="fa arrow"></span></a>
+	                            <ul class="nav nav-second-level">
+	                                <li>
+	                                    <a href="#/cadastrarConvenio"><i class="fa fa-edit fa-fw"></i>Cadastro</a>
+	                                </li>
+	                                <li>
+	                                    <a href="#/consultarConvenios"><i class="fa fa-search fa-fw"></i>Consultar</a>
+	                                </li>
+	                            </ul>
+	                            <!-- /.nav-second-level -->
+	                        </li>
+						</ul>
+					</div>
+					<!-- /.sidebar-collapse -->
+				</div>
+				<!-- /.navbar-static-side -->
+			</nav>
+		</div>	
+	</div>
+	
+	<div ng-view ng-show="authenticated"></div>		 	
+		
+	<script type="text/javascript" src='lib/jquery-3.2.1.min.js'></script>
+	<script type="text/javascript" src='lib/angular-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/angular-route-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/angular-animate-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/angular-aria-1.5.9.min.js'></script>	
+	<script type="text/javascript" src='lib/angular-messages-1.5.9.min.js'></script>
+	<script type="text/javascript" src='lib/bootstrap/bootstrap.min.js'></script>		 	
+	<script type="text/javascript" src='lib/angular-material/angular-material-1.1.0.min.js'></script>  	   	
+	<script type="text/javascript" src='lib/moment/moment-2.17.1.min.js'></script>	
+	<script type="text/javascript" src='lib/fullcalendar/fullcalendar-3.1.0.min.js'></script>
+	<script type="text/javascript" src='lib/fullcalendar/calendar.js'></script>
+	<script type="text/javascript" src='lib/fullcalendar/locale-all.js'></script>		
+	<script type="text/javascript" src='lib/ui-bootstrap/ui-bootstrap-tpls-2.3.2.min.js'></script>
+	<script type="text/javascript" src="lib/clockpicker/bootstrap-clockpicker.min.js"></script>
+	<script type="text/javascript" src='lib/ckeditor/ckeditor.js'></script>		
+	<script type="text/javascript" src='lib/angular-ckeditor/angular-ckeditor.min.js'></script>
+	<script type="text/javascript" src='lib/angular-idle.min.js'></script>	
+	<script type="text/javascript" src='lib/angular-table/ng-table.min.js'></script>
+	<script type="text/javascript" src='js/app.js'></script>	
+	<script type="text/javascript" src='js/controllers/loginController.js'></script>
+	<script type="text/javascript" src='js/controllers/agendaController.js'></script>				
+	<script type="text/javascript" src='js/controllers/modalAgendamentoController.js'></script>
+	<script type="text/javascript" src='js/controllers/cadastroPsicologoController.js'></script>		
+	<script type="text/javascript" src='js/controllers/consultaPacienteController.js'></script>
+	<script type="text/javascript" src='js/controllers/cadastroPacienteController.js'></script>
+	<script type="text/javascript" src='js/controllers/cadastroConvenioController.js'></script>
+	<script type="text/javascript" src='js/controllers/psicologoController.js'></script>
+	<script type="text/javascript" src='js/controllers/dialogController.js'></script>	
+	<script type="text/javascript" src='js/controllers/financeiroController.js'></script>
+	<script type="text/javascript" src='js/controllers/dashboardController.js'></script>
+	<script type="text/javascript" src='js/controllers/configuracaoController.js'></script>	
+	<script type="text/javascript" src='js/controllers/waitController.js'></script>
+	<script type="text/javascript" src='js/services/loginFactory.js'></script>		
+	<script type="text/javascript" src='js/services/agendamentoFactory.js'></script>
+	<script type="text/javascript" src='js/services/cadastroPsicologoFactory.js'></script>
+	<script type="text/javascript" src='js/services/psicologoFactory.js'></script>
+	<script type="text/javascript" src='js/services/pacienteFactory.js'></script>		
+	<script type="text/javascript" src='js/services/convenioFactory.js'></script>
+	<script type="text/javascript" src='js/services/modalAgendamentoFactory.js'></script>
+	<script type="text/javascript" src='js/services/consultaPacienteFactory.js'></script>
+	<script type="text/javascript" src='js/services/cadastroPacienteFactory.js'></script>
+	<script type="text/javascript" src='js/services/cadastroConvenioFactory.js'></script>
+	<script type="text/javascript" src='js/services/financeiroFactory.js'></script>
+	<script type="text/javascript" src='js/services/configuracaoFactory.js'></script>	
+	<script type="text/javascript" src='js/services/modalAgendamentoService.js'></script>	
+	<script type="text/javascript" src='js/services/idleService.js'></script>
+	<script type="text/javascript" src='js/services/utilService.js'></script>	
+	<script type="text/javascript" src='js/filters/cpfFilter.js'></script>
+	<script type="text/javascript" src='js/filters/cnpjFilter.js'></script>
+	<script type="text/javascript" src='js/filters/telefoneFilter.js'></script>
+	<script type="text/javascript" src='js/filters/cepFilter.js'></script>
+	<script type="text/javascript" src='js/filters/monetarioFilter.js'></script>
+	<script type="text/javascript" src='js/filters/booleanFilter.js'></script>
+	<script type="text/javascript" src='js/directives/cpfDirective.js'></script>
+	<script type="text/javascript" src='js/directives/cnpjDirective.js'></script>
+	<script type="text/javascript" src='js/directives/telefoneDirective.js'></script>
+	<script type="text/javascript" src='js/directives/cepDirective.js'></script>
+	<script type="text/javascript" src='js/directives/dataNascimentoDirective.js'></script>
+	<script type="text/javascript" src='js/directives/exitCadastroPacientePageDirective.js'></script>
+	<script type="text/javascript" src='js/directives/exitConsultaPacientePageDirective.js'></script>	
+	<script type="text/javascript" src='js/directives/monetarioDirective.js'></script>
+	<script type="text/javascript" src="js/util.js"></script>
+	
+	
+	<!-- Metis Menu Plugin JavaScript -->
+	<script src="lib/metisMenu/metisMenu.min.js"></script>
+	
+	<!-- Custom Theme JavaScript -->
+	<script src="lib/sb-admin/js/sb-admin-2.js"></script>			
+
+	<!-- Morris Charts JavaScript -->
+	<!-- 
+	<script src="lib/raphael/raphael.min.js"></script>
+	<script src="lib/morrisjs/morris.min.js"></script>
+	<script src="lib/morris-data.js"></script>
+	 -->		
 </body>
 </html>

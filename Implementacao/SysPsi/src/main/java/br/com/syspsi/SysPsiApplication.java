@@ -127,7 +127,7 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 		}	
 		
 		@Override
-		public void configure(AuthenticationManagerBuilder builder) throws Exception {			
+		public void configure(AuthenticationManagerBuilder builder) throws Exception {						
 			builder
 	        	.jdbcAuthentication()
 	        		.dataSource(dataSource)

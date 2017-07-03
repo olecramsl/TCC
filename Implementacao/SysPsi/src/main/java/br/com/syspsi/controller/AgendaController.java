@@ -440,7 +440,7 @@ public class AgendaController {
 			)		
 	public List<Agendamento> listarAgendamentos(@RequestParam("dataInicial") String dataInicial, 
 			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {
-		logMessage("listarAgendamentos: início", false);
+		logMessage("listarAgendamentos: início", false);		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar di = Calendar.getInstance();
 		Calendar df = Calendar.getInstance();		
