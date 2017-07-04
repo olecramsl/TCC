@@ -168,6 +168,17 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		});
 	};
 	
+	ctrl.imprimirRelatorioReceitas = function(dataInicial, dataFinal) {
+		financeiroFactory.imprimirRelatorioReceitas(dataInicial, dataFinal).then(
+				successCallback = function(response) {
+					console.log("foi");
+				},
+				errorCallback = function(error) {
+					console.log("não foi");
+				}
+		);
+	};
+	
 	ctrl.dtInicio = new Date(moment().startOf('month').local());
 	ctrl.dtFim = new Date(moment().endOf('month').local());	
 	ctrl.pesquisarDespesasPeriodo(ctrl.dtInicio, ctrl.dtFim);

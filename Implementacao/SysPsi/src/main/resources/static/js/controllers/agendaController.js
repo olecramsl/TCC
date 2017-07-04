@@ -130,7 +130,8 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
    */ 
   var listarAgendamento = function(dataInicial, dataFinal) {	  
 	  utilService.setMessage("Carregando agendamentos ...");
-	  utilService.showWait();	 
+	  utilService.showWait();
+	  console.log();
 	  agendamentoFactory.listarAgendamentos(dataInicial, dataFinal).then(
 			  successCallback = function (response) {				  
 				  angular.element('.calendar').fullCalendar('removeEvents');

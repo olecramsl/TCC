@@ -214,7 +214,6 @@ public class FinanceiroController {
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}
 				
-		//List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo);
 		try {
 			OutReceitaDTO outReceitaDTO = new OutReceitaDTO();
 			outReceitaDTO.setLstAgendamentos(this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo));

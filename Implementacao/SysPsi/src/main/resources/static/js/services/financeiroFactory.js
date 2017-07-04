@@ -37,7 +37,12 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 	var _listarConsultasPorPeriodo = function(dataInicial, dataFinal) {
 		var params = {dataInicial: dataInicial, dataFinal: dataFinal};
 		return $http.get(consts.BASE_URL + '/listarConsultasPorPeriodo', {params});
-	}
+	};
+	
+	var _imprimirRelatorioReceitas = function(dataInicial, dataFinal) {
+		var params = {dataInicial: dataInicial, dataFinal: dataFinal};
+		return $http.get(consts.BASE_URL + '/imprimirRelatorioReceitas', {params});
+	};
 	
 	return {		
 		getAgendamento: function() { return _agendamento; },
@@ -77,6 +82,7 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		salvarDespesa: _salvarDespesa,
 		excluirDespesa: _excluirDespesa,
 		listarDespesasPorPeriodo: _listarDespesasPorPeriodo,
-		listarConsultasPorPeriodo: _listarConsultasPorPeriodo
+		listarConsultasPorPeriodo: _listarConsultasPorPeriodo,
+		imprimirRelatorioReceitas: _imprimirRelatorioReceitas
 	};
 }]);
