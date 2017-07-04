@@ -36,6 +36,15 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "					
+			+ "WHERE DATE(a.start) = DATE(NOW()) "
+			+ "AND a.start >= NOW() "			
+			+ "AND a.ativo = true "			
+			+ "AND ps = ?1 "
+			+ "ORDER BY a.start ASC")
+	public List<Agendamento> listarAposHorario(Psicologo psicologo);
+	@Query("SELECT a FROM Agendamento a "
+			+ "INNER JOIN a.paciente p "
+			+ "INNER JOIN p.psicologo ps "					
 			+ "WHERE DATE(a.end) <= DATE(?1) AND a.eventoPrincipal = true AND ps = ?2")
 	public List<Agendamento> listarEventosPrincipaisPorPeriodo(Calendar dataFinal, Psicologo psicologo);
 	@Query("SELECT DATE_FORMAT(a.start,'%Y-%m-%d') FROM Agendamento a "
@@ -69,15 +78,7 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 	public List<String> listarIdGCalendarPorPeriodo(Calendar start, Calendar end);
 	@Transactional
 	public void deleteByIdGCalendar(String idGCalendar);	
-	public Agendamento findByIdGCalendarAndAtivo(String idGCalendar, boolean ativo);
-	/*
-	@Query("SELECT a FROM Agendamento a "							
-			+ "WHERE a.idRecurring = ?1 "
-			+ "AND p.ativo = true "
-			+ "ORDER BY a.start ASC "
-			+ "LIMIT 1")	
-	public Agendamento listarPorIdRecurringEAtivo(String idRecurring);
-	*/
+	public Agendamento findByIdGCalendarAndAtivo(String idGCalendar, boolean ativo);	
 	public Agendamento findFirstByIdRecurringAndAtivo(String idRecurring, boolean ativo);
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "

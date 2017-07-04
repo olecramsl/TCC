@@ -12,12 +12,6 @@ angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http
 			if (response.data.name) {				
 				$rootScope.authenticated = true;	
 				psicologoFactory.setVinculadoGCal();				
-				loginFactory.realizarBackup().then(
-						successCallback = function(response) {},
-						errorCallback = function(error) {														
-							utilService.tratarExcecao(error);
-						}
-				);
 				$location.path('/dashboard');
 			} else {											
 				$rootScope.authenticated = false;
@@ -35,6 +29,13 @@ angular.module('syspsi').controller('LoginCtrl', ['$scope', '$rootScope', '$http
 		authenticate(ctrl.credentials, function() {
 			if ($rootScope.authenticated) {				
 				ctrl.error = false;
+				
+				loginFactory.realizarBackup().then(
+						successCallback = function(response) {},
+						errorCallback = function(error) {														
+							utilService.tratarExcecao(error);
+						}
+				);
 		    } else {		    	
 		    	ctrl.error = true;
 		    }

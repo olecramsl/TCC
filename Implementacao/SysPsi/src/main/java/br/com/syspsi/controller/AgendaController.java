@@ -1185,8 +1185,7 @@ public class AgendaController {
 			logMessage("idPaciente recebido nulo", true);
 			throw new Exception("Não foi possível listar os prontuários.");
 		}
-						
-		//Psicologo psicologo = LoginController.getPsicologoLogado();
+								
 		Psicologo psicologo;
 		if (user != null) {
 			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
@@ -1215,6 +1214,36 @@ public class AgendaController {
 		
 		logMessage("AgendaController.listarAgendamentosComConsultaPeriodo: fim", false);		
 		return lstAgendamento;
+	}
+	
+	@RequestMapping(
+			value = "/listarAgendamentosDoDia", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE
+			)
+	public List<Agendamento> listarAgendamentosDoDia(Principal user) throws Exception {		
+		logMessage("AgendaController.listarAgendamentosDoDia: início", false);
+		try {
+			Psicologo psicologo;
+			if (user != null) {
+				psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+				if (psicologo == null) {
+					logMessage("Psicólogo nulo em getPsicologoLogado", true);
+					throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+				}
+			} else {
+				logMessage("user nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+			List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAposHorario(psicologo);
+			for (Agendamento ag : lstAgendamentos) {
+				ag.getConsulta().setProntuario(Util.decrypt(ag.getConsulta().getProntuario(), psicologo));
+			}
+			logMessage("AgendaController.listarAgendamentosDoDia: fim", false);
+			return lstAgendamentos;
+		} catch(Exception ex) {
+			throw new Exception(ex.getMessage());
+		}
 	}
 	
 	@RequestMapping(

@@ -128,28 +128,20 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
    * Popula o calendario com os agendamentos do BD e persiste novos agendamentos
    * na view atual, caso necessário
    */ 
-  var listarAgendamento = function(dataInicial, dataFinal) {
-	  console.log("1");
+  var listarAgendamento = function(dataInicial, dataFinal) {	  
 	  utilService.setMessage("Carregando agendamentos ...");
-	  utilService.showWait();
-	  console.log("2");
+	  utilService.showWait();	 
 	  agendamentoFactory.listarAgendamentos(dataInicial, dataFinal).then(
-			  successCallback = function (response) {
-				  console.log("3");
+			  successCallback = function (response) {				  
 				  angular.element('.calendar').fullCalendar('removeEvents');
 				  angular.element('.calendar').fullCalendar('renderEvents',response.data);
-				  utilService.hideWait();
-				  console.log("4");
+				  utilService.hideWait();				  
 			  },
-			  errorCallback = function (error) {
-				  console.log("5");
-				  utilService.hideWait();
-				  console.log("6");
-				  utilService.tratarExcecao(error);
-				  console.log("7");
+			  errorCallback = function (error) {				  
+				  utilService.hideWait();				  
+				  utilService.tratarExcecao(error);				  
 			  }			  
-	  );	  
-	  console.log("8");
+	  );	  	  
   };      
   
   /**

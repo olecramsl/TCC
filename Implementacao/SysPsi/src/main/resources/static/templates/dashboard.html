@@ -19,9 +19,10 @@
 				<div class="panel-body">
 					<div class="row">
 						<div class="list-group">
-  							<a href="#" class="list-group-item">First item</a>
-  							<a href="#" class="list-group-item">Second item</a>
-  							<a href="#" class="list-group-item">Third item</a>
+  							<a ng-repeat="agendamento in ctrl.lstAgendamentos" ng-href="" class="list-group-item">
+								<span class="btn btn-success badge" ng-click="ctrl.iniciarConsulta(agendamento)"><i class="fa fa-calendar-check-o fa-fw"></i>Iniciar Consulta</span>
+            					<div>{{agendamento.start | date:'HH:mm'}} - {{agendamento.paciente.nomeExibicao}}</div> 
+          					</a>
 						</div>
 					</div>
 				</div>
@@ -98,9 +99,10 @@
 				<div class="panel-body">
 					<div class="row">
 						<div class="list-group">
-  							<a href="#" class="list-group-item">First item</a>
-  							<a href="#" class="list-group-item">Second item</a>
-  							<a href="#" class="list-group-item">Third item</a>
+							<a ng-repeat="paciente in ctrl.lstAniversariantes" ng-href="" class="list-group-item">
+								<span class="badge" ng-if="paciente.email" ng-click="ctrl.sendEmail(paciente)"><i class="fa fa-envelope fa-fw"></i></span>
+            					<div>{{paciente.dataNascimento | date:'dd'}} - {{paciente.nomeCompleto}}</div> 
+          					</a>
 						</div>						
 					</div>				
 					<!-- /.row -->

@@ -6,10 +6,15 @@ angular.module('syspsi').factory('pacienteFactory', ['$http', 'consts', function
 	
 	var _listarPacientes = function() {				
 		return $http.get(consts.BASE_URL + '/listarPacientes');
-	};		
+	};	
+	
+	var _listarAniversariantesDoMes = function() {
+		return $http.get(consts.BASE_URL + '/listarAniversariantesDoMes');
+	}
 	
 	return {
 		listarPacientesAtivosInativos: _listarPacientesAtivosInativos,
-		listarPacientes: _listarPacientes
+		listarPacientes: _listarPacientes,
+		listarAniversariantesDoMes: _listarAniversariantesDoMes
 	};
 }]);

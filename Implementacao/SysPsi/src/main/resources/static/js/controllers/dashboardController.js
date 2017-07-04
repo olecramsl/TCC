@@ -1,8 +1,9 @@
-angular.module('syspsi').controller('DashboardCtrl', ['$mdDialog', '$location', 'financeiroFactory', 
-	'pacienteFactory', 'convenioFactory', 'agendamentoFactory', 'configuracaoFactory','utilService', 
-	'consts', function($mdDialog, $location, financeiroFactory, pacienteFactory, convenioFactory, 
-			agendamentoFactory, configuracaoFactory, utilService, consts) {
-	var ctrl = this;	
+angular.module('syspsi').controller('DashboardCtrl', ['$window', '$mdDialog', '$location', 'financeiroFactory', 
+	'pacienteFactory', 'convenioFactory', 'agendamentoFactory', 'configuracaoFactory',
+	'consultaPacienteFactory','utilService','consts', function($window, $mdDialog, $location, 
+			financeiroFactory, pacienteFactory, convenioFactory, agendamentoFactory, 
+			configuracaoFactory, consultaPacienteFactory, utilService, consts) {
+	var ctrl = this;			
 		
 	if ($location.absUrl().indexOf("?success") >= 0) {
 		$location.search({});
@@ -78,8 +79,59 @@ angular.module('syspsi').controller('DashboardCtrl', ['$mdDialog', '$location', 
 				}
 		  );
 	  };
+	  
+	  var carregarAniversariantesDoMes = function() {
+		  pacienteFactory.listarAniversariantesDoMes().then(
+			      successCallback = function(response) {		    	  
+			    	  ctrl.lstAniversariantes = response.data;	    	  
+			  	  },
+			  	  errorCallback = function (error, status){			  		
+			  	  }
+			  );
+	  }
+	  
+	  var carregarAgendamentosDoDia = function() {
+		  agendamentoFactory.listarAgendamentosDoDia().then(
+			      successCallback = function(response) {		    	  
+			    	  ctrl.lstAgendamentos = response.data;				    	  
+			  	  },
+			  	  errorCallback = function (error, status){		
+			  		  utilService.tratarExcecao(error);
+			  	  }
+			  );
+	  }
+	  
+	  ctrl.iniciarConsulta = function(agendamento) {
+		  var ag = angular.copy(agendamento);
+		  			
+		  if (!ag.consulta) {
+			  var start = new Date();								
+			  var end = new Date();
+				
+			  consulta = {
+					  id: null,
+					  prontuario: "",
+					  valor: 0,
+					  recibo: false,
+					  inicio: start,
+					  fim: end
+			  };
+			  
+			  ag.consulta = consulta;
+		  }
+		  
+		  consultaPacienteFactory.setAgendamento(ag);			
+		  $location.path("/consulta");		
+	  }
+	  
+	  ctrl.sendEmail = function(paciente) {
+		  console.log(paciente.email);
+		  $window.open("mailto:"+ paciente.email + "?subject=" + "Feliz Aniversário!");		 
+	  }
 	
 	carregarPacientesAtivos();
 	carregarConveniosAtivos();
 	carregarContasDoMes();
+	carregarAniversariantesDoMes();
+	carregarAgendamentosDoDia();
 }]);

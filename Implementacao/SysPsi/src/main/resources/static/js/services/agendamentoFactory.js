@@ -56,6 +56,10 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'consts', funct
 		return $http.get(consts.BASE_URL + '/listarAgendamentosComConsultaPeriodo', {params});
 	};
 	
+	var _listarAgendamentosDoDia = function() {
+		return $http.get(consts.BASE_URL + '/listarAgendamentosDoDia');
+	}
+	
 	return {		
 		getAgendamento: function() { return _agendamento; },
 		setAgendamento: function(agendamento) { _agendamento = agendamento; },		
@@ -100,6 +104,7 @@ angular.module('syspsi').factory('agendamentoFactory', ['$http', 'consts', funct
 		moverAgendamentosFuturos: _moverAgendamentosFuturos,
 		atualizarAgendamentosFuturos: _atualizarAgendamentosFuturos,
 		listarAgendamentosComConsulta: _listarAgendamentosComConsulta,
-		listarAgendamentosComConsultaPeriodo: _listarAgendamentosComConsultaPeriodo
+		listarAgendamentosComConsultaPeriodo: _listarAgendamentosComConsultaPeriodo,
+		listarAgendamentosDoDia: _listarAgendamentosDoDia
 	};
 }]);

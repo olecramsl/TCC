@@ -32,7 +32,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 	$scope.$watch(function () { return consultaPacienteFactory.getLstAgendamentosComConsulta(); }, function (newValue, oldValue) {		
 		ctrl.lstAgendamentosComConsulta = newValue;
 	});
-	
+		
 	ctrl.agendamento = consultaPacienteFactory.getAgendamento();
 	ctrl.oldProntuario = consultaPacienteFactory.getProntuario();					
 	
