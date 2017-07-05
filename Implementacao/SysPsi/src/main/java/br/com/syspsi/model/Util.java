@@ -1,8 +1,6 @@
 package br.com.syspsi.model;
 
-import java.security.SecureRandom;
 import java.util.InputMismatchException;
-import java.util.Random;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -37,6 +35,7 @@ public class Util {
 	 * @throws Exception caso ocorra algum erro durante a encriptação
 	 */
 	public static String encrypt(String texto) throws Exception {
+		logMessage("Util.encrypt(texto): início", false);
         SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
 
         Cipher cipher = Cipher.getInstance("AES");        
@@ -44,6 +43,7 @@ public class Util {
 
         byte[] encrypted = cipher.doFinal(texto.getBytes());        
 
+        logMessage("Util.encrypt(texto): fim", false);
         return Base64.encodeBase64String(encrypted);
     }
 
@@ -54,6 +54,7 @@ public class Util {
 	 * @throws Exception caso ocorra algum erro durante a encriptação
 	 */
 	public static String encrypt(String texto, Psicologo psicologo) throws Exception {
+		logMessage("Util.encrypt(texto, psicologo): início", false);
 		byte[] key = psicologo.getChave();		
 		
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
@@ -63,6 +64,7 @@ public class Util {
 
         byte[] encrypted = cipher.doFinal(texto.getBytes());        
 
+        logMessage("Util.encrypt(texto, psicologo): fim", false);
         return Base64.encodeBase64String(encrypted);
     }
 	
@@ -72,7 +74,8 @@ public class Util {
 	 * @return o texto descriptografado
 	 * @throws Exception caso algum erro ocorra durante a descriptografia
 	 */
-    public static String decrypt(String encrypted) throws Exception {    	        	    	    	    
+    public static String decrypt(String encrypted) throws Exception {
+    	logMessage("Util.decrypt(texto): início", false);
         SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
 
         Cipher cipher = Cipher.getInstance("AES");                
@@ -80,6 +83,7 @@ public class Util {
     	 
         byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));        
 
+        logMessage("Util.decrypt(texto): fim", false);
         return new String(original);
     }    	
 
@@ -90,6 +94,7 @@ public class Util {
 	 * @throws Exception caso algum erro ocorra durante a descriptografia
 	 */
     public static String decrypt(String encrypted, Psicologo psicologo) throws Exception {
+    	logMessage("Util.decrypt(texto, psicologo): início", false);
     	byte[] key = psicologo.getChave();    	
     	    	    	    	
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
@@ -99,6 +104,7 @@ public class Util {
     	 
         byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));        
 
+        logMessage("Util.decrypt(texto, psicologo): fim", false);
         return new String(original);
     }
     
@@ -107,9 +113,11 @@ public class Util {
 	 * @throws Exception caso algum problema ocorra
 	 */
 	public static String gerarChave() throws Exception {
+		logMessage("Util.gerarChave: início", false);
 		// create new key
 		SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();	
 		
+		logMessage("Util.gerarChave: fim", false);
 		// get base64 encoded version of the key
 		return java.util.Base64.getEncoder().encodeToString(secretKey.getEncoded()).substring(0, 16);
 	}
@@ -119,14 +127,16 @@ public class Util {
 	 * @throws Exception caso o cpf informado seja inválido
 	 */
 	public static void validarCPF(String cpf) throws Exception {
+		logMessage("Util.validarCPF: início", false);
 		// considera-se erro CPF's formados por uma sequencia de numeros iguais
 	    if (cpf.equals("00000000000") || cpf.equals("11111111111") ||
 	    	cpf.equals("22222222222") || cpf.equals("33333333333") ||
 	    	cpf.equals("44444444444") || cpf.equals("55555555555") ||
 	    	cpf.equals("66666666666") || cpf.equals("77777777777") ||
 	    	cpf.equals("88888888888") || cpf.equals("99999999999") ||
-	       (cpf.length() != 11)) {	    	
-	       throw new Exception("O CPF informado é inválido!");
+	       (cpf.length() != 11)) {	  
+	    	logMessage("O CPF informado é inválido: " + cpf, true);
+	    	throw new Exception("O CPF informado é inválido!");
 	    }
 
 	    char dig10, dig11;
@@ -166,15 +176,19 @@ public class Util {
 	    	else dig11 = (char)(r + 48);
 
 	    	// Verifica se os digitos calculados conferem com os digitos informados.
-	    	if ((dig10 != cpf.charAt(9)) || (dig11 != cpf.charAt(10))) {	    		
+	    	if ((dig10 != cpf.charAt(9)) || (dig11 != cpf.charAt(10))) {
+	    		logMessage("O CPF informado é inválido: " + cpf, true);
 	    		throw new Exception("O CPF informado é inválido!");
 	    	}
-	    } catch (InputMismatchException erro) {	    	
+	    } catch (InputMismatchException erro) {	
+	    	logMessage("O CPF informado é inválido: " + cpf, true);
 	    	throw new Exception("O CPF informado é inválido!");
 	    }
+	    logMessage("Util.validarCPF: fim", false);
 	}
 	
 	public static void validarCNPJ(String cnpj) throws Exception {
+		logMessage("Util.validarCNPJ: início", false);
 		// considera-se erro CNPJ's formados por uma sequencia de numeros iguais
 		if (cnpj.equals("00000000000000") || cnpj.equals("11111111111111") ||
 			cnpj.equals("22222222222222") || cnpj.equals("33333333333333") ||
@@ -182,6 +196,7 @@ public class Util {
 	        cnpj.equals("66666666666666") || cnpj.equals("77777777777777") ||
 	        cnpj.equals("88888888888888") || cnpj.equals("99999999999999") ||
 	       (cnpj.length() != 14)) {
+			logMessage("O CNPJ informado é inválido: " + cnpj, true);
 			throw new Exception("O CNPJ informado é inválido!");
 		}
 
@@ -232,10 +247,13 @@ public class Util {
 
 	    	// Verifica se os dígitos calculados conferem com os dígitos informados.
 	    	if ((dig13 != cnpj.charAt(12)) || (dig14 != cnpj.charAt(13))) {
+	    		logMessage("O CNPJ informado é inválido: " + cnpj, true);
 	    		throw new Exception("O CNPJ informado é inválido!");
 	    	}
 	    } catch (InputMismatchException erro) {
+	    	logMessage("O CNPJ informado é inválido: " + cnpj, true);
 	    	throw new Exception("O CNPJ informado é inválido!");
 	    }
-	}
+	    logMessage("Util.validarCNPJ: fim", false);
+	}	
 }

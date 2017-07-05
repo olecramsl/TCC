@@ -24,18 +24,17 @@ angular.module('syspsi').service('utilService', ['$rootScope', '$mdDialog', func
 		);	
 	};  
 	
-	var _showWait = function() {		
+	var _showWait = function(size) {		
 		$mdDialog.show({
 			controller: 'WaitCtrl',			
 		    templateUrl: 'templates/waiting.html',
 		    parent: angular.element(document.body),		    
 		    clickOutsideToClose: false		    
-		}).then(function() {			
-		}, function() {});
+		});
 	};
 	
 	var _hideWait = function() {
-		$rootScope.$emit("hide_wait");
+		$rootScope.$emit("hide_wait");			
 	};
 	
 	return {

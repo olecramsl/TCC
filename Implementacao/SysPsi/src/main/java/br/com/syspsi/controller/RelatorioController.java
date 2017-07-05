@@ -21,7 +21,6 @@ import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
-import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -92,7 +91,7 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}
 		
-		try {						
+		try {			
 			/*
 			JasperReportsPdfView view = new JasperReportsPdfView();						
 			view.setUrl("classpath:br/com/syspsi/jasper/receitasRel.jrxml");			
@@ -102,25 +101,33 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 		
 			Map<String, Object> params = new HashMap<>();
 			params.put("DS", lstAgendamentos);
-			*/
+			*/			
 			
-			/*
+			
 			List<Agendamento> lstAgendamentos = 
-					this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo);
-			
-			System.out.println("SIZE: " + lstAgendamentos.size());
+					this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo);				
 			
 			JRBeanCollectionDataSource beanColDataSource = 
 					new JRBeanCollectionDataSource(lstAgendamentos);
 			
-			Map parameters = new HashMap();			
-			parameters.put("DS1", beanColDataSource);
-			
 			String path = this.getClass().getClassLoader().getResource("").getPath();
-			String pathToReportPackage = path + "br/com/syspsi/jasper/";			
+			String pathToReportPackage = path + "br/com/syspsi/jasper/";
+			//String report = path + "br/com/syspsi/jasper/receitasRel.jrxml";
+			
 			JasperReport report = 
-					JasperCompileManager.compileReport(pathToReportPackage + "receitasRel.jrxml");
+					JasperCompileManager.compileReport(pathToReportPackage + "receitasRel.jrxml");									
+			
+			/*
+			Map parameters = new HashMap();			
+			parameters.put("DS1", "teste");
 			*/
+			
+			JasperPrint print = 
+					JasperFillManager.fillReport(report, null, beanColDataSource);						
+			
+			JasperExportManager.exportReportToPdfFile(print, 
+					"C:/Users/marcelo.lima/Desktop/Nova pasta/Relatorio_de_Clientes.pdf");											
+										
 			
 			/*
 			JasperPrint print = 

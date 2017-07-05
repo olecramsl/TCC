@@ -32,6 +32,10 @@
 					<reportElement x="0" y="63" width="100" height="30" uuid="5dc25362-de62-43c2-a816-88591e50f7ed"/>
 					<text><![CDATA[Consulta]]></text>
 				</staticText>
+				<textField>
+					<reportElement x="153" y="68" width="100" height="30" uuid="054d053f-146d-43a8-a1f9-c3f82760ea94"/>
+					<textFieldExpression><![CDATA[$F{}]]></textFieldExpression>
+				</textField>
 			</band>
 		</groupHeader>
 		<groupFooter>

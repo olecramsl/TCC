@@ -86,7 +86,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   };
 	
   var viewRender = function (view, element) {
-	  listarAgendamento(view.start, view.end);
+	  listarAgendamento(view.start, view.end);	 
   };    
 
   /* config object */
@@ -132,10 +132,10 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 	  utilService.setMessage("Carregando agendamentos ...");
 	  utilService.showWait();	  
 	  agendamentoFactory.listarAgendamentos(dataInicial, dataFinal).then(
-			  successCallback = function (response) {				  
-				  utilService.hideWait();
+			  successCallback = function (response) {				  				  				 
 				  angular.element('.calendar').fullCalendar('removeEvents');
-				  angular.element('.calendar').fullCalendar('renderEvents',response.data);				  				 
+				  angular.element('.calendar').fullCalendar('renderEvents',response.data);				  
+				  utilService.hideWait();				  
 			  },
 			  errorCallback = function (error) {				  
 				  utilService.hideWait();				  
