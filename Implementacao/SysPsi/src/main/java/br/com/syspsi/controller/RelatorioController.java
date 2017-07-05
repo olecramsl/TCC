@@ -102,7 +102,9 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 		
 			Map<String, Object> params = new HashMap<>();
 			params.put("DS", lstAgendamentos);
-			*/														
+			*/
+			
+			/*
 			List<Agendamento> lstAgendamentos = 
 					this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo);
 			
@@ -118,6 +120,7 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 			String pathToReportPackage = path + "br/com/syspsi/jasper/";			
 			JasperReport report = 
 					JasperCompileManager.compileReport(pathToReportPackage + "receitasRel.jrxml");
+			*/
 			
 			/*
 			JasperPrint print = 
@@ -126,8 +129,10 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 			JasperExportManager.exportReportToPdfFile(print, 
 					"C:/Users/marcelo.lima/Desktop/Nova pasta/Relatorio_de_Clientes.pdf");
 			*/
+			/*
 			JasperPrint jasperPrint = 
 					JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+			*/
 
 			logMessage("RelatorioController.imprimirRelatorioReceitas: fim", false);
         

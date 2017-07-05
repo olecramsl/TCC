@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -229,6 +230,52 @@ public class FinanceiroController {
 			logMessage("ConsultaController.listarConsultasPorPeriodo: Fim", false);
 		
 			return outReceitaDTO;
+		} catch(Exception ex) {
+			logMessage("Erro ao listar consultas: " + ex.getMessage(), true);
+			throw new Exception("Não foi possível listar as receitas!");
+		}
+	}
+	
+	@RequestMapping(
+			value = "/listarConsultasNaoFinalizadasPorPeriodo", 
+			method={RequestMethod.GET},
+			produces = MediaType.APPLICATION_JSON_VALUE			
+			)
+	public List<Agendamento> listarConsultasNaoFinalizadasPorPeriodo(@RequestParam("dataInicial") String dataInicial, 
+			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {
+		logMessage("ConsultaController.listarConsultasNaoFinalizadasPorPeriodo: início", false);
+		
+		if (user == null) {
+			logMessage("user nulo", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}						
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar di = Calendar.getInstance();
+		Calendar df = Calendar.getInstance();		
+		
+		try {
+			di.setTime(format.parse(dataInicial));
+			df.setTime(format.parse(dataFinal));
+		} catch (ParseException e) {
+			logMessage("Formato de data inválido", true);
+			throw new Exception("Erro ao listar agendamentos: formato de data inválido.");
+		}		
+		
+		//Psicologo psicologo = LoginController.getPsicologoLogado();
+		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+		if (psicologo == null) {
+			logMessage("Psicólogo nulo em getPsicologoLogado", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}
+				
+		try {			
+			List<Agendamento> lstAgendamentos = 
+					this.agendamentoRepositorio.listarConsultasNaoFinalizadasPorPeriodo(di, df, psicologo);
+		
+			logMessage("ConsultaController.listarConsultasNaoFinalizadasPorPeriodo: Fim", false);
+		
+			return lstAgendamentos;
 		} catch(Exception ex) {
 			logMessage("Erro ao listar consultas: " + ex.getMessage(), true);
 			throw new Exception("Não foi possível listar as receitas!");

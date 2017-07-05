@@ -9,17 +9,18 @@
 		<!-- /.col-lg-12 -->
 	</div>
 	<div class="row">	
-		<div class="col-lg-6">
+		<div class="col-lg-5">
 			<!-- /.panel -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<i class="fa fa-edit fa-fw"></i> Próximas Consultas
 				</div>
 				<!-- /.panel-heading -->
-				<div class="panel-body">
+				<div class="panel-body">					
 					<div class="row">
-						<div class="list-group">
-  							<a ng-repeat="agendamento in ctrl.lstAgendamentos" ng-href="" class="list-group-item">
+						<p style="padding-left:5px;" ng-if="ctrl.lstAgendamentos.length == 0">Não há sessões marcadas para as próximas horas de hoje</p>
+						<div class="list-group">							
+  							<a ng-repeat="agendamento in ctrl.lstAgendamentos" ng-href="" class="list-group-item">  								
 								<span class="btn btn-success badge" ng-click="ctrl.iniciarConsulta(agendamento)"><i class="fa fa-calendar-check-o fa-fw"></i>Iniciar Consulta</span>
             					<div>{{agendamento.start | date:'HH:mm'}} - {{agendamento.paciente.nomeExibicao}}</div> 
           					</a>
@@ -28,7 +29,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-6">
+		<div class="col-lg-7">
 			<!-- /.panel -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -89,7 +90,7 @@
 	</div>
 	<!-- /.row -->
 	<div class="row">
-		<div class="col-lg-3">
+		<div class="col-lg-4">
 			<!-- /.panel -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -98,10 +99,11 @@
 				<!-- /.panel-heading -->
 				<div class="panel-body">
 					<div class="row">
+						<p style="padding-left:5px;" ng-if="ctrl.lstAniversariantes == 0">Não há aniversariantes este mês.</p>
 						<div class="list-group">
 							<a ng-repeat="paciente in ctrl.lstAniversariantes" ng-href="" class="list-group-item">
 								<span class="badge" ng-if="paciente.email" ng-click="ctrl.sendEmail(paciente)"><i class="fa fa-envelope fa-fw"></i></span>
-            					<div>{{paciente.dataNascimento | date:'dd'}} - {{paciente.nomeCompleto}}</div> 
+            					<div>{{paciente.dataNascimento | date:'dd'}} - {{paciente.nomeExibicao}}</div> 
           					</a>
 						</div>						
 					</div>				
@@ -110,57 +112,34 @@
 				<!-- /.panel-body -->
 			</div>
 		</div>
-		<div class="col-lg-3">
+		<div class="col-lg-4">
 			<!-- /.panel -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<i class="fa fa-bar-chart-o fa-fw"></i> Sexo
+					<i class="fa fa-pie-chart fa-fw"></i> Sexo
 				</div>
 				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<div class="row">
-						<div class="col-lg-8">
-							<div id="morris-bar-chart"></div>
-						</div>
-						<!-- /.col-lg-8 (nested) -->
+				<div class="panel-body">				
+					<div class="row">		
+						<p style="padding-left:5px;" ng-if="ctrl.dataSexo.length === 0">Não há dados suficientes para gerar o gráfico.</p>				
+						<div donut-chart donut-data="ctrl.dataSexo"></div>						
 					</div>				
 					<!-- /.row -->
 				</div>
 				<!-- /.panel-body -->
 			</div>
-		</div>
-		<div class="col-lg-3">
+		</div>		
+		<div class="col-lg-4">
 			<!-- /.panel -->
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<i class="fa fa-bar-chart-o fa-fw"></i> Convênio
+					<i class="fa fa-pie-chart fa-fw"></i> Grupo
 				</div>
 				<!-- /.panel-heading -->
 				<div class="panel-body">
 					<div class="row">
-						<div class="col-lg-8">
-							<div id="morris-bar-chart"></div>
-						</div>
-						<!-- /.col-lg-8 (nested) -->
-					</div>				
-					<!-- /.row -->
-				</div>
-				<!-- /.panel-body -->
-			</div>
-		</div>
-		<div class="col-lg-3">
-			<!-- /.panel -->
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<i class="fa fa-bar-chart-o fa-fw"></i> Grupo
-				</div>
-				<!-- /.panel-heading -->
-				<div class="panel-body">
-					<div class="row">
-						<div class="col-lg-8">
-							<div id="morris-bar-chart"></div>
-						</div>
-						<!-- /.col-lg-8 (nested) -->
+						<p style="padding-left:5px;" ng-if="ctrl.dataGrupo.length === 0">Não há dados suficientes para gerar o gráfico.</p>						
+						<div donut-chart donut-data="ctrl.dataGrupo"></div>												
 					</div>				
 					<!-- /.row -->
 				</div>

@@ -1,10 +1,17 @@
+// Modulos desta controller
+var lazyModules = ['angular.morris'];
+  
+angular.forEach(lazyModules, function(dependency) {
+	angular.module('syspsi').requires.push(dependency);
+});
+
 angular.module('syspsi').controller('DashboardCtrl', ['$window', '$mdDialog', '$location', 'financeiroFactory', 
 	'pacienteFactory', 'convenioFactory', 'agendamentoFactory', 'configuracaoFactory',
 	'consultaPacienteFactory','utilService','consts', function($window, $mdDialog, $location, 
 			financeiroFactory, pacienteFactory, convenioFactory, agendamentoFactory, 
 			configuracaoFactory, consultaPacienteFactory, utilService, consts) {
-	var ctrl = this;			
-		
+	var ctrl = this;						
+	
 	if ($location.absUrl().indexOf("?success") >= 0) {
 		$location.search({});
 
@@ -73,6 +80,66 @@ angular.module('syspsi').controller('DashboardCtrl', ['$window', '$mdDialog', '$
 		  financeiroFactory.listarConsultasPorPeriodo(dataInicial, dataFinal).then(
 				successCallback = function(response) {
 					ctrl.totalConsultasMesCorrente = response.data.totalConsultas;
+					
+					financeiroFactory.listarConsultasNaoFinalizadasPorPeriodo(dataInicial, dataFinal).then(
+							successCallback = function(response) {
+								var contMasculino = 0;
+						    	var contFeminino = 0;
+						    	var contAdolescente = 0;
+						    	var contAdulto = 0;
+						    	var contCrianca = 0;
+						    	var contIdoso = 0;
+						    	
+						    	response.data.forEach(function(item, index) {
+						    		if (item.paciente.sexo === "M") {
+						    			contMasculino++;
+						    		} else {
+						    			contFeminino++;
+						    		} 
+						    					    	
+						    		if (item.paciente.grupo.descricao === "Adolescente") {
+						    			contAdolescente++;
+						    		} else if (item.paciente.grupo.descricao === "Adulto") {
+						    			contAdulto++;
+						    		} else if (item.paciente.grupo.descricao === "Criança") {
+						    			contCrianca++;
+						    		} else {
+						    			contIdoso++;
+						    		}
+						    	});
+						    	  
+						    	ctrl.dataSexo = [];
+						    	  
+						    	if (contMasculino > 0) {			    		
+						    		ctrl.dataSexo.push({label: "Masculino", value: contMasculino});
+						    	}
+						    	  
+						    	if (contFeminino > 0) {			    		
+						    		ctrl.dataSexo.push({label: "Feminino",value: contFeminino});
+						    	}
+						    	  
+						    	ctrl.dataGrupo = [];
+						    	
+						    	if (contAdolescente > 0) {
+						    		ctrl.dataGrupo.push({label: "Adolescente", value: contAdolescente});
+					    		}
+						    	
+						    	if (contAdulto > 0) {
+					    			ctrl.dataGrupo.push({label: "Adulto",value: contAdulto});
+					    		}
+						    	
+						    	if (contCrianca > 0) {
+					    			ctrl.dataGrupo.push({label: "Criança",value: contCrianca});
+					    		}
+						    	
+						    	if (contIdoso > 0){
+					    			ctrl.dataGrupo.push({label: "Idoso",value: contIdoso});
+					    		}			
+							},
+							errorCallback = function(error) {
+								utilService.tratarExcecao("Erro ao gerar o gráfico");
+							}
+						);
 				},
 				errorCallback = function(error) {					
 					utilService.tratarExcecao(error);
@@ -93,7 +160,7 @@ angular.module('syspsi').controller('DashboardCtrl', ['$window', '$mdDialog', '$
 	  var carregarAgendamentosDoDia = function() {
 		  agendamentoFactory.listarAgendamentosDoDia().then(
 			      successCallback = function(response) {		    	  
-			    	  ctrl.lstAgendamentos = response.data;				    	  
+			    	  ctrl.lstAgendamentos = response.data;					    	  			    	 
 			  	  },
 			  	  errorCallback = function (error, status){		
 			  		  utilService.tratarExcecao(error);

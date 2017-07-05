@@ -1211,7 +1211,7 @@ public class AgendaController {
 			}
 			lstAgendamento.add(ag);
 		}
-		
+				
 		logMessage("AgendaController.listarAgendamentosComConsultaPeriodo: fim", false);		
 		return lstAgendamento;
 	}
@@ -1235,10 +1235,14 @@ public class AgendaController {
 				logMessage("user nulo em getPsicologoLogado", true);
 				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 			}
-			List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAposHorario(psicologo);
+			
+			List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarAposHorario(psicologo);			
 			for (Agendamento ag : lstAgendamentos) {
-				ag.getConsulta().setProntuario(Util.decrypt(ag.getConsulta().getProntuario(), psicologo));
+				if (ag.getConsulta() != null && ag.getConsulta().getProntuario() != null) {
+					ag.getConsulta().setProntuario(Util.decrypt(ag.getConsulta().getProntuario(), psicologo));
+				}
 			}
+			
 			logMessage("AgendaController.listarAgendamentosDoDia: fim", false);
 			return lstAgendamentos;
 		} catch(Exception ex) {
