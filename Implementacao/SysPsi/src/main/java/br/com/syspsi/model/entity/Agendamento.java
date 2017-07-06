@@ -1,6 +1,7 @@
 package br.com.syspsi.model.entity;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.persistence.CascadeType;
@@ -305,5 +306,5 @@ public class Agendamento implements Serializable {
 	 */
 	public boolean isRepetirSemanalmente() {
 		return this.grupo > 0 ? true : false;		
-	}
+	}	
 }

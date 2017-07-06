@@ -5,8 +5,9 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'financeiroFactory', 'NgTableParams', 'utilService', 
-	function($scope, $mdDialog,	financeiroFactory, NgTableParams, utilService) {
+angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'financeiroFactory', 
+	'NgTableParams', 'utilService', function($scope, $mdDialog,	financeiroFactory, NgTableParams, 
+			utilService) {
 	var ctrl = this;							 	 		
 	
 	$scope.$watch(function () { return financeiroFactory.getLstReceitas(); }, function (newValue, oldValue) {
@@ -167,17 +168,22 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 			financeiroFactory.setAgendamento({});
 		});
 	};
-	
+		
 	ctrl.imprimirRelatorioReceitas = function(dataInicial, dataFinal) {
 		financeiroFactory.imprimirRelatorioReceitas(dataInicial, dataFinal).then(
 				successCallback = function(response) {
-					console.log("foi");
+					console.log(response);					
+					var file = new Blob([response.data], {
+				    	type: 'application/pdf'
+				    });
+				    var fileURL = URL.createObjectURL(file);				    
+					window.open(fileURL);												    				   
 				},
 				errorCallback = function(error) {
-					console.log("não foi");
+					utilService.tratarExcecao(error);
 				}
 		);
-	};
+	};	
 	
 	ctrl.dtInicio = new Date(moment().startOf('month').local());
 	ctrl.dtFim = new Date(moment().endOf('month').local());	

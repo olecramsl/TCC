@@ -2,70 +2,19 @@
 <!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 6.4.1  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Receitas" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d709bc2b-ef78-4e68-8dee-a1d39fa53b2b">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-	<import value="br.com.syspsi.model.entity.Agendamento"/>
+	<import value="br.com.syspsi.model.*"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<group name="Group1">
-		<groupHeader>
-			<band height="109">
-				<line>
-					<reportElement x="-20" y="32" width="595" height="1" forecolor="#666666" uuid="65fdf7fc-77d5-4fcc-ab96-33aaec93bc3e"/>
-				</line>
-				<staticText>
-					<reportElement x="0" y="29" width="100" height="30" uuid="849c9a6b-48eb-4287-8464-83b8203524d5"/>
-					<text><![CDATA[Tipo de Receita]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="140" y="30" width="100" height="30" uuid="3185c2f9-f151-4d3c-b3c6-fb18fae3fd81"/>
-					<text><![CDATA[Paciente]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="290" y="30" width="100" height="30" uuid="6326ad8e-3a1b-42d1-b921-9628a2eaae28"/>
-					<text><![CDATA[Data]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="450" y="30" width="100" height="30" uuid="afe02794-8608-41e0-bbc8-68b173cfd873"/>
-					<text><![CDATA[Valor]]></text>
-				</staticText>
-				<staticText>
-					<reportElement x="0" y="63" width="100" height="30" uuid="5dc25362-de62-43c2-a816-88591e50f7ed"/>
-					<text><![CDATA[Consulta]]></text>
-				</staticText>
-				<textField>
-					<reportElement x="153" y="68" width="100" height="30" uuid="054d053f-146d-43a8-a1f9-c3f82760ea94"/>
-					<textFieldExpression><![CDATA[$F{}]]></textFieldExpression>
-				</textField>
-			</band>
-		</groupHeader>
-		<groupFooter>
-			<band/>
-		</groupFooter>
-	</group>
-	<group name="Group2">
-		<groupHeader>
-			<band height="33"/>
-		</groupHeader>
-		<groupFooter>
-			<band/>
-		</groupFooter>
-	</group>
-	<group name="Group3">
-		<groupHeader>
-			<band height="32"/>
-		</groupHeader>
-		<groupFooter>
-			<band/>
-		</groupFooter>
-	</group>
-	<group name="Group4">
-		<groupHeader>
-			<band height="32"/>
-		</groupHeader>
-		<groupFooter>
-			<band/>
-		</groupFooter>
-	</group>
+	<field name="paciente" class="br.com.syspsi.model.entity.Paciente">
+		<fieldDescription><![CDATA[paciente]]></fieldDescription>
+	</field>
+	<field name="start" class="java.util.Calendar">
+		<fieldDescription><![CDATA[start]]></fieldDescription>
+	</field>
+	<field name="consulta" class="br.com.syspsi.model.entity.Consulta">
+		<fieldDescription><![CDATA[consulta]]></fieldDescription>
+	</field>
 	<background>
 		<band/>
 	</background>
@@ -94,24 +43,46 @@
 		<band height="13"/>
 	</pageHeader>
 	<columnHeader>
-		<band height="50">
+		<band height="31">
 			<line>
 				<reportElement x="-20" y="20" width="595" height="1" forecolor="#666666" uuid="7fa97b42-e69c-4c26-aaa7-3e6b1401764c"/>
 			</line>
 			<staticText>
-				<reportElement x="190" y="20" width="100" height="30" uuid="23837c08-6f68-4eec-8276-3550aa6c3db5"/>
-				<textElement>
-					<font size="16"/>
-				</textElement>
-				<text><![CDATA[Período]]></text>
+				<reportElement x="0" y="0" width="100" height="30" uuid="849c9a6b-48eb-4287-8464-83b8203524d5"/>
+				<text><![CDATA[Tipo de Receita]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="134" y="0" width="100" height="30" uuid="3185c2f9-f151-4d3c-b3c6-fb18fae3fd81"/>
+				<text><![CDATA[Paciente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="0" width="100" height="30" uuid="6326ad8e-3a1b-42d1-b921-9628a2eaae28"/>
+				<text><![CDATA[Data/Hora]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="445" y="0" width="100" height="30" uuid="afe02794-8608-41e0-bbc8-68b173cfd873"/>
+				<text><![CDATA[Valor]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20">
-			<line>
-				<reportElement positionType="FixRelativeToBottom" x="0" y="19" width="555" height="1" uuid="ca77c60f-474e-4b56-bb1e-c92a81fa1191"/>
-			</line>
+		<band height="31">
+			<staticText>
+				<reportElement x="0" y="-1" width="100" height="30" uuid="5dc25362-de62-43c2-a816-88591e50f7ed"/>
+				<text><![CDATA[Consulta]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="130" y="0" width="100" height="30" uuid="054d053f-146d-43a8-a1f9-c3f82760ea94"/>
+				<textFieldExpression><![CDATA[$F{paciente}.getNomeExibicao()]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm">
+				<reportElement x="290" y="-1" width="100" height="30" uuid="47b1bd35-b362-4862-b0a5-1fc29f900f8e"/>
+				<textFieldExpression><![CDATA[$F{start}.getTime()]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤#,##0.##;¤-#,##0.##">
+				<reportElement x="445" y="0" width="100" height="30" uuid="3e96f3b0-1415-44e6-8e9c-0f0aa130af69"/>
+				<textFieldExpression><![CDATA[$F{consulta}.getValor()]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 	<columnFooter>

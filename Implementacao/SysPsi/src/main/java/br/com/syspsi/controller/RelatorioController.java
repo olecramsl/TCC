@@ -1,12 +1,16 @@
 package br.com.syspsi.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +26,6 @@ import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
 import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -33,18 +36,14 @@ public class RelatorioController {
 	
 private final static Logger logger = Logger.getLogger(CadastroController.class);
 
-	//@Autowired 
-	//private DataSource dataSource;
-	
-	@Autowired
-	private ApplicationContext appContext;
-	
 	@Autowired
 	private PsicologoRepositorio psicologoRepositorio;
 	
 	@Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
 
+	@Autowired
+    private ApplicationContext appContext;	
 
 	private static void logMessage(String msg, boolean error) {
     	if(!error && logger.isDebugEnabled()){
@@ -56,16 +55,17 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
     		logger.error(msg);
     	}
     }
-	
+		
 	@RequestMapping(
 			value = "/imprimirRelatorioReceitas", 
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
 	public void imprimirRelatorioReceitas(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {
+			@RequestParam("dataFinal") String dataFinal, Principal user,
+			HttpServletResponse response) throws Exception {	
 		logMessage("RelatorioController.imprimirRelatorioReceitas: início", false);
-		
+			
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar di = Calendar.getInstance();
 		Calendar df = Calendar.getInstance();		
@@ -89,61 +89,55 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 		} else {
 			logMessage("User nulo em getPsicologoLogado", true);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
+		}		
 		
-		try {			
-			/*
-			JasperReportsPdfView view = new JasperReportsPdfView();						
-			view.setUrl("classpath:br/com/syspsi/jasper/receitasRel.jrxml");			
-			view.setApplicationContext(appContext);							
-		
-			List<Agendamento> lstAgendamentos = this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo);			
-		
-			Map<String, Object> params = new HashMap<>();
-			params.put("DS", lstAgendamentos);
-			*/			
-			
-			
+		try {								
 			List<Agendamento> lstAgendamentos = 
-					this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo);				
-			
+					this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo);
+								
 			JRBeanCollectionDataSource beanColDataSource = 
 					new JRBeanCollectionDataSource(lstAgendamentos);
 			
 			String path = this.getClass().getClassLoader().getResource("").getPath();
 			String pathToReportPackage = path + "br/com/syspsi/jasper/";
-			//String report = path + "br/com/syspsi/jasper/receitasRel.jrxml";
 			
 			JasperReport report = 
 					JasperCompileManager.compileReport(pathToReportPackage + "receitasRel.jrxml");									
 			
-			/*
-			Map parameters = new HashMap();			
-			parameters.put("DS1", "teste");
-			*/
-			
 			JasperPrint print = 
-					JasperFillManager.fillReport(report, null, beanColDataSource);						
+					JasperFillManager.fillReport(report, new HashMap<String, Object>(), beanColDataSource);						
 			
-			JasperExportManager.exportReportToPdfFile(print, 
-					"C:/Users/marcelo.lima/Desktop/Nova pasta/Relatorio_de_Clientes.pdf");											
-										
-			
-			/*
-			JasperPrint print = 
-					JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
-	 
-			JasperExportManager.exportReportToPdfFile(print, 
-					"C:/Users/marcelo.lima/Desktop/Nova pasta/Relatorio_de_Clientes.pdf");
-			*/
-			/*
-			JasperPrint jasperPrint = 
-					JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
-			*/
-
-			logMessage("RelatorioController.imprimirRelatorioReceitas: fim", false);
-        
-			//return new ModelAndView(view, params);
+			if (print != null) {	
+				//byte[] pdfReport = JasperExportManager.exportReportToPdf(print);
+				
+				File initialFile = new File("C:\\Users\\marcelo.lima\\Desktop\\Nova pasta\\Relatorio_de_Clientes.pdf");
+			    InputStream targetStream = new FileInputStream(initialFile);
+			    org.apache.commons.io.IOUtils.copy(targetStream, response.getOutputStream());
+			    response.flushBuffer();
+				
+				/*1
+				response.setHeader("Content-disposition", "attachment; filename=Relatorio_de_Receitas.pdf");
+				response.setContentType("application/pdf");
+				JasperExportManager.exportReportToPdfStream(print, response.getOutputStream());				
+				response.getOutputStream().flush();
+		        response.getOutputStream().close();
+		        */														
+						
+				/*2
+				HttpHeaders headers = new HttpHeaders();
+			    headers.setContentType(MediaType.parseMediaType("application/pdf"));
+			    String filename = "Relatorio_de_Receitas.pdf";
+			    headers.setContentDispositionFormData(filename, filename);
+			    headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+			    ResponseEntity<byte[]> response = 
+			    		new ResponseEntity<byte[]>(pdfReport, headers, HttpStatus.OK);
+			    logMessage("RelatorioController.imprimirRelatorioReceitas: fim", false);
+			    return response;
+			    */
+				
+			} else {
+				logMessage("print null", false);
+			}																    
 		} catch(Exception ex) {
 			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);
 			throw new Exception("Não foi possível gerar o relatório");
