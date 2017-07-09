@@ -189,12 +189,7 @@ angular.module('syspsi').controller('DashboardCtrl', ['$window', '$mdDialog', '$
 		  
 		  consultaPacienteFactory.setAgendamento(ag);			
 		  $location.path("/consulta");		
-	  }
-	  
-	  ctrl.sendEmail = function(paciente) {
-		  console.log(paciente.email);
-		  $window.open("mailto:"+ paciente.email + "?subject=" + "Feliz Aniversário!");		 
-	  }
+	  }	  	  
 	
 	carregarPacientesAtivos();
 	carregarConveniosAtivos();

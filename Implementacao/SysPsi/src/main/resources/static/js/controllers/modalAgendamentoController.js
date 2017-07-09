@@ -26,16 +26,16 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 /**
 	  * Remove os eventos da view e popula com eventos atualizados/salvos
 	  */
-	 var atualizarViewFC = function() {
+	 var atualizarViewFC = function() {		 
 		 utilService.setMessage("Carergando agendamentos ...");
 		 utilService.showWait();
 		 angular.element('.calendar').fullCalendar('removeEvents');
 		 // Atualiza a view para o caso de haver algum evento semanal
 		 view = angular.element('.calendar').fullCalendar('getView');
 		 agendamentoFactory.listarAgendamentos(view.start, view.end).then(
-				 successCallback = function (response) {
-					 utilService.hideWait();
+				 successCallback = function (response) {					 
 					 angular.element('.calendar').fullCalendar('renderEvents',response.data);
+					 utilService.hideWait();
 				 },
 				 errorCallback = function (error) {	  			  		  
 					 utilService.tratarExcecao(error);
@@ -206,7 +206,8 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			
 			agendamentoFactory.salvarAgendamento(agendamento).then(
 					successCallback = function(response) {
-						utilService.hideWait();
+						utilService.hideWait();						
+					
 						if (agendamento.repetirSemanalmente) {
 							atualizarViewFC();
 						} else {
@@ -223,6 +224,7 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 		
 		angular.element('.calendar').fullCalendar('unselect');												
 		$uibModalInstance.close();
+		
 	};			
 	
 	/**

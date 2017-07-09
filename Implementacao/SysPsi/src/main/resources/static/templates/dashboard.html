@@ -98,11 +98,11 @@
 				</div>
 				<!-- /.panel-heading -->
 				<div class="panel-body">
-					<div class="row">
+					<div class="row">					
 						<p style="padding-left:5px;" ng-if="ctrl.lstAniversariantes == 0">Não há aniversariantes este mês.</p>
 						<div class="list-group">
-							<a ng-repeat="paciente in ctrl.lstAniversariantes" ng-href="" class="list-group-item">
-								<span class="badge" ng-if="paciente.email" ng-click="ctrl.sendEmail(paciente)"><i class="fa fa-envelope fa-fw"></i></span>
+							<a ng-repeat="paciente in ctrl.lstAniversariantes" href="mailto:{{paciente.email}}" target="_blank" class="list-group-item">
+								<span class="badge" ng-if="paciente.email"><i class="fa fa-envelope fa-fw"></i></span>
             					<div>{{paciente.dataNascimento | date:'dd'}} - {{paciente.nomeExibicao}}</div> 
           					</a>
 						</div>						

@@ -1,14 +1,13 @@
 package br.com.syspsi.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,15 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView;
 
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @RestController
@@ -61,8 +58,8 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
-	public void imprimirRelatorioReceitas(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal, Principal user,
+	public ModelAndView imprimirRelatorioReceitas(@RequestParam("dataInicial") String dataInicial, 
+			@RequestParam("dataFinal") String dataFinal, Principal user, 
 			HttpServletResponse response) throws Exception {	
 		logMessage("RelatorioController.imprimirRelatorioReceitas: início", false);
 			
@@ -97,49 +94,42 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 								
 			JRBeanCollectionDataSource beanColDataSource = 
 					new JRBeanCollectionDataSource(lstAgendamentos);
+							
+			JasperReportsPdfView view = new JasperReportsPdfView();
+	        view.setUrl("classpath:br/com/syspsi/jasper/receitasRel.jrxml");
+	        view.setApplicationContext(appContext);
+	        view.setContentType("application/pdf");	        
+	        view.setReportDataKey("datasource");
+	        
+	        Properties p = new Properties();
+	        p.setProperty("Content-disposition", "inline; filename=\"meuRelatorioLegal.pdf\"");
+	        view.setHeaders(p);
+
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("datasource", beanColDataSource);
+
+	        return new ModelAndView(view, params);	              
 			
+			/*
 			String path = this.getClass().getClassLoader().getResource("").getPath();
-			String pathToReportPackage = path + "br/com/syspsi/jasper/";
-			
-			JasperReport report = 
-					JasperCompileManager.compileReport(pathToReportPackage + "receitasRel.jrxml");									
-			
-			JasperPrint print = 
-					JasperFillManager.fillReport(report, new HashMap<String, Object>(), beanColDataSource);						
-			
-			if (print != null) {	
-				//byte[] pdfReport = JasperExportManager.exportReportToPdf(print);
-				
-				File initialFile = new File("C:\\Users\\marcelo.lima\\Desktop\\Nova pasta\\Relatorio_de_Clientes.pdf");
-			    InputStream targetStream = new FileInputStream(initialFile);
-			    org.apache.commons.io.IOUtils.copy(targetStream, response.getOutputStream());
-			    response.flushBuffer();
-				
-				/*1
-				response.setHeader("Content-disposition", "attachment; filename=Relatorio_de_Receitas.pdf");
-				response.setContentType("application/pdf");
-				JasperExportManager.exportReportToPdfStream(print, response.getOutputStream());				
-				response.getOutputStream().flush();
-		        response.getOutputStream().close();
-		        */														
-						
-				/*2
-				HttpHeaders headers = new HttpHeaders();
-			    headers.setContentType(MediaType.parseMediaType("application/pdf"));
-			    String filename = "Relatorio_de_Receitas.pdf";
-			    headers.setContentDispositionFormData(filename, filename);
-			    headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-			    ResponseEntity<byte[]> response = 
-			    		new ResponseEntity<byte[]>(pdfReport, headers, HttpStatus.OK);
-			    logMessage("RelatorioController.imprimirRelatorioReceitas: fim", false);
-			    return response;
-			    */
-				
-			} else {
-				logMessage("print null", false);
-			}																    
+			String pathToReport = path + "br/com/syspsi/jasper/receitasRel.jrxml";
+
+	        JasperReport jreport = JasperCompileManager.compileReport(pathToReport);	        
+
+	        HashMap params = new HashMap();
+
+	        JasperPrint jprint = JasperFillManager.fillReport(jreport, params, beanColDataSource);
+
+	        JasperExportManager.exportReportToPdfFile(jprint,
+	                "C:\\Users\\Marcelo\\Desktop\\DefesaTCC\\report2.pdf");
+	        
+	        File pdfFile = new File("C:\\Users\\Marcelo\\Desktop\\DefesaTCC\\report2.pdf");
+	        InputStream targetStream = new FileInputStream(pdfFile);
+	        IOUtils.copy(targetStream, response.getOutputStream());
+	        response.flushBuffer();	
+	        */        	       																						   
 		} catch(Exception ex) {
-			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);
+			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");
 		}
 	}

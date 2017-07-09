@@ -172,12 +172,12 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 	ctrl.imprimirRelatorioReceitas = function(dataInicial, dataFinal) {
 		financeiroFactory.imprimirRelatorioReceitas(dataInicial, dataFinal).then(
 				successCallback = function(response) {
-					console.log(response);					
+					console.log(response);
 					var file = new Blob([response.data], {
 				    	type: 'application/pdf'
 				    });
 				    var fileURL = URL.createObjectURL(file);				    
-					window.open(fileURL);												    				   
+					window.open(fileURL);							
 				},
 				errorCallback = function(error) {
 					utilService.tratarExcecao(error);

@@ -1,7 +1,7 @@
 <head>
 	<meta charset="utf-8">
 </head>
-<md-dialog>	
+<md-dialog ng-cloak>	
 	<md-toolbar>
 		<div class="md-toolbar-tools">
 			<h2>Cadastrar Nova Despesa</h2>
@@ -10,7 +10,7 @@
 
 	<md-dialog-content>
 		<div class="md-dialog-content">
-			<form ng-cloak name="cadastroDespesaForm">
+			<form name="cadastroDespesaForm">
 				<md-input-container class="md-block">
   					<label>Descrição</label>
   					<input name="descricao" maxlength="30" ng-model="despesa.descricao" md-autofocus ng-required="true">

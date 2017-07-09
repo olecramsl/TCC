@@ -46,10 +46,7 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		
 	var _imprimirRelatorioReceitas = function(dataInicial, dataFinal) {
 		var params = {dataInicial: dataInicial, dataFinal: dataFinal};
-		return $http.get(consts.BASE_URL + '/imprimirRelatorioReceitas', 
-				{params}, 
-				{responseType: 'arraybuffer'}
-		);
+		return $http.get(consts.BASE_URL + '/imprimirRelatorioReceitas', {params});
 	};
 	
 	return {		

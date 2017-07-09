@@ -17,9 +17,9 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "					
 			+ "WHERE a.grupo = ?1 "
-			+ "AND a.eventoPrincipal = ?2 "
+			+ "AND a.eventoPrincipal = true "
 			+ "AND ps = ?3")
-	public Agendamento listarPorGrupoEEventoPrincipalEPsicologo(Long grupo, boolean eventoPrincipal, Psicologo psicologo);	
+	public Agendamento listarEventoPrincipalPorGrupoEPsicologo(Long grupo, Psicologo psicologo);	
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "					
@@ -147,7 +147,7 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "
-			+ "WHERE a.eventoPrincipal = true "
+			+ "WHERE a.eventoPrincipal = true "			
 			+ "AND a.ativo = true "
 			+ "AND ps = ?1")
 	public List<Agendamento> listarAgendamentosRepetidosAVincular(Psicologo psicologo);
@@ -157,8 +157,9 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "WHERE (DATE(a.start) < DATE(?2) "
 			+ "AND a.eventoPrincipal = false) "
 			+ "AND a.ativo = true "
+			+ "AND a.grupo = ?3 "
 			+ "AND ps = ?1")
-	public List<Agendamento> listarAgendamentosRepetitivosParaNaoVincular(Psicologo psicologo, Calendar dataInicial);
+	public List<Agendamento> listarAgendamentosRepetitivosParaNaoVincular(Psicologo psicologo, Calendar dataInicial, Long grupo);
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "
 			+ "INNER JOIN p.psicologo ps "
