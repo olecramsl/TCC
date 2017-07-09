@@ -557,7 +557,7 @@ public class AgendaController {
 		   (agendamento.getGrupo() == null || agendamento.getGrupo() == 0))) {
 			agendamento.setGrupo(this.agendamentoRepositorio.getNextValueForGroup(psicologo));			
 			agendamento.setEventoPrincipal(true);
-		} else {
+		} else {			
 			agendamento.setEventoPrincipal(false);
 		}
 						
@@ -574,7 +574,7 @@ public class AgendaController {
 			try {
 				if (agendamento.getIdGCalendar() == null) {
 					agendamento = this.salvarAgendamentoNoGoogleCalendar(agendamento, psicologo, service);										
-				} else {
+				} else {					
 					Agendamento ag = this.editarAgendamentoNoGoogleCalendar(agendamento, service);					
 					agendamento.setIdGCalendar(ag.getIdGCalendar());					
 					agendamento.setIdRecurring(ag.getIdRecurring());				
@@ -1548,41 +1548,33 @@ public class AgendaController {
 	}	
 	
 	private Agendamento editarAgendamentoNoGoogleCalendar(Agendamento agendamento, 
-			com.google.api.services.calendar.Calendar service) throws GCalendarException {
-		/*
-		logMessage("AgendaController.editarAgendamentoNoGoogleCalendar: início", false);
-		logMessage("getCalendarService", false);
-        com.google.api.services.calendar.Calendar service =
-            getCalendarService();
-        logMessage("getCalendarService: OK", false);
-        */
-        
-        try {
+			com.google.api.services.calendar.Calendar service) throws GCalendarException {		        
+        try {        	
         	Event event = service.events().get("primary", agendamento.getIdGCalendar()).execute();
         	event.setSummary(agendamento.getPaciente().getNomeExibicao());
-        	event.setDescription(agendamento.getDescription());
+        	event.setDescription(agendamento.getDescription());        	
 
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss-03:00");
 			DateTime startDateTime = new DateTime(format.format(agendamento.getStart().getTime()));
 			EventDateTime start = new EventDateTime()
 				    .setDateTime(startDateTime)
 				    .setTimeZone("America/Sao_Paulo");
-			event.setStart(start);
-
+			event.setStart(start);			
+			
 			DateTime endDateTime = new DateTime(format.format(agendamento.getEnd().getTime()));
 			EventDateTime end = new EventDateTime()
 				    .setDateTime(endDateTime)
 				    .setTimeZone("America/Sao_Paulo");
-			event.setEnd(end);
+			event.setEnd(end);						
 						
-			if (agendamento.isEventoPrincipal() && agendamento.getIdRecurring() == null) {
+			if (agendamento.isEventoPrincipal() && agendamento.getIdRecurring() == null) {				
 				String[] recurrence = new String[] {"RRULE:FREQ=WEEKLY"};
 				event.setRecurrence(Arrays.asList(recurrence));
-			}			
-						
-			event = service.events().update("primary", event.getId(), event).execute();
+			}						
+												
+			event = service.events().update("primary", event.getId(), event).execute();			
 			
-			if (agendamento.isEventoPrincipal()) {							
+			if (agendamento.isEventoPrincipal()) {				
 				Calendar maxDateCal = Calendar.getInstance();
 				maxDateCal.setTime(agendamento.getStart().getTime());
 				maxDateCal.add(Calendar.DATE, 1);
