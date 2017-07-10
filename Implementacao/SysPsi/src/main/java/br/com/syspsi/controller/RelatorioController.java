@@ -1,30 +1,31 @@
 package br.com.syspsi.controller;
 
+import java.math.BigDecimal;
 import java.security.Principal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView;
 
+import br.com.syspsi.model.Util;
+import br.com.syspsi.model.dto.InRelatorioDTO;
 import br.com.syspsi.model.entity.Agendamento;
+import br.com.syspsi.model.entity.Despesa;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
+import br.com.syspsi.repository.DespesaRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
@@ -38,6 +39,9 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 	
 	@Autowired
 	private AgendamentoRepositorio agendamentoRepositorio;
+	
+	@Autowired
+	private DespesaRepositorio despesaRepositorio;
 
 	@Autowired
     private ApplicationContext appContext;	
@@ -55,26 +59,14 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 		
 	@RequestMapping(
 			value = "/imprimirRelatorioReceitas", 
-			method={RequestMethod.GET},
-			produces = MediaType.APPLICATION_JSON_VALUE			
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public ModelAndView imprimirRelatorioReceitas(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal, Principal user, 
-			HttpServletResponse response) throws Exception {	
+	public ModelAndView imprimirRelatorioReceitas(@RequestBody InRelatorioDTO inRelatorioDTO, 
+			Principal user) throws Exception {	
 		logMessage("RelatorioController.imprimirRelatorioReceitas: início", false);
-			
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar di = Calendar.getInstance();
-		Calendar df = Calendar.getInstance();		
-		
-		try {
-			di.setTime(format.parse(dataInicial));
-			df.setTime(format.parse(dataFinal));
-		} catch (ParseException e) {
-			logMessage("Formato de data inválido", true);
-			throw new Exception("Erro ao gerar relatório: formato de data inválido.");
-		}		
-		
+					
 		Psicologo psicologo;
 		if (user != null) {			
 			logMessage("user.getName(): " + user.getName(), false);
@@ -90,11 +82,18 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 		
 		try {								
 			List<Agendamento> lstAgendamentos = 
-					this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo);
-								
+					this.agendamentoRepositorio.listarConsultasPorPeriodo(
+							inRelatorioDTO.getDataInicial(), inRelatorioDTO.getDataFinal(), 
+							psicologo);
+			
+			BigDecimal totalReceitas = new BigDecimal(0);
+			for (Agendamento ag : lstAgendamentos) {				
+				totalReceitas = totalReceitas.add(ag.getConsulta().getValor()); 
+			}
+										
 			JRBeanCollectionDataSource beanColDataSource = 
 					new JRBeanCollectionDataSource(lstAgendamentos);
-							
+								
 			JasperReportsPdfView view = new JasperReportsPdfView();
 	        view.setUrl("classpath:br/com/syspsi/jasper/receitasRel.jrxml");
 	        view.setApplicationContext(appContext);
@@ -102,32 +101,145 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 	        view.setReportDataKey("datasource");
 	        
 	        Properties p = new Properties();
-	        p.setProperty("Content-disposition", "inline; filename=\"meuRelatorioLegal.pdf\"");
+	        p.setProperty("Content-disposition", "inline; filename=\"relatorioReceitas.pdf\"");
 	        view.setHeaders(p);
 
 	        Map<String, Object> params = new HashMap<>();
+	        params.put("dataInicial", inRelatorioDTO.getDataInicial());
+	        params.put("dataFinal", inRelatorioDTO.getDataFinal());
+	        params.put("totalReceitas", totalReceitas);
+	        params.put("datasource", beanColDataSource);
+	        
+	        logMessage("RelatorioController.imprimirRelatorioReceitas: fim", false);
+	        return new ModelAndView(view, params);	        						           	       																						
+		} catch(Exception ex) {
+			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			
+			throw new Exception("Não foi possível gerar o relatório");
+		}
+	}
+	
+	@RequestMapping(
+			value = "/imprimirRelatorioDespesas", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public ModelAndView imprimirRelatorioDespesas(@RequestBody InRelatorioDTO inRelatorioDTO, 
+			Principal user) throws Exception {	
+		logMessage("RelatorioController.imprimirRelatorioDespesas: início", false);
+					
+		Psicologo psicologo;
+		if (user != null) {			
+			logMessage("user.getName(): " + user.getName(), false);
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}		
+		} else {
+			logMessage("User nulo em getPsicologoLogado", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}		
+		
+		try {								
+			List<Despesa> lstDespesas = 
+					this.despesaRepositorio.listarPorPeriodo(inRelatorioDTO.getDataInicial(), 
+							inRelatorioDTO.getDataFinal(), psicologo);
+			
+			BigDecimal totalDespesas = new BigDecimal(0);
+			for (Despesa despesa : lstDespesas) {				
+				totalDespesas = totalDespesas.add(despesa.getValor()); 
+			}
+			
+								
+			JRBeanCollectionDataSource beanColDataSource = 
+					new JRBeanCollectionDataSource(lstDespesas);
+								
+			JasperReportsPdfView view = new JasperReportsPdfView();
+	        view.setUrl("classpath:br/com/syspsi/jasper/despesasRel.jrxml");
+	        view.setApplicationContext(appContext);
+	        view.setContentType("application/pdf");	        
+	        view.setReportDataKey("datasource");
+	        	        
+	        Properties p = new Properties();
+	        p.setProperty("Content-disposition", "inline; filename=\"relatorioDespesas.pdf\"");
+	        view.setHeaders(p);
+
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("dataInicial", inRelatorioDTO.getDataInicial());
+	        params.put("dataFinal", inRelatorioDTO.getDataFinal());
+	        params.put("totalDespesas", totalDespesas);
 	        params.put("datasource", beanColDataSource);
 
-	        return new ModelAndView(view, params);	              
+	        logMessage("RelatorioController.imprimirRelatorioDespesas: fim", false);
+	        return new ModelAndView(view, params);	        						           	       																						
+		} catch(Exception ex) {
+			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			
+			throw new Exception("Não foi possível gerar o relatório");
+		}
+	}
+	
+	@RequestMapping(
+			value = "/imprimirRelatorioProntuarios", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public ModelAndView imprimirRelatorioProntuarios(@RequestBody InRelatorioDTO inRelatorioDTO, 
+			Principal user) throws Exception {	
+		logMessage("RelatorioController.imprimirRelatorioProntuarios: início", false);								
+		
+		Psicologo psicologo;
+		if (user != null) {			
+			logMessage("user.getName(): " + user.getName(), false);
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}		
+		} else {
+			logMessage("User nulo em getPsicologoLogado", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}	
+		
+		try {								
+			List<Agendamento> lstAgendamentos = this.agendamentoRepositorio
+					.listarAgendamentosComConsultaPeriodo(inRelatorioDTO.getDataInicial(), 
+							inRelatorioDTO.getDataFinal(), inRelatorioDTO.getPaciente(), 
+							psicologo);
 			
-			/*
-			String path = this.getClass().getClassLoader().getResource("").getPath();
-			String pathToReport = path + "br/com/syspsi/jasper/receitasRel.jrxml";
+			Iterator<Agendamento> i = lstAgendamentos.iterator();
+			while (i.hasNext()) {
+			   Agendamento ag = i.next(); // must be called before you can call i.remove()
+			   if (ag.getConsulta().getProntuario() == null) {
+				   i.remove();
+			   } else {
+				   ag.getConsulta().setProntuario(Util.decrypt(ag.getConsulta().getProntuario(), psicologo));
+				   ag.getConsulta().setProntuario(ag.getConsulta().getProntuario().replaceAll("<.*?>", ""));
+			   }
+			}
+														
+			JRBeanCollectionDataSource beanColDataSource = 
+					new JRBeanCollectionDataSource(lstAgendamentos);
+								
+			JasperReportsPdfView view = new JasperReportsPdfView();
+	        view.setUrl("classpath:br/com/syspsi/jasper/prontuariosRel.jrxml");
+	        view.setApplicationContext(appContext);
+	        view.setContentType("application/pdf");	        
+	        view.setReportDataKey("datasource");
+	        	        
+	        Properties p = new Properties();
+	        p.setProperty("Content-disposition", "inline; filename=\"relatorioDespesas.pdf\"");
+	        view.setHeaders(p);
 
-	        JasperReport jreport = JasperCompileManager.compileReport(pathToReport);	        
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("dataInicial", inRelatorioDTO.getDataInicial());
+	        params.put("dataFinal", inRelatorioDTO.getDataFinal());
+	        params.put("nomePaciente", inRelatorioDTO.getPaciente().getNomeExibicao());
+	        params.put("datasource", beanColDataSource);
 
-	        HashMap params = new HashMap();
-
-	        JasperPrint jprint = JasperFillManager.fillReport(jreport, params, beanColDataSource);
-
-	        JasperExportManager.exportReportToPdfFile(jprint,
-	                "C:\\Users\\Marcelo\\Desktop\\DefesaTCC\\report2.pdf");
-	        
-	        File pdfFile = new File("C:\\Users\\Marcelo\\Desktop\\DefesaTCC\\report2.pdf");
-	        InputStream targetStream = new FileInputStream(pdfFile);
-	        IOUtils.copy(targetStream, response.getOutputStream());
-	        response.flushBuffer();	
-	        */        	       																						   
+	        logMessage("RelatorioController.imprimirRelatorioProntuarios: fim", false);
+	        return new ModelAndView(view, params);	        						           	       																						
 		} catch(Exception ex) {
 			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");

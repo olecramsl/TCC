@@ -47,15 +47,15 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	  * Remove os agendamentos futuros associados a um evento semanal
 	  */
 	 var removerEventosFuturos = function (agendamento) {		
-		 //utilService.setMessage("Removendo eventos futuros ...");
-		 //utilService.showWait();
+		 utilService.setMessage("Removendo eventos futuros ...");
+		 utilService.showWait();
 		 agendamentoFactory.removerAgendamentosFuturos(agendamento).then(
 				 successCallback = function(response) {
-					 //utilService.hideWait();
+					 utilService.hideWait();
 					 atualizarViewFC();					 
 				 },
 				 errorCallback = function (error, status){
-					 //utilService.hideWait();
+					 utilService.hideWait();
 					 utilService.tratarExcecao(error);			  						
 				 }
 		 );	
@@ -66,15 +66,15 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	  * Move os agendamentos futuros associados a um evento semanal
 	  */
 	 var moverEventosFuturos = function (agendamento) {
-		 //utilService.setMessage("Movendo eventos futuros ...");
-		 //utilService.showWait();
+		 utilService.setMessage("Movendo eventos futuros ...");
+		 utilService.showWait();
 		 agendamentoFactory.moverAgendamentosFuturos(agendamento).then(
 				 successCallback = function(response) {
-					 //utilService.hideWait();
+					 utilService.hideWait();
 					 atualizarViewFC();			
 				 },
 				 errorCallback = function (error, status){
-					 //utilService.hideWait();
+					 utilService.hideWait();
 					 utilService.tratarExcecao(error);			  						
 				 }
 		 );	
@@ -85,15 +85,15 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	  * Atualizar os agendamentos futuros associados a um evento semanal
 	  */
 	 var atualizarEventosFuturos = function (agendamento) {
-		 //utilService.setMessage("Atualizando eventos futuros ...");
-		 //utilService.showWait();
+		 utilService.setMessage("Atualizando eventos futuros ...");
+		 utilService.showWait();
 		 agendamentoFactory.atualizarAgendamentosFuturos(agendamento).then(
 				 successCallback = function(response) {
-					 //utilService.hideWait();
+					 utilService.hideWait();
 					 atualizarViewFC();			
 				 },
 				 errorCallback = function (error, status){
-					// utilService.hideWait();
+					 utilService.hideWait();
 					 utilService.tratarExcecao(error);			  						
 				 }
 		 );	
@@ -131,8 +131,8 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			);			
 		// Edicao	
 		} else if (agendamento.id) {
-			//utilService.setMessage("Editando agendamento ...");
-			//utilService.showWait();
+			utilService.setMessage("Editando agendamento ...");
+			utilService.showWait();
 			
 			var horas = agendamento.formatedStart.split(":")[0];
 			var minutos = agendamento.formatedStart.split(":")[1];
@@ -194,8 +194,8 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			);			
 		// Novo agendamento
 		} else if (agendamento.paciente) {
-			//utilService.setMessage("Salvando agendamento ...");
-			//utilService.showWait();
+			utilService.setMessage("Salvando agendamento ...");
+			utilService.showWait();
 			
 			agendamento.title = updateTitle(agendamento);
 			var horarioConsulta = agendamento.formatedStart.split(":");
@@ -207,17 +207,16 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 			
 			agendamentoFactory.salvarAgendamento(agendamento).then(
 					successCallback = function(response) {
-						//utilService.hideWait();						
+						utilService.hideWait();						
 					
 						if (agendamento.repetirSemanalmente) {
 							atualizarViewFC();
 						} else {
 							angular.element('.calendar').fullCalendar('renderEvent', response.data);
-						}						
-						//angular.element('.calendar').fullCalendar('renderEvent', response.data);
+						}												
 					},
 					errorCallBack = function(error) {
-						//utilService.hideWait();						
+						utilService.hideWait();						
 						utilService.tratarExcecao(error).then(function() {
 							var view = angular.element('.calendar').fullCalendar('getView');
 							listarAgendamento(view.start, view.end);
@@ -246,28 +245,28 @@ angular.module('syspsi').controller('ModalAgendamentoCtrl', ['$scope', '$uibModa
 	 * Remove um evento
 	 */
 	var removerEvento = function(agendamento) {
-		//utilService.setMessage("Removendo agendamento ...");
-		//utilService.showWait();
+		utilService.setMessage("Removendo agendamento ...");
+		utilService.showWait();
 		agendamentoFactory.removerAgendamento(agendamento).then(
 				successCallback = function(response) {					
 					if (agendamento.grupo > 0 && agendamento.eventoPrincipal) {
 						agendamentoFactory.atribuirNovoEventoPrincipal(agendamento).then(
 								successCallback = function(response) {
-									//utilService.hideWait();
+									utilService.hideWait();
 									angular.element('.calendar').fullCalendar('removeEvents',agendamento.id);				
 								},
 								errorCallback = function (error, status){
-									//utilService.hideWait();
+									utilService.hideWait();
 									utilService.tratarExcecao(error);			  						
 								}
 						);
 					} else {
-						//utilService.hideWait();
+						utilService.hideWait();
 					}
 					angular.element('.calendar').fullCalendar('removeEvents',agendamento.id);				
 				},
 				errorCallback = function (error, status){	
-					//utilService.hideWait();
+					utilService.hideWait();
 					utilService.tratarExcecao(error);			  						
 				}
 			);				

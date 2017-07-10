@@ -232,4 +232,19 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 				}
 		);
 	}
+	
+	ctrl.imprimirRelatorioProntuarios = function(dataInicial, dataFinal, paciente) {
+		consultaPacienteFactory.imprimirRelatorioProntuarios(dataInicial, dataFinal, paciente).then(
+				successCallback = function(response) {					
+					var file = new Blob([response.data], {
+				    	type: 'application/pdf'
+				    });
+				    var fileURL = URL.createObjectURL(file);				    
+					window.open(fileURL);							
+				},
+				errorCallback = function(error) {
+					utilService.tratarExcecao(error);
+				}
+		);
+	};
 }]);

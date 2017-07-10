@@ -1,7 +1,6 @@
 package br.com.syspsi.model.entity;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.persistence.CascadeType;

@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 6.4.1  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Receitas" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d709bc2b-ef78-4e68-8dee-a1d39fa53b2b">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Despesas" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d709bc2b-ef78-4e68-8dee-a1d39fa53b2b">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-	<import value="br.com.syspsi.model.entity.Agendamento"/>
+	<import value="br.com.syspsi.model.entity.Despesa"/>
 	<parameter name="dataInicial" class="java.util.Calendar"/>
 	<parameter name="dataFinal" class="java.util.Calendar"/>
-	<parameter name="totalReceitas" class="java.math.BigDecimal">
+	<parameter name="totalDespesas" class="java.math.BigDecimal">
 		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="paciente" class="br.com.syspsi.model.entity.Paciente">
-		<fieldDescription><![CDATA[paciente]]></fieldDescription>
+	<field name="descricao" class="java.lang.String">
+		<fieldDescription><![CDATA[descricao]]></fieldDescription>
 	</field>
-	<field name="start" class="java.util.Calendar">
-		<fieldDescription><![CDATA[start]]></fieldDescription>
+	<field name="vencimento" class="java.util.Calendar">
+		<fieldDescription><![CDATA[vencimento]]></fieldDescription>
 	</field>
-	<field name="consulta" class="br.com.syspsi.model.entity.Consulta">
-		<fieldDescription><![CDATA[consulta]]></fieldDescription>
+	<field name="pago" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[pago]]></fieldDescription>
+	</field>
+	<field name="valor" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[valor]]></fieldDescription>
 	</field>
 	<group name="Group1">
 		<groupFooter>
@@ -28,8 +31,8 @@
 					<text><![CDATA[Total]]></text>
 				</staticText>
 				<textField pattern="¤ #,###,###,##0.00;¤ -#,###,###,##0.00">
-					<reportElement x="445" y="40" width="100" height="21" uuid="4e2e989b-8e52-4b99-af88-d54c39047254"/>
-					<textFieldExpression><![CDATA[$P{totalReceitas}]]></textFieldExpression>
+					<reportElement x="444" y="40" width="100" height="21" uuid="4e2e989b-8e52-4b99-af88-d54c39047254"/>
+					<textFieldExpression><![CDATA[$P{totalDespesas}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>
@@ -53,10 +56,10 @@
 					<textElement textAlignment="Right">
 						<font size="14" isBold="false"/>
 					</textElement>
-					<text><![CDATA[Relatório de Receitas]]></text>
+					<text><![CDATA[Relatório de Despesas]]></text>
 				</staticText>
 				<textField pattern="dd/MM/yy">
-					<reportElement x="520" y="63" width="60" height="20" forecolor="#FFFFFF" uuid="08f27ea1-a94e-4a2c-8549-bd0445d1594f">
+					<reportElement x="513" y="63" width="60" height="20" forecolor="#FFFFFF" uuid="08f27ea1-a94e-4a2c-8549-bd0445d1594f">
 						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
@@ -68,7 +71,7 @@
 					<textFieldExpression><![CDATA[$P{dataFinal}.getTime()]]></textFieldExpression>
 				</textField>
 				<textField pattern="dd/MM/yy">
-					<reportElement x="441" y="63" width="60" height="20" forecolor="#FFFFFF" uuid="4e415f17-12ad-4ff8-b426-53ba07454e59">
+					<reportElement x="434" y="63" width="60" height="20" forecolor="#FFFFFF" uuid="4e415f17-12ad-4ff8-b426-53ba07454e59">
 						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
@@ -80,7 +83,7 @@
 					<textFieldExpression><![CDATA[$P{dataInicial}.getTime()]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="503" y="63" width="10" height="20" forecolor="#FFFFFF" uuid="91dc6bfb-7f10-4f95-8d03-f499ef841b46"/>
+					<reportElement x="496" y="63" width="10" height="20" forecolor="#FFFFFF" uuid="91dc6bfb-7f10-4f95-8d03-f499ef841b46"/>
 					<textElement>
 						<font size="14"/>
 					</textElement>
@@ -99,15 +102,15 @@
 			</line>
 			<staticText>
 				<reportElement x="0" y="0" width="100" height="30" uuid="849c9a6b-48eb-4287-8464-83b8203524d5"/>
-				<text><![CDATA[Tipo de Receita]]></text>
+				<text><![CDATA[Descrição]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="134" y="0" width="100" height="30" uuid="3185c2f9-f151-4d3c-b3c6-fb18fae3fd81"/>
-				<text><![CDATA[Paciente]]></text>
+				<text><![CDATA[Dt Vencimento]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="290" y="0" width="100" height="30" uuid="6326ad8e-3a1b-42d1-b921-9628a2eaae28"/>
-				<text><![CDATA[Data/Hora]]></text>
+				<text><![CDATA[Conta paga]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="445" y="0" width="100" height="30" uuid="afe02794-8608-41e0-bbc8-68b173cfd873"/>
@@ -116,22 +119,22 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="31">
-			<staticText>
-				<reportElement x="0" y="-1" width="100" height="30" uuid="5dc25362-de62-43c2-a816-88591e50f7ed"/>
-				<text><![CDATA[Consulta]]></text>
-			</staticText>
-			<textField>
+		<band height="36">
+			<textField pattern="dd/MM/yy">
 				<reportElement x="133" y="0" width="100" height="30" uuid="054d053f-146d-43a8-a1f9-c3f82760ea94"/>
-				<textFieldExpression><![CDATA[$F{paciente}.getNomeExibicao()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{vencimento}.getTime()]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yyyy HH:mm">
-				<reportElement x="290" y="-1" width="100" height="30" uuid="47b1bd35-b362-4862-b0a5-1fc29f900f8e"/>
-				<textFieldExpression><![CDATA[$F{start}.getTime()]]></textFieldExpression>
+			<textField pattern="">
+				<reportElement x="289" y="-1" width="100" height="30" uuid="47b1bd35-b362-4862-b0a5-1fc29f900f8e"/>
+				<textFieldExpression><![CDATA[$F{pago} ? "Sim" : "Não"]]></textFieldExpression>
 			</textField>
 			<textField pattern="¤ #,###,###,##0.00;¤ -#,###,###,##0.00">
-				<reportElement x="445" y="0" width="100" height="30" uuid="3e96f3b0-1415-44e6-8e9c-0f0aa130af69"/>
-				<textFieldExpression><![CDATA[$F{consulta}.getValor()]]></textFieldExpression>
+				<reportElement x="444" y="0" width="100" height="30" uuid="3e96f3b0-1415-44e6-8e9c-0f0aa130af69"/>
+				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="2" width="100" height="30" uuid="abd0319a-778e-46ef-b6e7-dea8d35de579"/>
+				<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

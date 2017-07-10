@@ -45,8 +45,21 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 	};
 		
 	var _imprimirRelatorioReceitas = function(dataInicial, dataFinal) {
-		var params = {dataInicial: dataInicial, dataFinal: dataFinal};
-		return $http.get(consts.BASE_URL + '/imprimirRelatorioReceitas', {params});
+		var inRelatorioDTO = {
+				dataInicial: dataInicial,
+				dataFinal: dataFinal
+		}; 
+		
+		return $http.post(consts.BASE_URL + '/imprimirRelatorioReceitas', inRelatorioDTO, {responseType:'arraybuffer'});
+	};
+	
+	var _imprimirRelatorioDespesas = function(dataInicial, dataFinal) {
+		var inRelatorioDTO = {
+				dataInicial: dataInicial,
+				dataFinal: dataFinal
+		}; 
+		
+		return $http.post(consts.BASE_URL + '/imprimirRelatorioDespesas', inRelatorioDTO, {responseType:'arraybuffer'});
 	};
 	
 	return {		
@@ -89,6 +102,7 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		listarDespesasPorPeriodo: _listarDespesasPorPeriodo,
 		listarConsultasPorPeriodo: _listarConsultasPorPeriodo,
 		listarConsultasNaoFinalizadasPorPeriodo: _listarConsultasNaoFinalizadasPorPeriodo,
-		imprimirRelatorioReceitas: _imprimirRelatorioReceitas
+		imprimirRelatorioReceitas: _imprimirRelatorioReceitas,
+		imprimirRelatorioDespesas: _imprimirRelatorioDespesas
 	};
 }]);

@@ -136,5 +136,5 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 	        		.authoritiesByUsernameQuery(PERMISSAO_POR_USUARIO)
 	        	.rolePrefix("ROLE_");
 		}
-	}
+	}		
 }

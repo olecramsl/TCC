@@ -832,8 +832,8 @@ public class AgendaController {
 			this.agendamentoRepositorio.save(agendamento);			
 		}
 				
-		if (psicologo.isVinculadoGCal()) {
-			try {
+		if ((psicologo.isVinculadoGCal()) && (agendamento.getIdGCalendar() != null || agendamento.getIdRecurring() != null)) {
+			try {				
 				this.excluirAgendamentoNoGoogleCalendar(agendamento, false);
 			} catch(GCalendarException ex) {						
 			}

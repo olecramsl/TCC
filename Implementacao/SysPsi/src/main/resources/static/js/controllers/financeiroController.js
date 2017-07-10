@@ -171,8 +171,7 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 		
 	ctrl.imprimirRelatorioReceitas = function(dataInicial, dataFinal) {
 		financeiroFactory.imprimirRelatorioReceitas(dataInicial, dataFinal).then(
-				successCallback = function(response) {
-					console.log(response);
+				successCallback = function(response) {					
 					var file = new Blob([response.data], {
 				    	type: 'application/pdf'
 				    });
@@ -184,6 +183,21 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 				}
 		);
 	};	
+	
+	ctrl.imprimirRelatorioDespesas = function(dataInicial, dataFinal) {
+		financeiroFactory.imprimirRelatorioDespesas(dataInicial, dataFinal).then(
+				successCallback = function(response) {					
+					var file = new Blob([response.data], {
+				    	type: 'application/pdf'
+				    });
+				    var fileURL = URL.createObjectURL(file);				    
+					window.open(fileURL);							
+				},
+				errorCallback = function(error) {
+					utilService.tratarExcecao(error);
+				}
+		);
+	};
 	
 	ctrl.dtInicio = new Date(moment().startOf('month').local());
 	ctrl.dtFim = new Date(moment().endOf('month').local());	
