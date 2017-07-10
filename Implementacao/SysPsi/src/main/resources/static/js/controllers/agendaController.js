@@ -38,7 +38,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 		  var time = moment();
 		  start = moment(start).hour(time.hour()).minute(time.minute()).second(0).millisecond(0);
 		  end = moment(start); // a consulta deve terminar no mesmo dia
-		  end.add(60, 'm');
+		  end.add(1, 'm');
 	  }
 		
 	  var dataInicialAgendamento = start.local();
@@ -71,7 +71,7 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
   
   var eventDrop = function(event, delta, revertFunc, jsEvent, ui, view) {	
   	  var oldEvent = angular.copy(event); // evento dropado			  
-	  
+	    	  
 	  var days = moment.duration(delta).days()*(-1);
 	  oldEvent.start.add(days, "d");
 	  oldEvent.end.add(days, "d");						
@@ -198,7 +198,10 @@ angular.module('syspsi').controller('AgendaCtrl', ['$scope', '$mdDialog', 'agend
 		  },
 		  errorCallback = function (error){			 
 			  utilService.hideWait();
-			  utilService.tratarExcecao(error);			  						
+			  utilService.tratarExcecao(error).then(function() {
+				  var view = angular.element('.calendar').fullCalendar('getView');
+				  listarAgendamento(view.start, view.end);
+			  });			  
 		  }
 	  );		  	 	 
   };                

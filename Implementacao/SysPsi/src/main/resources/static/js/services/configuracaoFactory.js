@@ -14,6 +14,6 @@ angular.module('syspsi').factory('configuracaoFactory', ['$http', 'consts', func
 	return {
 		isVinculadoGCal: _isVinculadoGCal,
 		exportarAgendamentoParaGoogleCalendar: _exportarAgendamentoParaGoogleCalendar,
-		desvincularAgendamentosDoGoogleCalendar: _desvincularAgendamentosDoGoogleCalendar
+		desvincularAgendamentosDoGoogleCalendar: _desvincularAgendamentosDoGoogleCalendar		
 	};
 }]);

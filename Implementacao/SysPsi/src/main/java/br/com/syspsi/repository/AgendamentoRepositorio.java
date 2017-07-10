@@ -18,7 +18,7 @@ public interface AgendamentoRepositorio extends CrudRepository<Agendamento, Long
 			+ "INNER JOIN p.psicologo ps "					
 			+ "WHERE a.grupo = ?1 "
 			+ "AND a.eventoPrincipal = true "
-			+ "AND ps = ?3")
+			+ "AND ps = ?2")
 	public Agendamento listarEventoPrincipalPorGrupoEPsicologo(Long grupo, Psicologo psicologo);	
 	@Query("SELECT a FROM Agendamento a "
 			+ "INNER JOIN a.paciente p "

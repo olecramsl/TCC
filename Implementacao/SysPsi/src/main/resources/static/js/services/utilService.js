@@ -14,7 +14,7 @@ angular.module('syspsi').service('utilService', ['$rootScope', '$mdDialog', func
 			msg = error;
 		}
 		
-		$mdDialog.show(
+		return $mdDialog.show(
 			$mdDialog.alert()
 				.clickOutsideToClose(true)
 				.title('Algo saiu errado ...')
