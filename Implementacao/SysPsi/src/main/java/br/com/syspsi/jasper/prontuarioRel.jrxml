@@ -2,17 +2,13 @@
 <!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 6.4.1  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Simple_Blue" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9a0049cc-bb59-401f-a7b1-1520cb5d8d36">
 	<import value="br.com.syspsi.model.entity.Agendamento"/>
-	<parameter name="dataInicial" class="java.util.Calendar"/>
-	<parameter name="dataFinal" class="java.util.Calendar"/>
 	<parameter name="nomePaciente" class="java.lang.String">
 		<parameterDescription><![CDATA[]]></parameterDescription>
 	</parameter>
+	<parameter name="consulta" class="br.com.syspsi.model.entity.Consulta"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="consulta" class="br.com.syspsi.model.entity.Consulta">
-		<fieldDescription><![CDATA[consulta]]></fieldDescription>
-	</field>
 	<group name="Group1">
 		<groupFooter>
 			<band/>
@@ -37,39 +33,8 @@
 					<textElement textAlignment="Right">
 						<font size="14" isBold="false"/>
 					</textElement>
-					<text><![CDATA[Relatório de Prontuários]]></text>
+					<text><![CDATA[Relatório de Prontuário]]></text>
 				</staticText>
-				<textField pattern="dd/MM/yy">
-					<reportElement x="424" y="63" width="60" height="20" forecolor="#FFFFFF" uuid="72ce4061-a972-4575-9036-285fea828e70">
-						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-					</reportElement>
-					<textElement>
-						<font size="14"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{dataInicial}.getTime()]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement x="486" y="63" width="10" height="20" forecolor="#FFFFFF" uuid="53897cf3-65e7-4727-b572-8c1bbc051353"/>
-					<textElement>
-						<font size="14"/>
-					</textElement>
-					<text><![CDATA[a]]></text>
-				</staticText>
-				<textField pattern="dd/MM/yy">
-					<reportElement x="503" y="63" width="60" height="20" forecolor="#FFFFFF" uuid="226c2ad8-f5c5-42a0-aee6-7b16b3625eed">
-						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
-					</reportElement>
-					<textElement>
-						<font size="14"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$P{dataFinal}.getTime()]]></textFieldExpression>
-				</textField>
 			</frame>
 		</band>
 	</title>
@@ -88,21 +53,21 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="58">
+		<band height="70">
 			<staticText>
 				<reportElement x="0" y="0" width="100" height="30" uuid="cef06333-45a2-4a59-b803-5c52f9648fe4"/>
 				<text><![CDATA[Consulta realizada em]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy HH:mm">
 				<reportElement x="101" y="0" width="100" height="30" uuid="50dd5005-2282-4a99-9109-e394794b1878"/>
-				<textFieldExpression><![CDATA[$F{consulta}.getInicio().getTime()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{consulta}.getInicio().getTime()]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="0" y="20" width="555" height="1" forecolor="#666666" uuid="89f9d754-05b9-4400-91dc-2de199e0885f"/>
 			</line>
 			<textField>
-				<reportElement x="0" y="28" width="100" height="30" uuid="6624e8ce-4dad-4e3c-ac0a-17949e420b59"/>
-				<textFieldExpression><![CDATA[$F{consulta}.getProntuario()]]></textFieldExpression>
+				<reportElement x="0" y="30" width="100" height="30" uuid="6624e8ce-4dad-4e3c-ac0a-17949e420b59"/>
+				<textFieldExpression><![CDATA[$P{consulta}.getProntuario()]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

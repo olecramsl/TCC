@@ -27,6 +27,7 @@ import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.DespesaRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @RestController
@@ -239,6 +240,54 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 	        params.put("datasource", beanColDataSource);
 
 	        logMessage("RelatorioController.imprimirRelatorioProntuarios: fim", false);
+	        return new ModelAndView(view, params);	        						           	       																						
+		} catch(Exception ex) {
+			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			
+			throw new Exception("Não foi possível gerar o relatório");
+		}
+	}
+	
+	@RequestMapping(
+			value = "/imprimirRelatorioProntuario", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public ModelAndView imprimirRelatorioProntuario(@RequestBody Agendamento agendamento, 
+			Principal user) throws Exception {	
+		logMessage("RelatorioController.imprimirRelatorioProntuario: início", false);								
+		
+		Psicologo psicologo;
+		if (user != null) {			
+			logMessage("user.getName(): " + user.getName(), false);
+			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}		
+		} else {
+			logMessage("User nulo em getPsicologoLogado", true);
+			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+		}	
+		
+		try {			
+			agendamento.getConsulta().setProntuario(agendamento.getConsulta().getProntuario().replaceAll("<.*?>", ""));
+			JasperReportsPdfView view = new JasperReportsPdfView();
+	        view.setUrl("classpath:br/com/syspsi/jasper/prontuarioRel.jrxml");
+	        view.setApplicationContext(appContext);
+	        view.setContentType("application/pdf");	    
+	        view.setReportDataKey("datasource");
+	        	        
+	        Properties p = new Properties();
+	        p.setProperty("Content-disposition", "inline; filename=\"relatorioDespesas.pdf\"");
+	        view.setHeaders(p);
+
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("nomePaciente", agendamento.getPaciente().getNomeExibicao());	        
+	        params.put("consulta", agendamento.getConsulta());
+	        params.put("datasource", new JREmptyDataSource());
+
+	        logMessage("RelatorioController.imprimirRelatorioProntuario: fim", false);
 	        return new ModelAndView(view, params);	        						           	       																						
 		} catch(Exception ex) {
 			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			

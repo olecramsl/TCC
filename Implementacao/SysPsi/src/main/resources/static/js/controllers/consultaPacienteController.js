@@ -247,4 +247,19 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 				}
 		);
 	};
+	
+	ctrl.imprimirRelatorioProntuario = function(agendamento) {
+		consultaPacienteFactory.imprimirRelatorioProntuario(agendamento).then(
+				successCallback = function(response) {					
+					var file = new Blob([response.data], {
+				    	type: 'application/pdf'
+				    });
+				    var fileURL = URL.createObjectURL(file);				    
+					window.open(fileURL);							
+				},
+				errorCallback = function(error) {
+					utilService.tratarExcecao(error);
+				}
+		);
+	};
 }]);

@@ -17,6 +17,10 @@ angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'consts', 
 		return $http.post(consts.BASE_URL + '/imprimirRelatorioProntuarios', inRelatorioDTO, {responseType:'arraybuffer'});
 	};
 	
+	var _imprimirRelatorioProntuario = function(agendamento) {		
+		return $http.post(consts.BASE_URL + '/imprimirRelatorioProntuario', agendamento, {responseType:'arraybuffer'});
+	};
+	
 	return {
 		getAgendamento: function() { return _agendamento; },
 		setAgendamento: function(agendamento) { _agendamento = agendamento; },
@@ -45,6 +49,7 @@ angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'consts', 
 		getConteudoProntuarioMudou: function() { return _conteudoProntuarioMudou; },
 		setConteudoProntuarioMudou: function(conteudoProntuarioMudou) { _conteudoProntuarioMudou = conteudoProntuarioMudou; },
 		salvarConsultaPaciente: _salvarConsultaPaciente,
-		imprimirRelatorioProntuarios: _imprimirRelatorioProntuarios
+		imprimirRelatorioProntuarios: _imprimirRelatorioProntuarios,
+		imprimirRelatorioProntuario: _imprimirRelatorioProntuario
 	};	
 }]);
