@@ -8,7 +8,8 @@
 	<title>Syspsi</title>
 		
 	<link href="lib/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css" >
-	<link href="lib/angular-material/angular-material-1.1.0.min.css" rel="stylesheet" type="text/css" >	 	
+	<!-- <link href="lib/angular-material/angular-material-1.1.0.min.css" rel="stylesheet" type="text/css" > -->
+	<link href="lib/angular-material/angular-material-1.1.4.min.css" rel="stylesheet" type="text/css" > 	 	
 	<link href="lib/clockpicker/bootstrap-clockpicker.min.css" rel="stylesheet" type="text/css" >
 	<link href='lib/fullcalendar/fullcalendar-3.1.0.min.css' rel='stylesheet' type="text/css" />
 	<link href='lib/fullcalendar/fullcalendar.print-3.1.0.min.css' rel='stylesheet' type="text/css" media='print' />				
@@ -32,16 +33,7 @@
 		}
 	</style>
 </head>
-<body ng-cloak class="ng-cloak">
-	<!-- 
-	<div ng-controller="navigation" class="container">
-		<ul class="nav nav-pills" role="tablist">
-			<li class="active"><a href="#/dashboard">home</a></li>
-			<li><a href="#/login">login</a></li>
-			<li ng-show="authenticated"><a href="" ng-click="logout()">logout</a></li>
-		</ul>
-	</div>
-	 -->	
+<body ng-cloak class="ng-cloak">	
 	<div ng-controller="LoginCtrl as ctrl">		
 		<div ng-show="!authenticated">
 		    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
@@ -183,13 +175,22 @@
 	<div ng-view ng-show="authenticated"></div>		 	
 		
 	<script type="text/javascript" src='lib/jquery-3.2.1.min.js'></script>
+	<!-- 
 	<script type="text/javascript" src='lib/angular-1.5.9.min.js'></script>
-	<script type="text/javascript" src='lib/angular-route-1.5.9.min.js'></script>
 	<script type="text/javascript" src='lib/angular-animate-1.5.9.min.js'></script>
 	<script type="text/javascript" src='lib/angular-aria-1.5.9.min.js'></script>	
 	<script type="text/javascript" src='lib/angular-messages-1.5.9.min.js'></script>
+	 -->
+	<script type="text/javascript" src='lib/angular-1.5.11.min.js'></script>
+	<script type="text/javascript" src='lib/angular-animate-1.5.11.min.js'></script>
+	<script type="text/javascript" src='lib/angular-aria-1.5.11.min.js'></script>	
+	<script type="text/javascript" src='lib/angular-messages-1.5.11.min.js'></script>
+	 
+	 
+	<script type="text/javascript" src='lib/angular-route-1.5.9.min.js'></script>	
 	<script type="text/javascript" src='lib/bootstrap/bootstrap.min.js'></script>		 	
-	<script type="text/javascript" src='lib/angular-material/angular-material-1.1.0.min.js'></script>  	   	
+	<!-- <script type="text/javascript" src='lib/angular-material/angular-material-1.1.0.min.js'></script> -->
+	<script type="text/javascript" src='lib/angular-material/angular-material-1.1.4.min.js'></script>   	   	
 	<script type="text/javascript" src='lib/moment/moment-2.17.1.min.js'></script>	
 	<script type="text/javascript" src='lib/fullcalendar/fullcalendar-3.1.0.min.js'></script>
 	<script type="text/javascript" src='lib/fullcalendar/calendar.js'></script>

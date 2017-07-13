@@ -1,5 +1,4 @@
 angular.module('syspsi', ['ngRoute', 'ngMaterial', 'ngIdle']).constant("consts", {
-	//BASE_URL: "https://192.168.0.5:8443",
 	BASE_URL: "https://localhost:8443",
 	TIPOS_CONFIRMACOES: {
 		'REMOVER_EVENTOS_FUTUROS': 1,

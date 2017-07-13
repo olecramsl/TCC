@@ -234,8 +234,11 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 	}
 	
 	ctrl.imprimirRelatorioProntuarios = function(dataInicial, dataFinal, paciente) {
+		utilService.setMessage("Gerando relatório ...");
+		utilService.showWait();
 		consultaPacienteFactory.imprimirRelatorioProntuarios(dataInicial, dataFinal, paciente).then(
-				successCallback = function(response) {					
+				successCallback = function(response) {
+					utilService.hideWait();
 					var file = new Blob([response.data], {
 				    	type: 'application/pdf'
 				    });
@@ -243,14 +246,18 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 					window.open(fileURL);							
 				},
 				errorCallback = function(error) {
+					utilService.hideWait();
 					utilService.tratarExcecao(error);
 				}
 		);
 	};
 	
 	ctrl.imprimirRelatorioProntuario = function(agendamento) {
+		utilService.setMessage("Gerando relatório ...");
+		utilService.showWait();
 		consultaPacienteFactory.imprimirRelatorioProntuario(agendamento).then(
-				successCallback = function(response) {					
+				successCallback = function(response) {
+					utilService.hideWait();
 					var file = new Blob([response.data], {
 				    	type: 'application/pdf'
 				    });
@@ -258,6 +265,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 					window.open(fileURL);							
 				},
 				errorCallback = function(error) {
+					utilService.hideWait();
 					utilService.tratarExcecao(error);
 				}
 		);

@@ -170,8 +170,11 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 	};
 		
 	ctrl.imprimirRelatorioReceitas = function(dataInicial, dataFinal) {
+		utilService.setMessage("Gerando relatório ...");
+		utilService.showWait();
 		financeiroFactory.imprimirRelatorioReceitas(dataInicial, dataFinal).then(
-				successCallback = function(response) {					
+				successCallback = function(response) {	
+					utilService.hideWait();			
 					var file = new Blob([response.data], {
 				    	type: 'application/pdf'
 				    });
@@ -179,14 +182,18 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 					window.open(fileURL);							
 				},
 				errorCallback = function(error) {
+					utilService.hideWait();
 					utilService.tratarExcecao(error);
 				}
 		);
 	};	
 	
 	ctrl.imprimirRelatorioDespesas = function(dataInicial, dataFinal) {
+		utilService.setMessage("Gerando relatório ...");
+		utilService.showWait();
 		financeiroFactory.imprimirRelatorioDespesas(dataInicial, dataFinal).then(
-				successCallback = function(response) {					
+				successCallback = function(response) {
+					utilService.hideWait();
 					var file = new Blob([response.data], {
 				    	type: 'application/pdf'
 				    });
@@ -194,6 +201,7 @@ angular.module('syspsi').controller('FinanceiroCtrl',['$scope', '$mdDialog', 'fi
 					window.open(fileURL);							
 				},
 				errorCallback = function(error) {
+					utilService.hideWait();
 					utilService.tratarExcecao(error);
 				}
 		);

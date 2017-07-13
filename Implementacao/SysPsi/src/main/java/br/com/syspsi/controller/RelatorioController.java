@@ -96,7 +96,7 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 					new JRBeanCollectionDataSource(lstAgendamentos);
 								
 			JasperReportsPdfView view = new JasperReportsPdfView();
-	        view.setUrl("classpath:br/com/syspsi/jasper/receitasRel.jrxml");
+	        view.setUrl("classpath:br/com/syspsi/jasper/receitasRel.jrxml");	        
 	        view.setApplicationContext(appContext);
 	        view.setContentType("application/pdf");	        
 	        view.setReportDataKey("datasource");
@@ -215,8 +215,7 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 			   if (ag.getConsulta().getProntuario() == null) {
 				   i.remove();
 			   } else {
-				   ag.getConsulta().setProntuario(Util.decrypt(ag.getConsulta().getProntuario(), psicologo));
-				   ag.getConsulta().setProntuario(ag.getConsulta().getProntuario().replaceAll("<.*?>", ""));
+				   ag.getConsulta().setProntuario(Util.decrypt(ag.getConsulta().getProntuario(), psicologo));				   
 			   }
 			}
 														
@@ -226,7 +225,7 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 			JasperReportsPdfView view = new JasperReportsPdfView();
 	        view.setUrl("classpath:br/com/syspsi/jasper/prontuariosRel.jrxml");
 	        view.setApplicationContext(appContext);
-	        view.setContentType("application/pdf");	        
+	        view.setContentType("application/pdf");	        	        
 	        view.setReportDataKey("datasource");
 	        	        
 	        Properties p = new Properties();
@@ -270,8 +269,7 @@ private final static Logger logger = Logger.getLogger(CadastroController.class);
 			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 		}	
 		
-		try {			
-			agendamento.getConsulta().setProntuario(agendamento.getConsulta().getProntuario().replaceAll("<.*?>", ""));
+		try {												
 			JasperReportsPdfView view = new JasperReportsPdfView();
 	        view.setUrl("classpath:br/com/syspsi/jasper/prontuarioRel.jrxml");
 	        view.setApplicationContext(appContext);

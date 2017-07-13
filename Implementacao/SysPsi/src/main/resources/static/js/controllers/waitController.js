@@ -4,6 +4,6 @@ angular.module('syspsi').controller('WaitCtrl', ['$mdDialog', '$rootScope', '$sc
 	$scope.message = utilService.getMessage();
 	
 	$rootScope.$on("hide_wait", function (event, args) {
-		$mdDialog.cancel();
+		$mdDialog.hide();
     });
 }]);
