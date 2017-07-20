@@ -2,7 +2,8 @@ package br.com.syspsi.controller;
 
 import java.security.Principal;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,11 +25,10 @@ public class ConsultaController {
 	@Autowired
 	private PsicologoRepositorio psicologoRepositorio;
 	
-	private final static Logger logger = Logger.getLogger(CadastroController.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(ConsultaController.class);	
 	private static void logMessage(String msg, boolean error) {
-    	if(!error && logger.isDebugEnabled()){
-    	    logger.debug(msg);
+    	if(!error){
+    		logger.debug(msg);
     	}
 
     	//logs an error message with parameter
@@ -36,7 +36,7 @@ public class ConsultaController {
     		logger.error(msg);
     	}
     }
-	
+		
 	/**
 	 * Salva um prontuario no BD
 	 * @param consulta o prontuário a ser persistido no BD

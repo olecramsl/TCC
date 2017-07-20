@@ -8,18 +8,18 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import br.com.syspsi.controller.FinanceiroController;
 import br.com.syspsi.model.entity.Psicologo;
 
-public class Util {
-	private final static Logger logger = Logger.getLogger(FinanceiroController.class);
+public class Util {	
 	private static String key = "$tM4l8OhfQ6&6f%#";
 	
+	private static final Logger logger = LoggerFactory.getLogger(Util.class);	
 	private static void logMessage(String msg, boolean error) {
-    	if(!error && logger.isDebugEnabled()){
-    	    logger.debug(msg);
+    	if(!error){
+    		logger.debug(msg);
     	}
 
     	//logs an error message with parameter

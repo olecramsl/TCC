@@ -2,7 +2,8 @@ package br.com.syspsi.controller;
 
 import java.security.Principal;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,18 +19,17 @@ public class PsicologoController {
 	@Autowired
 	private PsicologoRepositorio psicologoRepositorio;
 	
-	private final static Logger logger = Logger.getLogger(CadastroController.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(PsicologoController.class);	
 	private static void logMessage(String msg, boolean error) {
-    	if(!error && logger.isDebugEnabled()){
-    	    logger.debug(msg);
+    	if(!error){
+    		logger.debug(msg);
     	}
 
     	//logs an error message with parameter
     	if (error) {
     		logger.error(msg);
     	}
-    }	
+    }
 	
 	@RequestMapping(
 			value = "/isVinculadoGCal", 

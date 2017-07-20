@@ -11,6 +11,15 @@ server:
     key-store-password: 123456
     keyStoreType: PKCS12
     keyAlias: tomcat
+      
+logging:  
+  path: ${HOMEPATH}/logsSysPsi    
+  pattern:    
+    file: '%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n'     
+  level: 
+    root: ERROR
+    br.com.syspsi: DEBUG
+    
     
 backup:
   # Indicar onde os backups devem ser salvos

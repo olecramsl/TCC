@@ -8,7 +8,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -48,14 +47,12 @@ public class SysPsiApplication extends SpringBootServletInitializer {
 	private String dbUsername;
 
 	@Value("${spring.datasource.password}")
-	private String dbPassword;
-	
-	private final static Logger logger = Logger.getLogger(SysPsiApplication.class);
+	private String dbPassword;		
 	
 	@PostConstruct
 	void started() {
 		TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
-	}
+	}	
 	
 	@Bean
 	public DataSource dataSource() throws Exception {							

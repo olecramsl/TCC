@@ -7,7 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,9 +29,7 @@ import br.com.syspsi.repository.DespesaRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
 
 @RestController
-public class FinanceiroController {
-	private final static Logger logger = Logger.getLogger(FinanceiroController.class);
-	
+public class FinanceiroController {		
 	@Autowired
 	private DespesaRepositorio despesaRepositorio;
 	
@@ -40,10 +39,10 @@ public class FinanceiroController {
 	@Autowired
 	private PsicologoRepositorio psicologoRepositorio;
 	
-	
+	private static final Logger logger = LoggerFactory.getLogger(FinanceiroController.class);	
 	private static void logMessage(String msg, boolean error) {
-    	if(!error && logger.isDebugEnabled()){
-    	    logger.debug(msg);
+    	if(!error){
+    		logger.debug(msg);
     	}
 
     	//logs an error message with parameter
@@ -51,6 +50,7 @@ public class FinanceiroController {
     		logger.error(msg);
     	}
     }
+	
 	
 	@RequestMapping(
 			value="/salvarDespesa",
