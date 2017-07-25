@@ -277,7 +277,7 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -- Cria usuário da aplicação:
 
-CREATE USER 'USERSYSPSIAPP'@'LOCALHOST' IDENTIFIED BY '@Rtu3v!xK0l#';
+CREATE USER 'USERSYSPSIAPP'@'LOCALHOST' IDENTIFIED BY '$hm5RW!p93Y7sA%';
 
 --
 -- Configura permissões do usuário da aplicação:

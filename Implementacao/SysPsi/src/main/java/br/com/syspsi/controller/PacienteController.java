@@ -42,17 +42,15 @@ public class PacienteController {
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE
 			)
-	public List<Paciente> listarAniversariantesDoMes(Principal user) throws Exception {
-		logMessage("PacienteController.listarAniversariantesDoMes: início", false);
+	public List<Paciente> listarAniversariantesDoMes(Principal user) throws Exception {		
 		try {
 			Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
 			
 			List<Paciente> lstAniversariantes = 
-					this.pacienteRepositorio.listarAniversariantesDoMes(psicologo); 
-			logMessage("PacienteController.listarAniversariantesDoMes: fim", false);
+					this.pacienteRepositorio.listarAniversariantesDoMes(psicologo); 			
 			return lstAniversariantes;
 		} catch(Exception ex) {
-			logMessage("Erro ao buscar aniversariantes: " + ex.getMessage(), true);
+			logMessage("listarAniversariantesDoMes - Erro: " + ex.getMessage(), true);
 			throw new Exception();
 		}
 	}

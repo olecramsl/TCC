@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.syspsi.exception.FinanceiroException;
 import br.com.syspsi.model.Util;
 import br.com.syspsi.model.dto.InDespesaDTO;
 import br.com.syspsi.model.dto.OutDespesaDTO;
@@ -59,48 +60,52 @@ public class FinanceiroController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public OutDespesaDTO salvarDespesa(@RequestBody InDespesaDTO inDespesaDTO, Principal user) 
-			throws Exception {
-		logMessage("FinanceiroController.salvarDespesa: início", false);
-		
-		if (user == null) {
-			logMessage("user nulo", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
-		
-		//Psicologo psicologo = LoginController.getPsicologoLogado();
-		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}	
-		
-		Despesa despesa = inDespesaDTO.getDespesa();
-		if (despesa == null) {
-			logMessage("despesa null", true);
-			throw new Exception("Não foi possível excluir a despesa!");
-		}
-		
-		if (inDespesaDTO.getDataInicial() == null) {
-			logMessage("dataInicial null", true);
-			throw new Exception("Não foi possível excluir a despesa!");
-		}
-		
-		if (inDespesaDTO.getDataFinal() == null) {
-			logMessage("dataFinal null", true);
-			throw new Exception("Não foi possível excluir a despesa!");
-		}
-				
-		despesa.setPsicologo(psicologo);
-		
+			throws Exception {		
 		try {
-			this.despesaRepositorio.save(despesa);
-			OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(inDespesaDTO.getDataInicial(), 
-					inDespesaDTO.getDataFinal(), psicologo);
+			if (user == null) {
+				logMessage("user nulo", true);
+				throw new FinanceiroException("Erro ao carregar psicólogo. Faça login novamente.");
+			}
 			
-			logMessage("FinanceiroController.salvarDespesa: fim", false);
-			return outDespesaDTO;
+			//Psicologo psicologo = LoginController.getPsicologoLogado();
+			Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("salvarDespesa - Psicólogo nulo em getPsicologoLogado", true);
+				throw new FinanceiroException("Erro ao carregar psicólogo. Faça login novamente.");
+			}	
+			
+			Despesa despesa = inDespesaDTO.getDespesa();
+			if (despesa == null) {
+				logMessage("salvarDespesa - despesa null", true);
+				throw new FinanceiroException("Não foi possível excluir a despesa!");
+			}
+			
+			if (inDespesaDTO.getDataInicial() == null) {
+				logMessage("salvarDespesa - dataInicial null", true);
+				throw new FinanceiroException("Não foi possível excluir a despesa!");
+			}
+			
+			if (inDespesaDTO.getDataFinal() == null) {
+				logMessage("salvarDespesa - dataFinal null", true);
+				throw new FinanceiroException("Não foi possível excluir a despesa!");
+			}
+					
+			despesa.setPsicologo(psicologo);
+			
+			try {
+				this.despesaRepositorio.save(despesa);
+				OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(inDespesaDTO.getDataInicial(), 
+						inDespesaDTO.getDataFinal(), psicologo);
+								
+				return outDespesaDTO;
+			} catch(Exception ex) {
+				logMessage("salvarDespesa - Erro ao salvar: " + ex.getMessage(), true);
+				throw new FinanceiroException("Não foi possível salvar a despesa.");
+			}
+		} catch(FinanceiroException ex) {
+			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
-			logMessage("Erro ao salvar: " + ex.getMessage(), true);
+			logMessage("salvarDespesa - Erro ao salvar: " + ex.getMessage(), true);
 			throw new Exception("Não foi possível salvar a despesa.");
 		}
 	}
@@ -112,42 +117,46 @@ public class FinanceiroController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public OutDespesaDTO excluirDespesa(@RequestBody InDespesaDTO inDespesaDTO, Principal user) 
-			throws Exception {
-		logMessage("FinanceiroController.excluirDespesa: início", false);
-		
-		if (user == null) {
-			logMessage("user nulo", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
-		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-		
-		Despesa despesa = inDespesaDTO.getDespesa();		
-		if (despesa == null) {
-			logMessage("FinanceiroController.excluirDespesa: despesa null", true);
-			throw new Exception("Não foi possível excluir a despesa!");
-		}
-		
-		if (inDespesaDTO.getDataInicial() == null) {
-			logMessage("FinanceiroController.excluirDespesa: dataInicial null", true);
-			throw new Exception("Não foi possível excluir a despesa!");
-		}
-		
-		if (inDespesaDTO.getDataFinal() == null) {
-			logMessage("FinanceiroController.excluirDespesa: dataFinal null", true);
-			throw new Exception("Não foi possível excluir a despesa!");
-		}
-		
-		try {			
-			this.despesaRepositorio.delete(despesa);
-			OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(inDespesaDTO.getDataInicial(), 
-					inDespesaDTO.getDataFinal(), psicologo);
-			logMessage("FinanceiroController.excluirDespesa: fim", false);
+			throws Exception {		
+		try {
+			if (user == null) {
+				logMessage("excluirDespesa - user nulo", true);
+				throw new FinanceiroException("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+			Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
 			
-			return outDespesaDTO;
-		} catch (Exception ex) {
-			logMessage("FinanceiroController.excluirDespesa: " + ex.getMessage(), true);
-			throw new Exception("Não foi possível excluir a despesa!");
-		}					
+			Despesa despesa = inDespesaDTO.getDespesa();		
+			if (despesa == null) {
+				logMessage("excluirDespesa - despesa null", true);
+				throw new FinanceiroException("Não foi possível excluir a despesa!");
+			}
+			
+			if (inDespesaDTO.getDataInicial() == null) {
+				logMessage("excluirDespesa - dataInicial null", true);
+				throw new FinanceiroException("Não foi possível excluir a despesa!");
+			}
+			
+			if (inDespesaDTO.getDataFinal() == null) {
+				logMessage("excluirDespesa - dataFinal null", true);
+				throw new FinanceiroException("Não foi possível excluir a despesa!");
+			}
+			
+			try {			
+				this.despesaRepositorio.delete(despesa);
+				OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(inDespesaDTO.getDataInicial(), 
+						inDespesaDTO.getDataFinal(), psicologo);				
+				
+				return outDespesaDTO;
+			} catch (Exception ex) {
+				logMessage("excluirDespesa - erro: " + ex.getMessage(), true);
+				throw new FinanceiroException("Não foi possível excluir a despesa!");
+			}	
+		} catch(FinanceiroException ex) {
+			throw new Exception(ex.getMessage());
+		} catch(Exception ex) {
+			logMessage("salvarDespesa - Erro ao salvar: " + ex.getMessage(), true);
+			throw new Exception("Não foi possível salvar a despesa.");
+		}
 	}
 	
 	@RequestMapping(
@@ -157,29 +166,32 @@ public class FinanceiroController {
 			)
 	public OutDespesaDTO listarDespesas(@RequestParam("dataInicial") String dataInicial, 
 			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {
-		
-		logMessage("FinanceitoController.listarDespesas: início", false);
-		
-		if (user == null) {
-			logMessage("user nulo", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
-		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-		
-		Calendar di = Calendar.getInstance();
-		Calendar df = Calendar.getInstance();				
 		try {
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-			di.setTime(format.parse(dataInicial));
-			df.setTime(format.parse(dataFinal));
-		} catch (ParseException e) {
-			logMessage("Formato de data inválido", true);
-			throw new Exception("Erro ao listar despesas: formato de data inválido.");
-		}				
-				
-		OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(di, df, psicologo);
-		logMessage("FinanceitoController.listarDespesas: fim", false);
-		return outDespesaDTO;
+			if (user == null) {
+				logMessage("listarDespesas - user nulo", true);
+				throw new FinanceiroException("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+			Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			
+			Calendar di = Calendar.getInstance();
+			Calendar df = Calendar.getInstance();				
+			try {
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				di.setTime(format.parse(dataInicial));
+				df.setTime(format.parse(dataFinal));
+			} catch (ParseException e) {
+				logMessage("listarDespesas - Formato de data inválido", true);
+				throw new FinanceiroException("Erro ao listar despesas: formato de data inválido.");
+			}				
+					
+			OutDespesaDTO outDespesaDTO = prepararOutDespesaDTO(di, df, psicologo);			
+			return outDespesaDTO;
+		} catch(FinanceiroException ex) {
+			throw new Exception(ex.getMessage());
+		} catch(Exception ex) {
+			logMessage("listarDespesas - Erro: " + ex.getMessage(), true);
+			throw new Exception("Não foi possível listar as despesas.");
+		}
 	}
 	
 	@RequestMapping(
@@ -188,51 +200,55 @@ public class FinanceiroController {
 			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
 	public OutReceitaDTO listarConsultasPorPeriodo(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {
-		logMessage("ConsultaController.listarConsultasPorPeriodo: início", false);
-		
-		if (user == null) {
-			logMessage("user nulo", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}						
-		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar di = Calendar.getInstance();
-		Calendar df = Calendar.getInstance();		
-		
+			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {		
 		try {
-			di.setTime(format.parse(dataInicial));
-			df.setTime(format.parse(dataFinal));
-		} catch (ParseException e) {
-			logMessage("Formato de data inválido", true);
-			throw new Exception("Erro ao listar agendamentos: formato de data inválido.");
-		}		
-		
-		//Psicologo psicologo = LoginController.getPsicologoLogado();
-		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
-				
-		try {
-			OutReceitaDTO outReceitaDTO = new OutReceitaDTO();
-			outReceitaDTO.setLstAgendamentos(this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo));
+			if (user == null) {
+				logMessage("listarConsultasPorPeriodo - user nulo", true);
+				throw new FinanceiroException("Erro ao carregar psicólogo. Faça login novamente.");
+			}						
 			
-			BigDecimal totalConsultas = new BigDecimal(0);
-			for (Agendamento agendamento : outReceitaDTO.getLstAgendamentos()) {				
-				totalConsultas = totalConsultas.add(agendamento.getConsulta().getValor());
-				if (agendamento.getConsulta().getProntuario() != null && !agendamento.getConsulta().getProntuario().isEmpty()) {
-					agendamento.getConsulta().setProntuario(Util.decrypt(agendamento.getConsulta().getProntuario(), psicologo));
-				}
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar di = Calendar.getInstance();
+			Calendar df = Calendar.getInstance();		
+			
+			try {
+				di.setTime(format.parse(dataInicial));
+				df.setTime(format.parse(dataFinal));
+			} catch (ParseException e) {
+				logMessage("listarConsultasPorPeriodo - Formato de data inválido", true);
+				throw new FinanceiroException("Erro ao listar agendamentos: formato de data inválido.");
+			}		
+			
+			//Psicologo psicologo = LoginController.getPsicologoLogado();
+			Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("listarConsultasPorPeriodo - Psicólogo nulo.", true);
+				throw new FinanceiroException("Erro ao carregar psicólogo. Faça login novamente.");
 			}
-			outReceitaDTO.setTotalConsultas(totalConsultas);
-			logMessage("ConsultaController.listarConsultasPorPeriodo: Fim", false);
-		
-			return outReceitaDTO;
+					
+			try {
+				OutReceitaDTO outReceitaDTO = new OutReceitaDTO();
+				outReceitaDTO.setLstAgendamentos(this.agendamentoRepositorio.listarConsultasPorPeriodo(di, df, psicologo));
+				
+				BigDecimal totalConsultas = new BigDecimal(0);
+				for (Agendamento agendamento : outReceitaDTO.getLstAgendamentos()) {				
+					totalConsultas = totalConsultas.add(agendamento.getConsulta().getValor());
+					if (agendamento.getConsulta().getProntuario() != null && !agendamento.getConsulta().getProntuario().isEmpty()) {
+						agendamento.getConsulta().setProntuario(Util.decrypt(agendamento.getConsulta().getProntuario(), psicologo));
+					}
+				}
+				outReceitaDTO.setTotalConsultas(totalConsultas);				
+			
+				return outReceitaDTO;
+			} catch(Exception ex) {
+				logMessage("listarConsultasPorPeriodo - Erro: " + ex.getMessage(), true);
+				throw new FinanceiroException("Não foi possível listar as receitas");
+			}
+		} catch(FinanceiroException ex) {
+			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
-			logMessage("Erro ao listar consultas: " + ex.getMessage(), true);
-			throw new Exception("Não foi possível listar as receitas!");
+			logMessage("listarConsultasPorPeriodo - Erro: " + ex.getMessage(), true);
+			throw new Exception("Não foi possível listar as receitas.");
 		}
 	}
 	
@@ -242,75 +258,82 @@ public class FinanceiroController {
 			produces = MediaType.APPLICATION_JSON_VALUE			
 			)
 	public List<Agendamento> listarConsultasNaoFinalizadasPorPeriodo(@RequestParam("dataInicial") String dataInicial, 
-			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {
-		logMessage("ConsultaController.listarConsultasNaoFinalizadasPorPeriodo: início", false);
-		
-		if (user == null) {
-			logMessage("user nulo", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}						
-		
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Calendar di = Calendar.getInstance();
-		Calendar df = Calendar.getInstance();		
-		
+			@RequestParam("dataFinal") String dataFinal, Principal user) throws Exception {		
 		try {
-			di.setTime(format.parse(dataInicial));
-			df.setTime(format.parse(dataFinal));
-		} catch (ParseException e) {
-			logMessage("Formato de data inválido", true);
-			throw new Exception("Erro ao listar agendamentos: formato de data inválido.");
-		}		
-		
-		//Psicologo psicologo = LoginController.getPsicologoLogado();
-		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
-				
-		try {			
-			List<Agendamento> lstAgendamentos = 
-					this.agendamentoRepositorio.listarConsultasNaoFinalizadasPorPeriodo(di, df, psicologo);
-		
-			logMessage("ConsultaController.listarConsultasNaoFinalizadasPorPeriodo: Fim", false);
-		
-			return lstAgendamentos;
+			if (user == null) {
+				logMessage("listarConsultasNaoFinalizadasPorPeriodo - user nulo", true);
+				throw new FinanceiroException("Erro ao carregar psicólogo. Faça login novamente.");
+			}						
+			
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar di = Calendar.getInstance();
+			Calendar df = Calendar.getInstance();		
+			
+			try {
+				di.setTime(format.parse(dataInicial));
+				df.setTime(format.parse(dataFinal));
+			} catch (ParseException e) {
+				logMessage("listarConsultasNaoFinalizadasPorPeriodo - Formato de data inválido", true);
+				throw new FinanceiroException("Erro ao listar agendamentos: formato de data inválido.");
+			}		
+			
+			//Psicologo psicologo = LoginController.getPsicologoLogado();
+			Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			if (psicologo == null) {
+				logMessage("listarConsultasNaoFinalizadasPorPeriodo - Psicólogo nulo.", true);
+				throw new FinanceiroException("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+					
+			try {			
+				List<Agendamento> lstAgendamentos = 
+						this.agendamentoRepositorio.listarConsultasNaoFinalizadasPorPeriodo(di, df, psicologo);						
+			
+				return lstAgendamentos;
+			} catch(Exception ex) {
+				logMessage("listarConsultasNaoFinalizadasPorPeriodo - Erro: " + ex.getMessage(), true);
+				throw new Exception("Não foi possível listar as consultas.");
+			}
+		} catch(FinanceiroException ex) {
+			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
-			logMessage("Erro ao listar consultas: " + ex.getMessage(), true);
-			throw new Exception("Não foi possível listar as receitas!");
+			logMessage("listarConsultasNaoFinalizadasPorPeriodo - Erro: " + ex.getMessage(), true);
+			throw new Exception("Não foi possível listar as consultas.");
 		}
 	}
 	
-	private OutDespesaDTO prepararOutDespesaDTO(Calendar dataInicial, Calendar dataFinal, Psicologo psicologo) throws Exception {
-		logMessage("FinanceitoController.prepararDespesaDTO: início", false);
-		//Psicologo psicologo = LoginController.getPsicologoLogado();		
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo em getPsicologoLogado", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
-		
-		OutDespesaDTO despesaDTO = new OutDespesaDTO();		
-		despesaDTO.setLstDespesas(this.despesaRepositorio.listarPorPeriodo(dataInicial, dataFinal, psicologo));
-		
-		BigDecimal totalDespesas = new BigDecimal(0);
-		BigDecimal totalDespesasPagas = new BigDecimal(0);
-		BigDecimal totalDespesasNaoPagas = new BigDecimal(0);
-		
-		for (Despesa despesa : despesaDTO.getLstDespesas()) {
-			if (despesa.isPago()) {
-				totalDespesasPagas = totalDespesasPagas.add(despesa.getValor());				
-			} else {
-				totalDespesasNaoPagas = totalDespesasNaoPagas.add(despesa.getValor());				
+	private OutDespesaDTO prepararOutDespesaDTO(Calendar dataInicial, Calendar dataFinal, Psicologo psicologo) throws Exception {		
+		try {
+			//Psicologo psicologo = LoginController.getPsicologoLogado();		
+			if (psicologo == null) {
+				logMessage("prepararOutDespesaDTO - Psicólogo nulo em getPsicologoLogado", true);
+				throw new FinanceiroException("Erro ao carregar psicólogo. Faça login novamente.");
 			}
-			totalDespesas = totalDespesas.add(despesa.getValor());			
-		}		
-		despesaDTO.setTotalDespesas(totalDespesas);
-		despesaDTO.setTotalDespesasNaoPagas(totalDespesasNaoPagas);
-		despesaDTO.setTotalDespesasPagas(totalDespesasPagas);
-		
-		logMessage("FinanceitoController.prepararDespesaDTO: fim", false);
-		
-		return despesaDTO;
-	}
+			
+			OutDespesaDTO despesaDTO = new OutDespesaDTO();		
+			despesaDTO.setLstDespesas(this.despesaRepositorio.listarPorPeriodo(dataInicial, dataFinal, psicologo));
+			
+			BigDecimal totalDespesas = new BigDecimal(0);
+			BigDecimal totalDespesasPagas = new BigDecimal(0);
+			BigDecimal totalDespesasNaoPagas = new BigDecimal(0);
+			
+			for (Despesa despesa : despesaDTO.getLstDespesas()) {
+				if (despesa.isPago()) {
+					totalDespesasPagas = totalDespesasPagas.add(despesa.getValor());				
+				} else {
+					totalDespesasNaoPagas = totalDespesasNaoPagas.add(despesa.getValor());				
+				}
+				totalDespesas = totalDespesas.add(despesa.getValor());			
+			}		
+			despesaDTO.setTotalDespesas(totalDespesas);
+			despesaDTO.setTotalDespesasNaoPagas(totalDespesasNaoPagas);
+			despesaDTO.setTotalDespesasPagas(totalDespesasPagas);
+									
+			return despesaDTO;
+		} catch(FinanceiroException ex) {
+			throw new Exception(ex.getMessage());
+		} catch(Exception ex) {
+			logMessage("prepararOutDespesaDTO - Erro: " + ex.getMessage(), true);
+			throw new Exception();
+		}
+	}	
 }

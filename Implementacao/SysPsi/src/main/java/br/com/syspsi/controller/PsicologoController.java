@@ -36,15 +36,13 @@ public class PsicologoController {
 			method={RequestMethod.GET},
 			produces = MediaType.APPLICATION_JSON_VALUE
 			)
-	public boolean isVinculadoGCal(Principal user) {
-		logMessage("PsicologoController.isVinculadoGCal: início", false);
+	public boolean isVinculadoGCal(Principal user) {		
 		try {
 			Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-			boolean isVinculadoGCal = psicologo.isVinculadoGCal();
-			logMessage("PsicologoController.isVinculadoGCal: fim", false);
+			boolean isVinculadoGCal = psicologo.isVinculadoGCal();			
 			return isVinculadoGCal;
 		} catch(Exception ex) {
-			logMessage("Erro ao verificar vinculação: " + ex.getMessage(), true);
+			logMessage("isVinculadoGCal - Erro: " + ex.getMessage(), true);
 			return false;
 		}
 	}

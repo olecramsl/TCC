@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.syspsi.exception.ConsultaException;
 import br.com.syspsi.model.Util;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Psicologo;
@@ -49,47 +50,51 @@ public class ConsultaController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public Agendamento salvarConsultaPaciente(@RequestBody Agendamento agendamento, Principal user) 
-			throws Exception {
-		logMessage("ConsultaController.salvarConsultaPaciente: início", false);
-		
-		if (user == null) {
-			logMessage("user nulo", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
-		
-		//Psicologo psicologo = LoginController.getPsicologoLogado();
-		Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-		
-		if (psicologo == null) {
-			logMessage("Psicólogo nulo", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}
-				
-		if (agendamento == null) {
-			logMessage("Agendamento nulo", true);
-			throw new Exception("Não foi possível salvar a consulta.");
-		}
+			throws Exception {		
+		try {
+			if (user == null) {
+				logMessage("salvarConsultaPaciente - user nulo", true);
+				throw new ConsultaException("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+			
+			//Psicologo psicologo = LoginController.getPsicologoLogado();
+			Psicologo psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+			
+			if (psicologo == null) {
+				logMessage("salvarConsultaPaciente - Psicólogo nulo", true);
+				throw new ConsultaException("Erro ao carregar psicólogo. Faça login novamente.");
+			}
+					
+			if (agendamento == null) {
+				logMessage("salvarConsultaPaciente - Agendamento nulo", true);
+				throw new ConsultaException("Não foi possível salvar a consulta.");
+			}
+							
+			if (agendamento.getConsulta() == null) {
+				logMessage("salvarConsultaPaciente - Consulta nula", true);
+				throw new ConsultaException("Não foi possível salvar a consulta");
+			}
+					
+			agendamento.getConsulta().setInicio(agendamento.getStart());
+			agendamento.getConsulta().setFim(agendamento.getEnd());
+			agendamento.getConsulta().setProntuario(Util.encrypt(agendamento.getConsulta().getProntuario(), psicologo));				
+			
+			agendamento.setColor(AgendaController.COR_AGENDAMENTO_DEFAULT);
+			if (agendamento.getConvenio() != null) {
+				agendamento.setColor(AgendaController.COR_AGENDAMENTO_CONVENIO);
+			}
+			if (agendamento.isNaoCompareceu()) {
+				agendamento.setColor(AgendaController.COR_AGENDAMENTO_NAO_COMPARECEU);
+			}
+			
+			agendamento = this.agendamentoRepositorio.save(agendamento);
 						
-		if (agendamento.getConsulta() == null) {
-			logMessage("Consulta nula", true);
-			throw new Exception("Não foi possível salvar a consulta");
+			return agendamento;
+		} catch(ConsultaException ex) {
+			throw new Exception(ex.getMessage());
+		} catch(Exception ex) {
+			logMessage("salvarConsultaPaciente - erro: " + ex.getMessage(), true);
+			throw new ConsultaException("Não foi possível salvar a consulta");
 		}
-				
-		agendamento.getConsulta().setInicio(agendamento.getStart());
-		agendamento.getConsulta().setFim(agendamento.getEnd());
-		agendamento.getConsulta().setProntuario(Util.encrypt(agendamento.getConsulta().getProntuario(), psicologo));				
-		
-		agendamento.setColor(AgendaController.COR_AGENDAMENTO_DEFAULT);
-		if (agendamento.getConvenio() != null) {
-			agendamento.setColor(AgendaController.COR_AGENDAMENTO_CONVENIO);
-		}
-		if (agendamento.isNaoCompareceu()) {
-			agendamento.setColor(AgendaController.COR_AGENDAMENTO_NAO_COMPARECEU);
-		}
-		
-		agendamento = this.agendamentoRepositorio.save(agendamento);
-		
-		logMessage("ConsultaController.salvarConsultaPaciente: fim", false);
-		return agendamento;
 	}			
 }

@@ -523,8 +523,7 @@ public class AgendaController {
 			}												
 				
 			return lstAgendamentos;
-		} catch(AgendaException ex) {
-			logMessage("listarAgendamentos - Erro: " + ex.getMessage(), true);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch (ParseException e) {
 			logMessage("listarAgendamentos - Formato de data inválido. dataInicial:  " 
@@ -628,8 +627,7 @@ public class AgendaController {
 			}								
 	
 			return agendamento;
-		} catch (AgendaException ex) {
-			logMessage("salvarAgendamento - Erro ao salvar: " + ex.getMessage(), true);
+		} catch (AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch (Exception ex) {
 			logMessage("salvarAgendamento - Erro ao salvar: " + ex.getMessage(), true);
@@ -785,8 +783,7 @@ public class AgendaController {
 			agendamento.setColor(COR_AGENDAMENTO_DEFAULT);		
 			Agendamento ag = this.agendamentoRepositorio.save(agendamento);		
 			return ag;		
-		} catch(AgendaException ex) {
-			logMessage("salvarAgendamentoTemporarioGCalendar - Erro ao salvar: " + ex.getMessage(), false);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
 			logMessage("salvarAgendamentoTemporarioGCalendar - Erro ao salvar: " + ex.getMessage(), false);
@@ -852,8 +849,7 @@ public class AgendaController {
 					logMessage("removerAgendamento - erro remoção agendamento GCal (não tratado): " + ex.getMessage(), true);
 				}
 			}		
-		} catch(AgendaException ex) {
-			logMessage("removerAgendamento - Erro ao remover agendamento: " + ex.getMessage(), true);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
 			logMessage("removerAgendamento - Erro ao remover agendamento: " + ex.getMessage(), true);
@@ -914,8 +910,7 @@ public class AgendaController {
 				this.agendamentoRepositorio.save(lstAgendamento);
 			}
 			
-		} catch(AgendaException ex) {
-			logMessage("salvarAgendamentosFuturos - erro: " + ex.getMessage(), true);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {			
 			logMessage("salvarAgendamentosFuturos - erro: " + ex.getMessage(), true);
@@ -976,8 +971,7 @@ public class AgendaController {
 				}	
 				this.agendamentoRepositorio.save(lstAgendamentos);
 			}
-		} catch(AgendaException ex) {
-			logMessage("removerAgendamentosFuturos - erro: " + ex.getMessage(), true);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
 			logMessage("removerAgendamentosFuturos - erro: " + ex.getMessage(), true);
@@ -1053,8 +1047,7 @@ public class AgendaController {
 			}		
 			
 			this.agendamentoRepositorio.save(lstAgendamentos);		
-		} catch (AgendaException ex) {
-			logMessage("moverAgendamentosFuturos - erro: " + ex.getMessage(), true);
+		} catch (AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch (Exception ex) {
 			logMessage("moverAgendamentosFuturos - erro: " + ex.getMessage(), true);
@@ -1120,8 +1113,7 @@ public class AgendaController {
 			}
 			
 			this.agendamentoRepositorio.save(lstAgendamentos);
-		} catch(AgendaException ex) {
-			logMessage("atualizarAgendamentosFuturos - erro: " + ex.getMessage(), true);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
 			logMessage("atualizarAgendamentosFuturos - erro: " + ex.getMessage(), true);
@@ -1179,8 +1171,7 @@ public class AgendaController {
 				ag.setEventoPrincipal(true);			
 				this.agendamentoRepositorio.save(ag);
 			}		
-		} catch(AgendaException ex) {
-			logMessage("atribuirNovoEventoPrincipal - erro: " + ex.getMessage(), true);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
 			logMessage("atribuirNovoEventoPrincipal - erro: " + ex.getMessage(), true);
@@ -1222,8 +1213,7 @@ public class AgendaController {
 			}
 						
 			return lstAgendamento;
-		} catch(AgendaException ex) {
-			logMessage("listarAgendamentosComConsulta - erro: " + ex.getMessage(), true);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch (Exception ex) {
 			logMessage("listarAgendamentosComConsulta - erro: " + ex.getMessage(), true);
@@ -1278,8 +1268,7 @@ public class AgendaController {
 			}
 								
 			return lstAgendamento;
-		} catch(AgendaException ex) {
-			logMessage("listarAgendamentosComConsultaPeriodo - erro: " + ex.getMessage(), true);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch(ParseException ex) {
 			logMessage("listarAgendamentosComConsultaPeriodo - Formato de data inválido. dataInicial: " 
@@ -1318,8 +1307,7 @@ public class AgendaController {
 			}
 						
 			return lstAgendamentos;
-		} catch(AgendaException ex) {
-			logMessage("listarAgendamentosDoDia - Erro: " + ex.getMessage(), true);
+		} catch(AgendaException ex) {			
 			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
 			logMessage("listarAgendamentosDoDia - Erro: " + ex.getMessage(), true);

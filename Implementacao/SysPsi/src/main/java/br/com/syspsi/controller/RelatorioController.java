@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView;
 
+import br.com.syspsi.exception.RelatorioException;
 import br.com.syspsi.model.Util;
 import br.com.syspsi.model.dto.InRelatorioDTO;
 import br.com.syspsi.model.entity.Agendamento;
@@ -65,23 +66,21 @@ public class RelatorioController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public ModelAndView imprimirRelatorioReceitas(@RequestBody InRelatorioDTO inRelatorioDTO, 
-			Principal user) throws Exception {	
-		logMessage("RelatorioController.imprimirRelatorioReceitas: início", false);
-					
-		Psicologo psicologo;
-		if (user != null) {			
-			logMessage("user.getName(): " + user.getName(), false);
-			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-			if (psicologo == null) {
-				logMessage("Psicólogo nulo em getPsicologoLogado", true);
-				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			Principal user) throws Exception {			
+		try {
+			Psicologo psicologo;
+			if (user != null) {							
+				psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+				if (psicologo == null) {
+					logMessage("imprimirRelatorioReceitas - Psicólogo nulo.", true);
+					throw new RelatorioException("Erro ao carregar psicólogo. Faça login novamente.");
+				}		
+			} else {
+				logMessage("imprimirRelatorioReceitas - User nulo.", true);
+				throw new RelatorioException("Erro ao carregar psicólogo. Faça login novamente.");
 			}		
-		} else {
-			logMessage("User nulo em getPsicologoLogado", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}		
-		
-		try {								
+			
+											
 			List<Agendamento> lstAgendamentos = 
 					this.agendamentoRepositorio.listarConsultasPorPeriodo(
 							inRelatorioDTO.getDataInicial(), inRelatorioDTO.getDataFinal(), 
@@ -110,11 +109,12 @@ public class RelatorioController {
 	        params.put("dataFinal", inRelatorioDTO.getDataFinal());
 	        params.put("totalReceitas", totalReceitas);
 	        params.put("datasource", beanColDataSource);
-	        
-	        logMessage("RelatorioController.imprimirRelatorioReceitas: fim", false);
-	        return new ModelAndView(view, params);	        						           	       																						
+	        		        
+	        return new ModelAndView(view, params);	        						           	       																									
+		} catch(RelatorioException ex) {
+			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
-			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			
+			logMessage("imprimirRelatorioReceitas - Erro: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");
 		}
 	}
@@ -126,23 +126,21 @@ public class RelatorioController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public ModelAndView imprimirRelatorioDespesas(@RequestBody InRelatorioDTO inRelatorioDTO, 
-			Principal user) throws Exception {	
-		logMessage("RelatorioController.imprimirRelatorioDespesas: início", false);
-					
-		Psicologo psicologo;
-		if (user != null) {			
-			logMessage("user.getName(): " + user.getName(), false);
-			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-			if (psicologo == null) {
-				logMessage("Psicólogo nulo em getPsicologoLogado", true);
-				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			Principal user) throws Exception {							
+		try {
+			Psicologo psicologo;
+			if (user != null) {							
+				psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+				if (psicologo == null) {
+					logMessage("imprimirRelatorioDespesas - Psicólogo nulo.", true);
+					throw new RelatorioException("Erro ao carregar psicólogo. Faça login novamente.");
+				}		
+			} else {
+				logMessage("imprimirRelatorioDespesas - User nulo.", true);
+				throw new RelatorioException("Erro ao carregar psicólogo. Faça login novamente.");
 			}		
-		} else {
-			logMessage("User nulo em getPsicologoLogado", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}		
 		
-		try {								
+										
 			List<Despesa> lstDespesas = 
 					this.despesaRepositorio.listarPorPeriodo(inRelatorioDTO.getDataInicial(), 
 							inRelatorioDTO.getDataFinal(), psicologo);
@@ -150,8 +148,7 @@ public class RelatorioController {
 			BigDecimal totalDespesas = new BigDecimal(0);
 			for (Despesa despesa : lstDespesas) {				
 				totalDespesas = totalDespesas.add(despesa.getValor()); 
-			}
-			
+			}			
 								
 			JRBeanCollectionDataSource beanColDataSource = 
 					new JRBeanCollectionDataSource(lstDespesas);
@@ -171,11 +168,12 @@ public class RelatorioController {
 	        params.put("dataFinal", inRelatorioDTO.getDataFinal());
 	        params.put("totalDespesas", totalDespesas);
 	        params.put("datasource", beanColDataSource);
-
-	        logMessage("RelatorioController.imprimirRelatorioDespesas: fim", false);
-	        return new ModelAndView(view, params);	        						           	       																						
+	        
+	        return new ModelAndView(view, params);	        						           	       																								
+		} catch(RelatorioException ex) {
+			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
-			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			
+			logMessage("imprimirRelatorioDespesas - Erro: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");
 		}
 	}
@@ -188,22 +186,19 @@ public class RelatorioController {
 			)
 	public ModelAndView imprimirRelatorioProntuarios(@RequestBody InRelatorioDTO inRelatorioDTO, 
 			Principal user) throws Exception {	
-		logMessage("RelatorioController.imprimirRelatorioProntuarios: início", false);								
-		
-		Psicologo psicologo;
-		if (user != null) {			
-			logMessage("user.getName(): " + user.getName(), false);
-			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-			if (psicologo == null) {
-				logMessage("Psicólogo nulo em getPsicologoLogado", true);
-				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-			}		
-		} else {
-			logMessage("User nulo em getPsicologoLogado", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}	
-		
-		try {								
+		try {							
+			Psicologo psicologo;
+			if (user != null) {							
+				psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+				if (psicologo == null) {
+					logMessage("imprimirRelatorioProntuarios - Psicólogo nulo.", true);
+					throw new RelatorioException("Erro ao carregar psicólogo. Faça login novamente.");
+				}		
+			} else {
+				logMessage("imprimirRelatorioProntuarios - User nulo.", true);
+				throw new RelatorioException("Erro ao carregar psicólogo. Faça login novamente.");
+			}	
+											
 			List<Agendamento> lstAgendamentos = this.agendamentoRepositorio
 					.listarAgendamentosComConsultaPeriodo(inRelatorioDTO.getDataInicial(), 
 							inRelatorioDTO.getDataFinal(), inRelatorioDTO.getPaciente(), 
@@ -237,11 +232,12 @@ public class RelatorioController {
 	        params.put("dataFinal", inRelatorioDTO.getDataFinal());
 	        params.put("nomePaciente", inRelatorioDTO.getPaciente().getNomeExibicao());
 	        params.put("datasource", beanColDataSource);
-
-	        logMessage("RelatorioController.imprimirRelatorioProntuarios: fim", false);
-	        return new ModelAndView(view, params);	        						           	       																						
+	        
+	        return new ModelAndView(view, params);	        						           	       																								
+		} catch(RelatorioException ex) {
+			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
-			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			
+			logMessage("imprimirRelatorioProntuarios - Erro: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");
 		}
 	}
@@ -253,23 +249,20 @@ public class RelatorioController {
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
 	public ModelAndView imprimirRelatorioProntuario(@RequestBody Agendamento agendamento, 
-			Principal user) throws Exception {	
-		logMessage("RelatorioController.imprimirRelatorioProntuario: início", false);								
-		
-		Psicologo psicologo;
-		if (user != null) {			
-			logMessage("user.getName(): " + user.getName(), false);
-			psicologo = this.psicologoRepositorio.findByLogin(user.getName());
-			if (psicologo == null) {
-				logMessage("Psicólogo nulo em getPsicologoLogado", true);
+			Principal user) throws Exception {										
+		try {
+			Psicologo psicologo;
+			if (user != null) {							
+				psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+				if (psicologo == null) {
+					logMessage("imprimirRelatorioProntuario - Psicólogo nulo.", true);
+					throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+				}		
+			} else {
+				logMessage("imprimirRelatorioProntuario - User nulo.", true);
 				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-			}		
-		} else {
-			logMessage("User nulo em getPsicologoLogado", true);
-			throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-		}	
-		
-		try {												
+			}	
+														
 			JasperReportsPdfView view = new JasperReportsPdfView();
 	        view.setUrl("classpath:br/com/syspsi/jasper/prontuarioRel.jrxml");
 	        view.setApplicationContext(appContext);
@@ -284,11 +277,12 @@ public class RelatorioController {
 	        params.put("nomePaciente", agendamento.getPaciente().getNomeExibicao());	        
 	        params.put("consulta", agendamento.getConsulta());
 	        params.put("datasource", new JREmptyDataSource());
-
-	        logMessage("RelatorioController.imprimirRelatorioProntuario: fim", false);
-	        return new ModelAndView(view, params);	        						           	       																						
+	        
+	        return new ModelAndView(view, params);	        						           	       																								
+		} catch(RelatorioException ex) {
+			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
-			logMessage("Erro ao gerar relatório: " + ex.getMessage(), true);			
+			logMessage("imprimirRelatorioProntuario - Erro: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");
 		}
 	}

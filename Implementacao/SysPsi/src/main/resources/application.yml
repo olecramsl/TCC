@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/syspsi
     username: USERSYSPSIAPP
-    password: H6dzrVtdXy38sP7xfPVLHg==
+    password: Ujq/+ZffWjb4ZIKz1hBIZg==
     
 server:
   port: 8443

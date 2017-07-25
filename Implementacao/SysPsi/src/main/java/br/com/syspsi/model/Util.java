@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import br.com.syspsi.model.entity.Psicologo;
 
 public class Util {	
-	private static String key = "$tM4l8OhfQ6&6f%#";
+	private static String key = "#k6T!p8mBf2Y7W%*";
 	
 	private static final Logger logger = LoggerFactory.getLogger(Util.class);	
 	private static void logMessage(String msg, boolean error) {
@@ -35,16 +35,19 @@ public class Util {
 	 * @throws Exception caso ocorra algum erro durante a encriptação
 	 */
 	public static String encrypt(String texto) throws Exception {
-		logMessage("Util.encrypt(texto): início", false);
-        SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
-
-        Cipher cipher = Cipher.getInstance("AES");        
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-
-        byte[] encrypted = cipher.doFinal(texto.getBytes());        
-
-        logMessage("Util.encrypt(texto): fim", false);
-        return Base64.encodeBase64String(encrypted);
+		try {
+	        SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
+	
+	        Cipher cipher = Cipher.getInstance("AES");        
+	        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+	
+	        byte[] encrypted = cipher.doFinal(texto.getBytes());        
+	        
+	        return Base64.encodeBase64String(encrypted);
+		} catch(Exception ex) {
+        	logMessage("encrypt(texto) - erro: " + ex.getMessage(), true);
+        	throw new Exception("Erro ao encriptar o texto.");
+        }
     }
 
 	/**
@@ -54,18 +57,21 @@ public class Util {
 	 * @throws Exception caso ocorra algum erro durante a encriptação
 	 */
 	public static String encrypt(String texto, Psicologo psicologo) throws Exception {
-		logMessage("Util.encrypt(texto, psicologo): início", false);
-		byte[] key = psicologo.getChave();		
+		try {
+			byte[] key = psicologo.getChave();		
+			
+	        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+	
+	        Cipher cipher = Cipher.getInstance("AES");        
+	        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+	
+	        byte[] encrypted = cipher.doFinal(texto.getBytes());        
 		
-        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-
-        Cipher cipher = Cipher.getInstance("AES");        
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-
-        byte[] encrypted = cipher.doFinal(texto.getBytes());        
-
-        logMessage("Util.encrypt(texto, psicologo): fim", false);
-        return Base64.encodeBase64String(encrypted);
+	        return Base64.encodeBase64String(encrypted);
+		} catch(Exception ex) {
+	    	logMessage("encrypt(texto, psicologo) - erro: " + ex.getMessage(), true);
+	    	throw new Exception("Erro ao encriptar o texto.");
+	    }
     }
 	
 	/**
@@ -75,16 +81,19 @@ public class Util {
 	 * @throws Exception caso algum erro ocorra durante a descriptografia
 	 */
     public static String decrypt(String encrypted) throws Exception {
-    	logMessage("Util.decrypt(texto): início", false);
-        SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
-
-        Cipher cipher = Cipher.getInstance("AES");                
-    	cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-    	 
-        byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));        
-
-        logMessage("Util.decrypt(texto): fim", false);
-        return new String(original);
+    	try {
+	        SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
+	
+	        Cipher cipher = Cipher.getInstance("AES");                
+	    	cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+	    	 
+	        byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));        
+	        
+	        return new String(original);
+    	} catch(Exception ex) {
+	    	logMessage("decrypt(texto) - erro: " + ex.getMessage(), true);
+	    	throw new Exception("Erro ao decriptar o texto.");
+	    }
     }    	
 
 	/**
@@ -94,18 +103,21 @@ public class Util {
 	 * @throws Exception caso algum erro ocorra durante a descriptografia
 	 */
     public static String decrypt(String encrypted, Psicologo psicologo) throws Exception {
-    	logMessage("Util.decrypt(texto, psicologo): início", false);
-    	byte[] key = psicologo.getChave();    	
-    	    	    	    	
-        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-
-        Cipher cipher = Cipher.getInstance("AES");                
-    	cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-    	 
-        byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));        
-
-        logMessage("Util.decrypt(texto, psicologo): fim", false);
-        return new String(original);
+    	try {    	
+	    	byte[] key = psicologo.getChave();    	
+	    	    	    	    	
+	        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+	
+	        Cipher cipher = Cipher.getInstance("AES");                
+	    	cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+	    	 
+	        byte[] original = cipher.doFinal(Base64.decodeBase64(encrypted));        
+	        
+	        return new String(original);
+    	} catch(Exception ex) {
+	    	logMessage("decrypt(texto, psicologo) - erro: " + ex.getMessage(), true);
+	    	throw new Exception("Erro ao decriptar o texto.");
+	    }
     }
     
     /**
@@ -113,21 +125,23 @@ public class Util {
 	 * @throws Exception caso algum problema ocorra
 	 */
 	public static String gerarChave() throws Exception {
-		logMessage("Util.gerarChave: início", false);
-		// create new key
-		SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();	
-		
-		logMessage("Util.gerarChave: fim", false);
-		// get base64 encoded version of the key
-		return java.util.Base64.getEncoder().encodeToString(secretKey.getEncoded()).substring(0, 16);
+		try {
+			// create new key
+			SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();	
+					
+			// get base64 encoded version of the key
+			return java.util.Base64.getEncoder().encodeToString(secretKey.getEncoded()).substring(0, 16);
+		} catch(Exception ex) {
+			logMessage("gerarChave - erro: " + ex.getMessage(), true);
+			throw new Exception("Erro ao gerar a chave para o psicólogo.");
+		}
 	}
 	
 	/**
 	 * Valida o cpf informado
 	 * @throws Exception caso o cpf informado seja inválido
 	 */
-	public static void validarCPF(String cpf) throws Exception {
-		logMessage("Util.validarCPF: início", false);
+	public static void validarCPF(String cpf) throws Exception {		
 		// considera-se erro CPF's formados por uma sequencia de numeros iguais
 	    if (cpf.equals("00000000000") || cpf.equals("11111111111") ||
 	    	cpf.equals("22222222222") || cpf.equals("33333333333") ||
@@ -135,7 +149,7 @@ public class Util {
 	    	cpf.equals("66666666666") || cpf.equals("77777777777") ||
 	    	cpf.equals("88888888888") || cpf.equals("99999999999") ||
 	       (cpf.length() != 11)) {	  
-	    	logMessage("O CPF informado é inválido: " + cpf, true);
+	    	logMessage("validarCPF - O CPF informado é inválido: " + cpf, true);
 	    	throw new Exception("O CPF informado é inválido!");
 	    }
 
@@ -177,18 +191,16 @@ public class Util {
 
 	    	// Verifica se os digitos calculados conferem com os digitos informados.
 	    	if ((dig10 != cpf.charAt(9)) || (dig11 != cpf.charAt(10))) {
-	    		logMessage("O CPF informado é inválido: " + cpf, true);
+	    		logMessage("validarCPF - O CPF informado é inválido: " + cpf, true);
 	    		throw new Exception("O CPF informado é inválido!");
 	    	}
 	    } catch (InputMismatchException erro) {	
-	    	logMessage("O CPF informado é inválido: " + cpf, true);
+	    	logMessage("validarCPF - O CPF informado é inválido: " + cpf, true);
 	    	throw new Exception("O CPF informado é inválido!");
-	    }
-	    logMessage("Util.validarCPF: fim", false);
+	    }	    
 	}
 	
-	public static void validarCNPJ(String cnpj) throws Exception {
-		logMessage("Util.validarCNPJ: início", false);
+	public static void validarCNPJ(String cnpj) throws Exception {		
 		// considera-se erro CNPJ's formados por uma sequencia de numeros iguais
 		if (cnpj.equals("00000000000000") || cnpj.equals("11111111111111") ||
 			cnpj.equals("22222222222222") || cnpj.equals("33333333333333") ||
@@ -196,7 +208,7 @@ public class Util {
 	        cnpj.equals("66666666666666") || cnpj.equals("77777777777777") ||
 	        cnpj.equals("88888888888888") || cnpj.equals("99999999999999") ||
 	       (cnpj.length() != 14)) {
-			logMessage("O CNPJ informado é inválido: " + cnpj, true);
+			logMessage("validarCNPJ - O CNPJ informado é inválido: " + cnpj, true);
 			throw new Exception("O CNPJ informado é inválido!");
 		}
 
@@ -247,13 +259,12 @@ public class Util {
 
 	    	// Verifica se os dígitos calculados conferem com os dígitos informados.
 	    	if ((dig13 != cnpj.charAt(12)) || (dig14 != cnpj.charAt(13))) {
-	    		logMessage("O CNPJ informado é inválido: " + cnpj, true);
+	    		logMessage("validarCNPJ - O CNPJ informado é inválido: " + cnpj, true);
 	    		throw new Exception("O CNPJ informado é inválido!");
 	    	}
 	    } catch (InputMismatchException erro) {
-	    	logMessage("O CNPJ informado é inválido: " + cnpj, true);
+	    	logMessage("validarCNPJ - O CNPJ informado é inválido: " + cnpj, true);
 	    	throw new Exception("O CNPJ informado é inválido!");
-	    }
-	    logMessage("Util.validarCNPJ: fim", false);
+	    }	    
 	}	
 }
