@@ -162,6 +162,26 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 							consultaPacienteFactory.setAgendamento(response.data);
 							ctrl.oldProntuario = ctrl.agendamento.consulta.prontuario;
 							consultaPacienteFactory.setConteudoProntuarioMudou(false);
+							
+							// Imprime o recibo, caso necessário
+							if (response.data.consulta.recibo) {
+								utilService.setMessage("Gerando recibo ...");
+								utilService.showWait();
+								consultaPacienteFactory.imprimirRecibo(agendamento).then(
+										successCalback = function(response) {
+											utilService.hideWait();
+											var file = new Blob([response.data], {
+										    	type: 'application/pdf'
+										    });
+										    var fileURL = URL.createObjectURL(file);				    
+											window.open(fileURL);
+										},
+										errorCallback = function(error, status) {
+											utilService.hideWait();
+											utilService.tratarExcecao("Não foi psossível gerar o recibo.");
+										}
+								);
+							}
 						},
 						errorCallback = function (error, status){					
 							utilService.tratarExcecao(error); 

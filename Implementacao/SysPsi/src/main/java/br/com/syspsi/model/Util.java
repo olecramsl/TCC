@@ -267,4 +267,6 @@ public class Util {
 	    	throw new Exception("O CNPJ informado é inválido!");
 	    }	    
 	}	
+	
+	
 }

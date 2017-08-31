@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView;
 
 import br.com.syspsi.exception.RelatorioException;
+import br.com.syspsi.model.CurrencyWriter;
 import br.com.syspsi.model.Util;
 import br.com.syspsi.model.dto.InRelatorioDTO;
 import br.com.syspsi.model.entity.Agendamento;
@@ -240,7 +241,7 @@ public class RelatorioController {
 			logMessage("imprimirRelatorioProntuarios - Erro: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");
 		}
-	}
+	}	
 	
 	@RequestMapping(
 			value = "/imprimirRelatorioProntuario", 
@@ -283,6 +284,55 @@ public class RelatorioController {
 			throw new Exception(ex.getMessage());
 		} catch(Exception ex) {
 			logMessage("imprimirRelatorioProntuario - Erro: " + ex.getMessage(), true);			
+			throw new Exception("Não foi possível gerar o relatório");
+		}
+	}
+	
+	@RequestMapping(
+			value = "/imprimirRecibo", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public ModelAndView imprimirRecibo(@RequestBody Agendamento agendamento, Principal user) 
+			throws Exception {	
+		try {					
+			Psicologo psicologo;
+			if (user != null) {							
+				psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+				if (psicologo == null) {
+					logMessage("imprimirRelatorioProntuario - Psicólogo nulo.", true);
+					throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+				}		
+			} else {
+				logMessage("imprimirRelatorioProntuario - User nulo.", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}	
+			
+			JasperReportsPdfView view = new JasperReportsPdfView();
+	        view.setUrl("classpath:br/com/syspsi/jasper/recibo.jrxml");
+	        view.setApplicationContext(appContext);
+	        view.setContentType("application/pdf");	    
+	        view.setReportDataKey("datasource");
+	        	        
+	        Properties p = new Properties();
+	        p.setProperty("Content-disposition", "inline; filename=\"recibo.pdf\"");
+	        view.setHeaders(p);
+
+	        String valorExtenso = CurrencyWriter.getInstance().write(agendamento.getConsulta().getValor());	        
+	        Map<String, Object> params = new HashMap<>();
+	        params.put("nomePaciente", agendamento.getPaciente().getNomeCompleto());	        
+	        params.put("valorConsulta", agendamento.getConsulta().getValor());
+	        params.put("valorExtenso", valorExtenso);	        
+	        params.put("referente", "consulta psicológica");
+	        params.put("nomePsicologo", psicologo.getNomeExibicao());
+	        params.put("crp", psicologo.getCrp());
+	        params.put("cpfPsicologo", psicologo.getCpf());
+	        params.put("datasource", new JREmptyDataSource());
+	        
+	        return new ModelAndView(view, params);	        	        	    
+		} catch(Exception ex) {
+			logMessage("imprimirRelatorioProntuarios - Erro: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");
 		}
 	}

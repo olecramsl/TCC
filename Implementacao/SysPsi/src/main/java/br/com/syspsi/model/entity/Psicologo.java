@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,6 +25,8 @@ public class Psicologo implements Serializable {
 	@Column(name="vinculadogcal")
 	private boolean vinculadoGCal;
 	private boolean ativo;
+	@Transient
+	private String nomeExibicao;
 
 	/**
 	 * @return the id
@@ -151,5 +154,21 @@ public class Psicologo implements Serializable {
 	 */
 	public void setAtivo(boolean ativo) {
 		this.ativo = ativo;
-	}		
+	}
+	
+	/**
+	 * @return the nomeExibicao
+	 */
+	public String getNomeExibicao() {
+		// nome de exibicao
+		if (!this.nomeCompleto.isEmpty()) {
+			int index = this.nomeCompleto.split(" ").length - 1;
+			if (index > 0) {
+				return this.nomeCompleto.split(" ")[0] + " " + this.nomeCompleto.split(" ")[index];
+			} else {
+				return this.nomeCompleto.split(" ")[0];
+			}
+		}
+		return null;
+	}
 }
