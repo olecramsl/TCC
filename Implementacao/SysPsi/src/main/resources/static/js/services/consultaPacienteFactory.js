@@ -1,7 +1,7 @@
 angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'consts', function($http, consts) {
 	var _agendamento;
 	var _lstAgendamentosComConsulta;
-	var _conteudoProntuarioMudou;
+	var _conteudoProntuarioMudou;	
 	
 	var _salvarConsultaPaciente = function(agendamento) {
 		return $http.post(consts.BASE_URL + '/salvarConsultaPaciente', angular.copy(agendamento));
@@ -21,8 +21,13 @@ angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'consts', 
 		return $http.post(consts.BASE_URL + '/imprimirRelatorioProntuario', agendamento, {responseType:'arraybuffer'});
 	};
 	
-	var _imprimirRecibo = function(agendamento) {		
-		return $http.post(consts.BASE_URL + '/imprimirRecibo', agendamento, {responseType:'arraybuffer'});
+	var _imprimirRecibo = function(agendamento, referenteA) {
+		var inReciboDTO = {
+			agendamento: agendamento,
+			referenteA: referenteA
+		};
+		
+		return $http.post(consts.BASE_URL + '/imprimirRecibo', inReciboDTO, {responseType:'arraybuffer'});
 	};
 	
 	return {

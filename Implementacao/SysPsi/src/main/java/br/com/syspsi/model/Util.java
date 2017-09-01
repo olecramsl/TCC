@@ -266,7 +266,5 @@ public class Util {
 	    	logMessage("validarCNPJ - O CNPJ informado é inválido: " + cnpj, true);
 	    	throw new Exception("O CNPJ informado é inválido!");
 	    }	    
-	}	
-	
-	
+	}			
 }

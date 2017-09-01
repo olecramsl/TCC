@@ -23,6 +23,7 @@ import org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView;
 import br.com.syspsi.exception.RelatorioException;
 import br.com.syspsi.model.CurrencyWriter;
 import br.com.syspsi.model.Util;
+import br.com.syspsi.model.dto.InReciboDTO;
 import br.com.syspsi.model.dto.InRelatorioDTO;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Despesa;
@@ -294,8 +295,8 @@ public class RelatorioController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE
 			)
-	public ModelAndView imprimirRecibo(@RequestBody Agendamento agendamento, Principal user) 
-			throws Exception {	
+	public ModelAndView imprimirRecibo(@RequestBody InReciboDTO reciboDTO, Principal user) 
+			throws Exception {			
 		try {					
 			Psicologo psicologo;
 			if (user != null) {							
@@ -307,8 +308,8 @@ public class RelatorioController {
 			} else {
 				logMessage("imprimirRelatorioProntuario - User nulo.", true);
 				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
-			}	
-			
+			}			
+						
 			JasperReportsPdfView view = new JasperReportsPdfView();
 	        view.setUrl("classpath:br/com/syspsi/jasper/recibo.jrxml");
 	        view.setApplicationContext(appContext);
@@ -319,15 +320,31 @@ public class RelatorioController {
 	        p.setProperty("Content-disposition", "inline; filename=\"recibo.pdf\"");
 	        view.setHeaders(p);
 
+	        Agendamento agendamento = reciboDTO.getAgendamento();
+	        String referenteA = reciboDTO.getReferenteA();
+	        
+	        if (referenteA == null || referenteA.trim().isEmpty()) {
+	        	referenteA = "atendimento psicológico";
+	        }	        	       
+	        
+	        String cpf = null;
+	        if (psicologo.getCpf().length() == 11) {	        	
+	        	cpf = psicologo.getCpf().substring(0,3) + "." + 
+	        		psicologo.getCpf().substring(3,6) + "." +
+	        		psicologo.getCpf().substring(6,9) + "-" +
+	        		psicologo.getCpf().substring(9);
+	        }	        
+	        
 	        String valorExtenso = CurrencyWriter.getInstance().write(agendamento.getConsulta().getValor());	        
 	        Map<String, Object> params = new HashMap<>();
 	        params.put("nomePaciente", agendamento.getPaciente().getNomeCompleto());	        
 	        params.put("valorConsulta", agendamento.getConsulta().getValor());
 	        params.put("valorExtenso", valorExtenso);	        
-	        params.put("referente", "consulta psicológica");
+	        params.put("referenteA", referenteA);
 	        params.put("nomePsicologo", psicologo.getNomeExibicao());
+	        params.put("nomeCompletoPsicologo", psicologo.getNomeCompleto());
 	        params.put("crp", psicologo.getCrp());
-	        params.put("cpfPsicologo", psicologo.getCpf());
+	        params.put("cpfPsicologo", cpf);
 	        params.put("datasource", new JREmptyDataSource());
 	        
 	        return new ModelAndView(view, params);	        	        	    

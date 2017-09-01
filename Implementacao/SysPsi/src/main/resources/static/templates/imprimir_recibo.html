@@ -1,0 +1,28 @@
+<md-dialog>	
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+			<h2>Imprimir Recibo</h2>
+		</div>
+	</md-toolbar>
+
+	<md-dialog-content>
+		<div class="md-dialog-content">			
+			<form ng-cloak name="imprimirReciboForm">
+				<md-input-container class="md-block">										
+					<md-select md-autofocus ng-model="ctrl.parent.agendamento" placeholder="Selecione a Consulta">
+    					<md-option ng-value="item" ng-repeat="item in ctrl.parent.lstAgendamentosComConsulta">{{ item.consulta.inicio | date:'dd/MM/yyyy HH:mm'}}</md-option>
+  					</md-select>  					   					  				
+				</md-input-container>	
+				<md-input-container class="md-block">
+					<label>Pagamento Referente a ...</label>	 					
+ 					<input name="referenteA" ng-model="ctrl.parent.referenteA">
+				</md-input-container>														
+			</form>			
+		</div>
+	</md-dialog-content>
+
+	<md-dialog-actions layout="row"> 
+		<md-button ng-click="ctrl.parent.imprimirRecibo(ctrl.parent.agendamento, ctrl.parent.referenteA)"> Imprimir Recibo </md-button> 
+		<md-button ng-click="ctrl.parent.cancel()"> Cancelar </md-button> 
+	</md-dialog-actions>
+</md-dialog>

@@ -6,7 +6,7 @@ angular.forEach(lazyModules, function(dependency) {
 });
 
 angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', 'convenioFactory', 
-	'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'NgTableParams',	'utilService', 
+	'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'NgTableParams',	'utilService',
 	function ($mdDialog, $uibModal,	$scope,	$http, $location, convenioFactory, pacienteFactory,	cadastroPacienteFactory, consultaPacienteFactory, 
 			agendamentoFactory, NgTableParams, utilService) {	
 	
@@ -316,6 +316,74 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 				}
 		);
 	};
+	
+	ctrl.imprimirRecibo = function(paciente) {
+		agendamentoFactory.listarAgendamentosComConsulta(paciente).then(
+				successCallback = function(response) {										
+					$scope.lstAgendamentosComConsulta = response.data;					
+					if (response.data.length > 0) {												
+					    $mdDialog.show({
+					      controller: function($rootScope){					    	  
+					    	  this.parent = $scope;
+					    	  this.parent.agendamento = {};
+					    	  this.parent.referenteA = "";
+					    	  
+					    	  this.parent.cancel = function() {
+					    		  $scope.agendamento = null;
+					    		  $scope.referenteA = "";
+					    		  $mdDialog.hide();
+					    	  };
+					    	  
+					    	  this.parent.imprimirRecibo = function(agendamento, referenteA) {
+					    		  $scope.agendamento = agendamento;
+					    		  $scope.referenreA = referenteA;
+					    		  $mdDialog.hide();
+					    	  }
+					    	  					    	  
+				          },
+				          controllerAs: 'ctrl',
+					      templateUrl: 'templates/imprimir_recibo.html',
+					      parent: angular.element(document.body),
+					      clickOutsideToClose:false					     
+					    }).then(function() {		
+					    	if ($scope.agendamento) {
+					    		utilService.setMessage("Gerando recibo ...");
+								utilService.showWait();
+								consultaPacienteFactory.imprimirRecibo($scope.agendamento, $scope.referenteA).then(
+										successCalback = function(response) {
+											utilService.hideWait();
+											var file = new Blob([response.data], {
+										    	type: 'application/pdf'
+										    });
+										    var fileURL = URL.createObjectURL(file);				    
+											window.open(fileURL);
+										},
+										errorCallback = function(error, status) {
+											utilService.hideWait();
+											utilService.tratarExcecao("Não foi psossível gerar o recibo.");
+										}
+								);
+					    	} 					    	
+					    }, function() {
+					    	$scope.agendamento = null;
+				    		$scope.referenteA = "";
+					    });					    
+					} else {
+						$mdDialog.show(
+							$mdDialog.alert()
+								.clickOutsideToClose(true)
+								.title('Prontuários')
+								.textContent('Paciente não possui consultas!')
+								.ariaLabel('Alerta')
+								.ok('Ok')						
+						);
+					}					
+				},
+				errorCallback = function (error, status){					
+					utilService.tratarExcecao(error); 
+				}
+		);
+	};	
 				
 	ctrl.carregarPacientes();
 	carregarGruposPacientes();		
