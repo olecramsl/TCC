@@ -357,6 +357,9 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 										    });
 										    var fileURL = URL.createObjectURL(file);				    
 											window.open(fileURL);
+																						
+											$scope.agendamento.consulta.recibo = true;
+											agendamentoFactory.salvarAgendamento($scope.agendamento);
 										},
 										errorCallback = function(error, status) {
 											utilService.hideWait();
@@ -372,8 +375,8 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 						$mdDialog.show(
 							$mdDialog.alert()
 								.clickOutsideToClose(true)
-								.title('Prontuários')
-								.textContent('Paciente não possui consultas!')
+								.title('Emissão de Recibo')
+								.textContent('Paciente não possui consultas finalizadas!')
 								.ariaLabel('Alerta')
 								.ok('Ok')						
 						);

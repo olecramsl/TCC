@@ -173,7 +173,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 							      .ariaLabel('Referente a ...')							      
 							      //.targetEvent(ev)
 							      .ok('Emitir Recibo')
-							      .cancel('Cancelar');
+							      .cancel('Não Emitir');
 
 							    $mdDialog.show(confirm).then(function(referenteA) {
 							    	utilService.setMessage("Gerando recibo ...");
