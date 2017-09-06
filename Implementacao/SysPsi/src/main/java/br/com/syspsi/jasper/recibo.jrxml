@@ -26,6 +26,7 @@
 	<parameter name="cpfPsicologo" class="java.lang.String"/>
 	<parameter name="referenteA" class="java.lang.String"/>
 	<parameter name="nomeCompletoPsicologo" class="java.lang.String"/>
+	<parameter name="dataEmissao" class="java.util.Calendar"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -95,7 +96,7 @@
 				<textField pattern="&apos;Porto Alegre,&apos; dd &apos;de&apos; MMMMM &apos;de&apos; yyyy">
 					<reportElement x="280" y="70" width="274" height="13" uuid="2dd4d4c8-f0d1-4131-a453-57e96f778271"/>
 					<textElement textAlignment="Right"/>
-					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+					<textFieldExpression><![CDATA[$P{dataEmissao}.getTime()]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement x="178" y="110" width="200" height="20" uuid="d8f0760e-49f8-4675-aad5-1bb5ea393b2d">

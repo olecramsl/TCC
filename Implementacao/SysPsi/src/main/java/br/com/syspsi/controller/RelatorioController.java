@@ -28,9 +28,11 @@ import br.com.syspsi.model.dto.InRelatorioDTO;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Despesa;
 import br.com.syspsi.model.entity.Psicologo;
+import br.com.syspsi.model.entity.Recibo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
 import br.com.syspsi.repository.DespesaRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
+import br.com.syspsi.repository.ReciboRepositorio;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
@@ -45,6 +47,9 @@ public class RelatorioController {
 	
 	@Autowired
 	private DespesaRepositorio despesaRepositorio;
+	
+	@Autowired
+	private ReciboRepositorio reciboRepositorio;
 
 	@Autowired
     private ApplicationContext appContext;
@@ -320,13 +325,9 @@ public class RelatorioController {
 	        p.setProperty("Content-disposition", "inline; filename=\"recibo.pdf\"");
 	        view.setHeaders(p);
 
-	        Agendamento agendamento = reciboDTO.getAgendamento();
+	        //Agendamento agendamento = reciboDTO.getAgendamento();
 	        String referenteA = reciboDTO.getReferenteA();
-	        
-	        if (referenteA == null || referenteA.trim().isEmpty()) {
-	        	referenteA = "atendimento psicológico";
-	        }	        	       
-	        
+	        	        
 	        String cpf = null;
 	        if (psicologo.getCpf().length() == 11) {	        	
 	        	cpf = psicologo.getCpf().substring(0,3) + "." + 
@@ -334,18 +335,29 @@ public class RelatorioController {
 	        		psicologo.getCpf().substring(6,9) + "-" +
 	        		psicologo.getCpf().substring(9);
 	        }	        
-	        
-	        String valorExtenso = CurrencyWriter.getInstance().write(agendamento.getConsulta().getValor());	        
+	        	        
 	        Map<String, Object> params = new HashMap<>();
-	        params.put("nomePaciente", agendamento.getPaciente().getNomeCompleto());	        
-	        params.put("valorConsulta", agendamento.getConsulta().getValor());
+	        //String valorExtenso = CurrencyWriter.getInstance().write(agendamento.getConsulta().getValor());
+	        //params.put("nomePaciente", agendamento.getPaciente().getNomeCompleto());
+	        //params.put("valorConsulta", agendamento.getConsulta().getValor());	        	        
+	        String valorExtenso = CurrencyWriter.getInstance().write(reciboDTO.getValor());
+	        params.put("nomePaciente", reciboDTO.getNomePaciente());	        
+	        params.put("valorConsulta", reciboDTO.getValor());
 	        params.put("valorExtenso", valorExtenso);	        
 	        params.put("referenteA", referenteA);
+	        params.put("dataEmissao", reciboDTO.getDataEmissao());
 	        params.put("nomePsicologo", psicologo.getNomeExibicao());
 	        params.put("nomeCompletoPsicologo", psicologo.getNomeCompleto());
 	        params.put("crp", psicologo.getCrp());
 	        params.put("cpfPsicologo", cpf);
 	        params.put("datasource", new JREmptyDataSource());
+	        
+	        Recibo recibo = new Recibo();
+	        recibo.setReferenteA(referenteA);
+	        recibo.setValor(reciboDTO.getValor());
+	        recibo.setDataEmissao(reciboDTO.getDataEmissao());
+	        recibo = this.reciboRepositorio.save(recibo);
+	        System.out.println("ID: " + recibo.getId());
 	        
 	        return new ModelAndView(view, params);	        	        	    
 		} catch(Exception ex) {

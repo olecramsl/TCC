@@ -40,7 +40,7 @@ angular.module('syspsi').controller('DialogCtrl', ['$scope', '$mdDialog', 'consu
 		
 		if (novoValor > 0) {		
 			consultaPacienteFactory.setValor(novoValor);		
-			consultaPacienteFactory.setRecibo(!!recibo);
+			//consultaPacienteFactory.setRecibo(!!recibo);
 			$mdDialog.hide();
 		} else {
 			utilService.tratarExcecao("Valor da consulta inválido!")

@@ -22,10 +22,14 @@ angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'consts', 
 	};
 	
 	var _imprimirRecibo = function(agendamento, referenteA) {
-		var inReciboDTO = {
-			agendamento: agendamento,
-			referenteA: referenteA
+		var inReciboDTO = {			
+			referenteA: referenteA,
+			nomePaciente: agendamento.paciente.nomeCompleto,
+			dataEmissao: moment(),
+			valor: agendamento.consulta.valor
 		};
+		
+		console.log(inReciboDTO);
 		
 		return $http.post(consts.BASE_URL + '/imprimirRecibo', inReciboDTO, {responseType:'arraybuffer'});
 	};
