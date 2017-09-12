@@ -26,10 +26,13 @@ import br.com.syspsi.model.Util;
 import br.com.syspsi.model.dto.InReciboDTO;
 import br.com.syspsi.model.dto.InRelatorioDTO;
 import br.com.syspsi.model.entity.Agendamento;
+import br.com.syspsi.model.entity.Consulta;
+import br.com.syspsi.model.entity.ConsultaTemRecibo;
 import br.com.syspsi.model.entity.Despesa;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.model.entity.Recibo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
+import br.com.syspsi.repository.ConsultaTemReciboRepositorio;
 import br.com.syspsi.repository.DespesaRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
 import br.com.syspsi.repository.ReciboRepositorio;
@@ -50,6 +53,9 @@ public class RelatorioController {
 	
 	@Autowired
 	private ReciboRepositorio reciboRepositorio;
+	
+	@Autowired
+	private ConsultaTemReciboRepositorio consultaTemReciboRepositorio;
 
 	@Autowired
     private ApplicationContext appContext;
@@ -311,7 +317,7 @@ public class RelatorioController {
 					throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 				}		
 			} else {
-				logMessage("imprimirRelatorioProntuario - User nulo.", true);
+				logMessage("imprimirRelatorioProntuario - Psicólogo nulo.", true);
 				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
 			}			
 						
@@ -326,7 +332,9 @@ public class RelatorioController {
 	        view.setHeaders(p);
 
 	        //Agendamento agendamento = reciboDTO.getAgendamento();
-	        String referenteA = reciboDTO.getReferenteA();
+	        String referenteA = (reciboDTO.getReferenteA()==null || 
+	        		reciboDTO.getReferenteA().isEmpty())?
+	        				"atendimento psicológico":reciboDTO.getReferenteA();
 	        	        
 	        String cpf = null;
 	        if (psicologo.getCpf().length() == 11) {	        	
@@ -335,12 +343,13 @@ public class RelatorioController {
 	        		psicologo.getCpf().substring(6,9) + "-" +
 	        		psicologo.getCpf().substring(9);
 	        }	        
-	        	        
+	        	        	        	        
 	        Map<String, Object> params = new HashMap<>();
 	        //String valorExtenso = CurrencyWriter.getInstance().write(agendamento.getConsulta().getValor());
 	        //params.put("nomePaciente", agendamento.getPaciente().getNomeCompleto());
 	        //params.put("valorConsulta", agendamento.getConsulta().getValor());	        	        
 	        String valorExtenso = CurrencyWriter.getInstance().write(reciboDTO.getValor());
+	        	        
 	        params.put("nomePaciente", reciboDTO.getNomePaciente());	        
 	        params.put("valorConsulta", reciboDTO.getValor());
 	        params.put("valorExtenso", valorExtenso);	        
@@ -356,11 +365,14 @@ public class RelatorioController {
 	        recibo.setReferenteA(referenteA);
 	        recibo.setValor(reciboDTO.getValor());
 	        recibo.setDataEmissao(reciboDTO.getDataEmissao());
-	        recibo = this.reciboRepositorio.save(recibo);
-	        System.out.println("ID: " + recibo.getId());
+	        recibo = this.reciboRepositorio.save(recibo);	        
+	        
+	        for (Consulta consulta : reciboDTO.getLstConsultas()) {
+	        	consultaTemReciboRepositorio.save(new ConsultaTemRecibo(consulta, recibo));
+	        }
 	        
 	        return new ModelAndView(view, params);	        	        	    
-		} catch(Exception ex) {
+		} catch(Exception ex) {			
 			logMessage("imprimirRelatorioProntuarios - Erro: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");
 		}

@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -12,9 +14,23 @@ public class ConsultaTemRecibo {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	@ManyToOne
+    @JoinColumn(name="idconsulta")
 	private Consulta consulta;
-	private Recibo recibo;
+	@ManyToOne
+    @JoinColumn(name="idrecibo")
+	private Recibo recibo;		
 	
+	public ConsultaTemRecibo() {
+		super();
+	}	
+
+	public ConsultaTemRecibo(Consulta consulta, Recibo recibo) {
+		super();
+		this.consulta = consulta;
+		this.recibo = recibo;
+	}
+
 	/**
 	 * @return the id
 	 */

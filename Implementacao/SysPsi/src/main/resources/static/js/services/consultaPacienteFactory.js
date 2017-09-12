@@ -21,15 +21,14 @@ angular.module('syspsi').factory('consultaPacienteFactory', ['$http', 'consts', 
 		return $http.post(consts.BASE_URL + '/imprimirRelatorioProntuario', agendamento, {responseType:'arraybuffer'});
 	};
 	
-	var _imprimirRecibo = function(agendamento, referenteA) {
-		var inReciboDTO = {			
+	var _imprimirRecibo = function(lstConsultas, referenteA, nomeCompletoPaciente, valorTotal) {
+		var inReciboDTO = {		
+			lstConsultas: lstConsultas,			
 			referenteA: referenteA,
-			nomePaciente: agendamento.paciente.nomeCompleto,
+			nomePaciente: nomeCompletoPaciente,
 			dataEmissao: moment(),
-			valor: agendamento.consulta.valor
-		};
-		
-		console.log(inReciboDTO);
+			valor: valorTotal
+		};				
 		
 		return $http.post(consts.BASE_URL + '/imprimirRecibo', inReciboDTO, {responseType:'arraybuffer'});
 	};

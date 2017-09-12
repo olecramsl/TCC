@@ -2,13 +2,31 @@ package br.com.syspsi.model.dto;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.List;
+
+import br.com.syspsi.model.entity.Consulta;
 
 
 public class InReciboDTO {	
+	private List<Consulta> lstConsultas;
 	private String referenteA;
 	private String nomePaciente;
 	private Calendar dataEmissao;
 	private BigDecimal valor;
+
+	/**
+	 * @return the lstConsultas
+	 */
+	public List<Consulta> getLstConsultas() {
+		return lstConsultas;
+	}
+
+	/**
+	 * @param lstConsultas the lstConsultas to set
+	 */
+	public void setLstConsultas(List<Consulta> lstConsultas) {
+		this.lstConsultas = lstConsultas;
+	}
 
 	/**
 	 * @return the referenteA

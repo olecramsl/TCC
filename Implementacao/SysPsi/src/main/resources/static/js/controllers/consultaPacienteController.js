@@ -175,7 +175,10 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 						    $mdDialog.show(confirm).then(function(referenteA) {
 						    	utilService.setMessage("Gerando recibo ...");
 								utilService.showWait();
-								consultaPacienteFactory.imprimirRecibo(agendamento, referenteA).then(
+								var lstConsulta = [consultaPacienteFactory.getAgendamento().consulta];
+								var nomeCompletoPaciente = consultaPacienteFactory.getAgendamento().paciente.nomeCompleto;
+								var valorTotal = consultaPacienteFactory.getAgendamento().consulta.valor;
+								consultaPacienteFactory.imprimirRecibo(lstConsulta, referenteA, nomeCompletoPaciente, valorTotal).then(
 										successCalback = function(response) {
 											utilService.hideWait();
 											var file = new Blob([response.data], {
