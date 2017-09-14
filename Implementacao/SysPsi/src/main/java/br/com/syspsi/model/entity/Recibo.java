@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Recibo implements Serializable {	
@@ -17,12 +19,29 @@ public class Recibo implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	@ManyToOne
+    @JoinColumn(name="idpaciente")
+	private Paciente paciente;
 	@Column(name="referentea")
 	private String referenteA;
 	@Column(name="dataemissao")
 	private Calendar dataEmissao;
 	private BigDecimal valor;
 	
+	/**
+	 * @return the paciente
+	 */
+	public Paciente getPaciente() {
+		return paciente;
+	}
+
+	/**
+	 * @param paciente the paciente to set
+	 */
+	public void setPaciente(Paciente paciente) {
+		this.paciente = paciente;
+	}
+
 	/**
 	 * @return the id
 	 */

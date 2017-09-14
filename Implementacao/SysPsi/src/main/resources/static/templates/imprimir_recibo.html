@@ -1,3 +1,6 @@
+<head>
+	<meta charset="utf-8">
+</head>
 <md-dialog>	
 	<md-toolbar>
 		<div class="md-toolbar-tools">
@@ -7,22 +10,31 @@
 
 	<md-dialog-content>
 		<div class="md-dialog-content">			
-			<form ng-cloak name="imprimirReciboForm">
-				<md-input-container class="md-block">										
-					<md-select md-autofocus ng-model="ctrl.parent.agendamento" placeholder="Selecione a Consulta">
-    					<md-option ng-value="item" ng-repeat="item in ctrl.parent.lstAgendamentosComConsulta">{{ item.consulta.inicio | date:'dd/MM/yyyy HH:mm'}}</md-option>
-  					</md-select>  					   					  				
-				</md-input-container>	
+			<form ng-cloak name="imprimirReciboForm">				
+				<md-input-container class="md-block">
+					<label>Data de Emissão</label>
+					<md-datepicker ng-model="ctrl.parent.dtEmissao" 
+						md-placeholder="Data de Emissão"></md-datepicker>
+				</md-input-container>
 				<md-input-container class="md-block">
 					<label>Pagamento Referente a ...</label>	 					
- 					<input name="referenteA" maxlength="100" ng-model="ctrl.parent.referenteA">
-				</md-input-container>														
+ 					<input name="referenteA" maxlength="100" 
+ 						ng-model="ctrl.parent.referenteA">
+				</md-input-container>								
+				<md-input-container class="md-block">
+					<label>Valor</label>
+					<input name="valor" maxlength="7" ng-model="ctrl.parent.valor" 						
+						ng-pattern="/^\$?[\d]+(\,\d{1,2})?$/"
+						ng-required="true" formattedValor>
+				</md-input-container>										
 			</form>			
 		</div>
 	</md-dialog-content>
 
 	<md-dialog-actions layout="row"> 
-		<md-button ng-click="ctrl.parent.imprimirRecibo(ctrl.parent.agendamento, ctrl.parent.referenteA)"> Imprimir Recibo </md-button> 
+		<md-button ng-disabled="!ctrl.parent.dtEmissao || !ctrl.parent.valor || ctrl.parent.valor <= 0" 
+			ng-click="ctrl.parent.imprimirRecibo(ctrl.parent.referenteA, ctrl.parent.dtEmissao, ctrl.parent.valor)"> 
+			Imprimir Recibo </md-button> 
 		<md-button ng-click="ctrl.parent.cancel()"> Cancelar </md-button> 
 	</md-dialog-actions>
 </md-dialog>

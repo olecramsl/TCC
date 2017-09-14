@@ -2,30 +2,28 @@ package br.com.syspsi.model.dto;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.List;
 
-import br.com.syspsi.model.entity.Consulta;
+import br.com.syspsi.model.entity.Paciente;
 
 
-public class InReciboDTO {	
-	private List<Consulta> lstConsultas;
+public class InReciboDTO {		
+	private Paciente paciente;
 	private String referenteA;
-	private String nomePaciente;
 	private Calendar dataEmissao;
-	private BigDecimal valor;
+	private BigDecimal valor;	
 
 	/**
-	 * @return the lstConsultas
+	 * @return the paciente
 	 */
-	public List<Consulta> getLstConsultas() {
-		return lstConsultas;
+	public Paciente getPaciente() {
+		return paciente;
 	}
 
 	/**
-	 * @param lstConsultas the lstConsultas to set
+	 * @param paciente the paciente to set
 	 */
-	public void setLstConsultas(List<Consulta> lstConsultas) {
-		this.lstConsultas = lstConsultas;
+	public void setPaciente(Paciente paciente) {
+		this.paciente = paciente;
 	}
 
 	/**
@@ -42,20 +40,6 @@ public class InReciboDTO {
 		this.referenteA = referenteA;
 	}
 	
-	/**
-	 * @return the nomePaciente
-	 */
-	public String getNomePaciente() {
-		return nomePaciente;
-	}
-
-	/**
-	 * @param nomePaciente the nomePaciente to set
-	 */
-	public void setNomePaciente(String nomePaciente) {
-		this.nomePaciente = nomePaciente;
-	}
-
 	/**
 	 * @return the dataEmissao
 	 */

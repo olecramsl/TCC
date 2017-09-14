@@ -161,40 +161,7 @@ angular.module('syspsi').controller('ConsultaPacienteCtrl', ['$scope','$mdDialog
 						successCallback = function(response) {
 							consultaPacienteFactory.setAgendamento(response.data);
 							ctrl.oldProntuario = ctrl.agendamento.consulta.prontuario;
-							consultaPacienteFactory.setConteudoProntuarioMudou(false);
-														
-							// dados do recibo
-							var confirm = $mdDialog.prompt()
-						      .title('Informações Adicionais do Recibo')
-						      .textContent('Pagamento referente a ...')
-						      .placeholder('referente a ...')
-						      .ariaLabel('Referente a ...')							      
-						      .ok('Emitir Recibo')
-						      .cancel('Não Emitir');
-
-						    $mdDialog.show(confirm).then(function(referenteA) {
-						    	utilService.setMessage("Gerando recibo ...");
-								utilService.showWait();
-								var lstConsulta = [consultaPacienteFactory.getAgendamento().consulta];
-								var nomeCompletoPaciente = consultaPacienteFactory.getAgendamento().paciente.nomeCompleto;
-								var valorTotal = consultaPacienteFactory.getAgendamento().consulta.valor;
-								consultaPacienteFactory.imprimirRecibo(lstConsulta, referenteA, nomeCompletoPaciente, valorTotal).then(
-										successCalback = function(response) {
-											utilService.hideWait();
-											var file = new Blob([response.data], {
-										    	type: 'application/pdf'
-										    });
-										    var fileURL = URL.createObjectURL(file);				    
-											window.open(fileURL);																					
-										},
-										errorCallback = function(error, status) {
-											utilService.hideWait();
-											utilService.tratarExcecao("Não foi psossível gerar o recibo.");
-										}
-								);
-						    }, function() {							      
-						    });							    							
-							
+							consultaPacienteFactory.setConteudoProntuarioMudou(false);																											    												
 						},
 						errorCallback = function (error, status){					
 							utilService.tratarExcecao(error); 

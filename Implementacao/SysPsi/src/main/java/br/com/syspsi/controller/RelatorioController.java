@@ -26,13 +26,10 @@ import br.com.syspsi.model.Util;
 import br.com.syspsi.model.dto.InReciboDTO;
 import br.com.syspsi.model.dto.InRelatorioDTO;
 import br.com.syspsi.model.entity.Agendamento;
-import br.com.syspsi.model.entity.Consulta;
-import br.com.syspsi.model.entity.ConsultaTemRecibo;
 import br.com.syspsi.model.entity.Despesa;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.model.entity.Recibo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
-import br.com.syspsi.repository.ConsultaTemReciboRepositorio;
 import br.com.syspsi.repository.DespesaRepositorio;
 import br.com.syspsi.repository.PsicologoRepositorio;
 import br.com.syspsi.repository.ReciboRepositorio;
@@ -54,9 +51,6 @@ public class RelatorioController {
 	@Autowired
 	private ReciboRepositorio reciboRepositorio;
 	
-	@Autowired
-	private ConsultaTemReciboRepositorio consultaTemReciboRepositorio;
-
 	@Autowired
     private ApplicationContext appContext;
 	
@@ -345,12 +339,9 @@ public class RelatorioController {
 	        }	        
 	        	        	        	        
 	        Map<String, Object> params = new HashMap<>();
-	        //String valorExtenso = CurrencyWriter.getInstance().write(agendamento.getConsulta().getValor());
-	        //params.put("nomePaciente", agendamento.getPaciente().getNomeCompleto());
-	        //params.put("valorConsulta", agendamento.getConsulta().getValor());	        	        
 	        String valorExtenso = CurrencyWriter.getInstance().write(reciboDTO.getValor());
 	        	        
-	        params.put("nomePaciente", reciboDTO.getNomePaciente());	        
+	        params.put("nomePaciente", reciboDTO.getPaciente().getNomeCompleto());	        
 	        params.put("valorConsulta", reciboDTO.getValor());
 	        params.put("valorExtenso", valorExtenso);	        
 	        params.put("referenteA", referenteA);
@@ -362,18 +353,15 @@ public class RelatorioController {
 	        params.put("datasource", new JREmptyDataSource());
 	        
 	        Recibo recibo = new Recibo();
+	        recibo.setPaciente(reciboDTO.getPaciente());
 	        recibo.setReferenteA(referenteA);
 	        recibo.setValor(reciboDTO.getValor());
 	        recibo.setDataEmissao(reciboDTO.getDataEmissao());
-	        recibo = this.reciboRepositorio.save(recibo);	        
-	        
-	        for (Consulta consulta : reciboDTO.getLstConsultas()) {
-	        	consultaTemReciboRepositorio.save(new ConsultaTemRecibo(consulta, recibo));
-	        }
+	        recibo = this.reciboRepositorio.save(recibo);	        	        
 	        
 	        return new ModelAndView(view, params);	        	        	    
 		} catch(Exception ex) {			
-			logMessage("imprimirRelatorioProntuarios - Erro: " + ex.getMessage(), true);			
+			logMessage("imprimirRelatorioRecibo - Erro: " + ex.getMessage(), true);			
 			throw new Exception("Não foi possível gerar o relatório");
 		}
 	}

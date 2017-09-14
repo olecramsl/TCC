@@ -5,6 +5,9 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
 -- Schema syspsi
 -- -----------------------------------------------------
 
@@ -98,12 +101,11 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`consulta` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `prontuario` TEXT NULL DEFAULT NULL,
   `valor` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-  `recibo` TINYINT(1) NOT NULL DEFAULT 0,
+  `recibo` TINYINT(1) NOT NULL DEFAULT '0',
   `inicio` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `fim` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 32
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -172,7 +174,6 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`agendamento` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 42
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -185,44 +186,7 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`backup` (
   `fim` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 20
-DEFAULT CHARACTER SET = utf8;
-
-
--- -----------------------------------------------------
--- Table `syspsi`.`recibo`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`recibo` (
-  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `referenteA` VARCHAR(100) NOT NULL DEFAULT 'atendimento psicológico',
-  `dataEmissao` DATE NOT NULL,
-  `valor` DECIMAL(10,2) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
-
--- -----------------------------------------------------
--- Table `syspsi`.`consulta_tem_recibo`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`consulta_tem_recibo` (
-  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `idConsulta` BIGINT(20) UNSIGNED NOT NULL,
-  `idRecibo` BIGINT(20) UNSIGNED NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_consulta_tem_recibo_consulta_idx` (`idConsulta` ASC),
-  INDEX `fk_consulta_tem_recibo_recibo_idx` (`idRecibo` ASC),
-  CONSTRAINT `fk_consulta_tem_recibo_consulta`
-    FOREIGN KEY (`idConsulta`)
-    REFERENCES `syspsi`.`consulta` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_consulta_tem_recibo_recibo`
-    FOREIGN KEY (`idRecibo`)
-    REFERENCES `syspsi`.`recibo` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
+AUTO_INCREMENT = 22
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -286,6 +250,25 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo_tem_permissao` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 AUTO_INCREMENT = 8
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `syspsi`.`recibo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `syspsi`.`recibo` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `idPaciente` BIGINT(20) UNSIGNED NOT NULL,
+  `referenteA` VARCHAR(100) NOT NULL,
+  `dataEmissao` DATE NOT NULL,
+  `valor` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_recibo_paciente`
+    FOREIGN KEY (`id`)
+    REFERENCES `syspsi`.`paciente` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 
