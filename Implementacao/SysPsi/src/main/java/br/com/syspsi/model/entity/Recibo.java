@@ -22,6 +22,9 @@ public class Recibo implements Serializable {
 	@ManyToOne
     @JoinColumn(name="idpaciente")
 	private Paciente paciente;
+	@ManyToOne
+    @JoinColumn(name="idpsicologo")
+	private Psicologo psicologo;
 	@Column(name="referentea")
 	private String referenteA;
 	@Column(name="dataemissao")
@@ -40,6 +43,20 @@ public class Recibo implements Serializable {
 	 */
 	public void setPaciente(Paciente paciente) {
 		this.paciente = paciente;
+	}
+
+	/**
+	 * @return the psicologo
+	 */
+	public Psicologo getPsicologo() {
+		return psicologo;
+	}
+
+	/**
+	 * @param psicologo the psicologo to set
+	 */
+	public void setPsicologo(Psicologo psicologo) {
+		this.psicologo = psicologo;
 	}
 
 	/**

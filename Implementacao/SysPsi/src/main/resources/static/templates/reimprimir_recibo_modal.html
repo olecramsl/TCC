@@ -1,0 +1,32 @@
+<head>
+	<meta charset="utf-8">
+</head>
+<md-dialog>	
+	<md-toolbar>
+		<div class="md-toolbar-tools">
+			<h2>Reimprimir Recibo</h2>
+		</div>
+	</md-toolbar>
+
+	<md-dialog-content>
+		<div class="md-dialog-content">			
+			<form ng-cloak name="ReimprimirReciboForm">				
+				<md-input-container class="md-block">
+					<label>Data de emissão:</label>
+						<md-select 
+							id="selDtEmissao"										
+							ng-model="ctrl.parent.recibo"	
+							ng-model-options="{trackBy: '$value.id'}"											
+							ng-required = "true">													
+							<md-option ng-value="recibo" ng-repeat="recibo in ctrl.parent.lstRecibos">{{ recibo.dataEmissao | date:'dd/MM/yyyy HH:mm' }}</md-option>									
+						</md-select>
+				</md-input-container>													
+			</form>			
+		</div>
+	</md-dialog-content>
+
+	<md-dialog-actions layout="row"> 
+		<md-button ng-disabled="" ng-click="ctrl.parent.reimprimirRecibo(ctrl.parent.recibo)"> Reimprimir Recibo </md-button> 
+		<md-button ng-click="ctrl.parent.cancel()"> Cancelar </md-button> 
+	</md-dialog-actions>
+</md-dialog>

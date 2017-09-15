@@ -27,6 +27,7 @@ import br.com.syspsi.model.dto.InReciboDTO;
 import br.com.syspsi.model.dto.InRelatorioDTO;
 import br.com.syspsi.model.entity.Agendamento;
 import br.com.syspsi.model.entity.Despesa;
+import br.com.syspsi.model.entity.Paciente;
 import br.com.syspsi.model.entity.Psicologo;
 import br.com.syspsi.model.entity.Recibo;
 import br.com.syspsi.repository.AgendamentoRepositorio;
@@ -344,7 +345,7 @@ public class RelatorioController {
 	        params.put("nomePaciente", reciboDTO.getPaciente().getNomeCompleto());	        
 	        params.put("valorConsulta", reciboDTO.getValor());
 	        params.put("valorExtenso", valorExtenso);	        
-	        params.put("referenteA", referenteA);
+	        params.put("referenteA", referenteA.toLowerCase());
 	        params.put("dataEmissao", reciboDTO.getDataEmissao());
 	        params.put("nomePsicologo", psicologo.getNomeExibicao());
 	        params.put("nomeCompletoPsicologo", psicologo.getNomeCompleto());
@@ -354,15 +355,88 @@ public class RelatorioController {
 	        
 	        Recibo recibo = new Recibo();
 	        recibo.setPaciente(reciboDTO.getPaciente());
-	        recibo.setReferenteA(referenteA);
+	        recibo.setPsicologo(psicologo);
+	        recibo.setReferenteA(referenteA.toLowerCase());
 	        recibo.setValor(reciboDTO.getValor());
 	        recibo.setDataEmissao(reciboDTO.getDataEmissao());
 	        recibo = this.reciboRepositorio.save(recibo);	        	        
 	        
 	        return new ModelAndView(view, params);	        	        	    
 		} catch(Exception ex) {			
-			logMessage("imprimirRelatorioRecibo - Erro: " + ex.getMessage(), true);			
-			throw new Exception("Não foi possível gerar o relatório");
+			logMessage("imprimirRecibo - Erro: " + ex.getMessage(), true);			
+			throw new Exception("Não foi possível gerar o recibo");
+		}
+	}
+	
+	@RequestMapping(
+			value = "/reimprimirRecibo", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public ModelAndView reimprimirRecibo(@RequestBody Recibo recibo) throws Exception {			
+		try {					
+			JasperReportsPdfView view = new JasperReportsPdfView();
+	        view.setUrl("classpath:br/com/syspsi/jasper/recibo.jrxml");
+	        view.setApplicationContext(appContext);
+	        view.setContentType("application/pdf");	    
+	        view.setReportDataKey("datasource");
+	        	        
+	        Properties p = new Properties();
+	        p.setProperty("Content-disposition", "inline; filename=\"recibo.pdf\"");
+	        view.setHeaders(p);
+	        	        	        
+	        String cpf = recibo.getPsicologo().getCpf().substring(0,3) + "." +
+        		recibo.getPsicologo().getCpf().substring(3,6) + "." +
+        		recibo.getPsicologo().getCpf().substring(6,9) + "-" +
+        		recibo.getPsicologo().getCpf().substring(9);
+	        	        
+	        	        	        	        
+	        Map<String, Object> params = new HashMap<>();
+	        String valorExtenso = CurrencyWriter.getInstance().write(recibo.getValor());
+	        	        
+	        params.put("nomePaciente", recibo.getPaciente().getNomeCompleto());	        
+	        params.put("valorConsulta", recibo.getValor());
+	        params.put("valorExtenso", valorExtenso);	        
+	        params.put("referenteA", recibo.getReferenteA().toLowerCase());
+	        params.put("dataEmissao", recibo.getDataEmissao());
+	        params.put("nomePsicologo", recibo.getPsicologo().getNomeExibicao());
+	        params.put("nomeCompletoPsicologo", recibo.getPsicologo().getNomeCompleto());
+	        params.put("crp", recibo.getPsicologo().getCrp());
+	        params.put("cpfPsicologo", cpf);
+	        params.put("datasource", new JREmptyDataSource());
+	        	       
+	        return new ModelAndView(view, params);	        	        	    
+		} catch(Exception ex) {			
+			logMessage("reimprimirRecibo - Erro: " + ex.getMessage(), true);			
+			throw new Exception("Não foi possível reimprimir o recibo");
+		}
+	}
+	
+	@RequestMapping(
+			value = "/listarRecibosPaciente", 
+			method={RequestMethod.POST},
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE
+			)
+	public List<Recibo> listarRecibosPaciente(@RequestBody Paciente paciente, Principal user) throws Exception {
+		try {
+			Psicologo psicologo;
+			if (user != null) {							
+				psicologo = this.psicologoRepositorio.findByLogin(user.getName());
+				if (psicologo == null) {
+					logMessage("imprimirRelatorioProntuario - Psicólogo nulo.", true);
+					throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+				}		
+			} else {
+				logMessage("imprimirRelatorioProntuario - Psicólogo nulo.", true);
+				throw new Exception("Erro ao carregar psicólogo. Faça login novamente.");
+			}	
+			
+			return reciboRepositorio.findByPacienteAndPsicologo(paciente, psicologo);
+		} catch (Exception ex) {
+			logMessage("listarRecibosPaciente - Erro: " + ex.getMessage(), true);			
+			throw new Exception("Não foi possível listar os recibos do paciente.");
 		}
 	}
 }

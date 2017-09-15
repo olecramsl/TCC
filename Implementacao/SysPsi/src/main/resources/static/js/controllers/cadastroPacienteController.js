@@ -5,10 +5,10 @@ angular.forEach(lazyModules, function(dependency) {
 	angular.module('syspsi').requires.push(dependency);
 });
 
-angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', 'convenioFactory', 
-	'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 'NgTableParams',	'utilService',
-	function ($mdDialog, $uibModal,	$scope,	$http, $location, convenioFactory, pacienteFactory,	cadastroPacienteFactory, consultaPacienteFactory, 
-			agendamentoFactory, NgTableParams, utilService) {	
+angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibModal', '$scope', '$http', '$location', 
+	'convenioFactory', 'pacienteFactory', 'cadastroPacienteFactory', 'consultaPacienteFactory', 'agendamentoFactory', 
+	'NgTableParams',	'utilService', function ($mdDialog, $uibModal,	$scope,	$http, $location, convenioFactory, 
+	pacienteFactory, cadastroPacienteFactory, consultaPacienteFactory, agendamentoFactory, NgTableParams, utilService) {	
 	
 	var ctrl = this;
 		
@@ -320,7 +320,7 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	ctrl.imprimirRecibo = function(paciente) {
 		$scope.paciente = paciente;
 		$mdDialog.show({
-		      controller: function($rootScope){					    	  
+		      controller: function(){					    	  
 		    	  this.parent = $scope;
 		    	  this.parent.referenteA = "";
 		    	  this.parent.dtEmissao = moment();
@@ -339,15 +339,13 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 		    		  $scope.dtEmissao = dtEmissao;
 		    		  $scope.valor = valor;
 		    		  $mdDialog.hide();
-		    	  }
-		    	  					    	  
+		    	  }		    	  					    	 
 	          },
 	          controllerAs: 'ctrl',
-		      templateUrl: 'templates/imprimir_recibo.html',
+		      templateUrl: 'templates/imprimir_recibo_modal.html',
 		      parent: angular.element(document.body),
 		      clickOutsideToClose:false					     
-		    }).then(function() {	
-		    	$scope.valor=null;
+		    }).then(function() {			    	
 		    	if ($scope.paciente && $scope.dtEmissao && $scope.valor) {
 		    		utilService.setMessage("Gerando recibo ...");
 					utilService.showWait();
@@ -380,6 +378,81 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 	    		$scope.referenteA = "";
 		    });				
 	};	
+	
+	ctrl.reimprimirRecibo = function(paciente) {
+		consultaPacienteFactory.listarRecibosPaciente(paciente).then(
+				successCalback = function(response) {					
+					$scope.lstRecibos = response.data;					
+					if ($scope.lstRecibos && $scope.lstRecibos.length > 0) {
+						$mdDialog.show({
+						      controller: function(){					    	  
+						    	  this.parent = $scope;						    	  
+						    	  this.parent.lstRecibos = $scope.lstRecibos;
+						    	  this.parent.recibo = null;
+						    	  
+						    	  this.parent.cancel = function() {
+						    		  $scope.recibo = null;
+						    		  $scope.lstRecibos = null;
+						    		  $mdDialog.hide();
+						    	  };
+						    	  
+						    	  this.parent.reimprimirRecibo = function(recibo) {						    		  
+						    		  $scope.recibo = recibo;
+						    		  $scope.lstRecibos = null;
+						    		  $mdDialog.hide();
+						    	  }
+					          },
+					          controllerAs: 'ctrl',
+						      templateUrl: 'templates/reimprimir_recibo_modal.html',
+						      parent: angular.element(document.body),
+						      clickOutsideToClose:false					     
+						    }).then(function() {			    	
+						    	if ($scope.recibo) {
+						    		utilService.setMessage("Gerando recibo ...");
+									utilService.showWait();
+									consultaPacienteFactory.reimprimirRecibo($scope.recibo).then(
+											successCalback = function(response) {
+												utilService.hideWait();
+												var file = new Blob([response.data], {
+											    	type: 'application/pdf'
+											    });
+											    var fileURL = URL.createObjectURL(file);				    
+												window.open(fileURL);
+											},
+											errorCallback = function(error, status) {
+												utilService.hideWait();
+												utilService.tratarExcecao("Não foi psossível gerar o recibo.");
+											}
+									);
+						    	} else {
+						    		$mdDialog.show(
+										$mdDialog.alert()
+											.clickOutsideToClose(true)
+											.title('Emissão de Recibo')
+											.textContent('Erro na emissão!')
+											.ariaLabel('Alerta')
+											.ok('Ok')						
+										);
+						    	}
+						    }, function() {		    	
+					    		$scope.recibo = null;
+						    });
+					} else {
+						$mdDialog.show(
+								$mdDialog.alert()
+									.clickOutsideToClose(true)
+									.title('Emissão de Recibo')
+									.textContent('Não foram encontrados recibos emitidos para o paciente.')
+									.ariaLabel('Alerta')
+									.ok('Ok')						
+								);
+					}
+				},
+				errorCallback = function(error) {
+					utilService.tratarExcecao(error);
+				}
+		);					
+	};
 				
 	ctrl.carregarPacientes();
 	carregarGruposPacientes();		

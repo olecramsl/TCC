@@ -26,7 +26,6 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`grupopaciente` (
   `maiorIdade` TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -90,7 +89,6 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`paciente` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 24
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -133,7 +131,6 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`convenio` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `cnpj_UNIQUE` (`cnpj` ASC))
 ENGINE = InnoDB
-AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -186,7 +183,6 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`backup` (
   `fim` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 22
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -209,7 +205,6 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`despesa` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -222,7 +217,6 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`permissao` (
   `descricao` VARCHAR(100) NULL DEFAULT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8;
 
 
@@ -249,23 +243,30 @@ CREATE TABLE IF NOT EXISTS `syspsi`.`psicologo_tem_permissao` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 8
 DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
 -- Table `syspsi`.`recibo`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `syspsi`.`recibo` (
+CREATE TABLE `syspsi`.`recibo` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `idPaciente` BIGINT(20) UNSIGNED NOT NULL,
+  `idPsicologo` BIGINT(20) UNSIGNED NOT NULL,
   `referenteA` VARCHAR(100) NOT NULL,
-  `dataEmissao` DATE NOT NULL,
+  `dataEmissao` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `valor` DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (`id`),
+  INDEX `fk_recibo_paciente_idx` (`idPaciente` ASC),
+  INDEX `fk_recibo_psicologo_idx` (`idPsicologo` ASC),
   CONSTRAINT `fk_recibo_paciente`
-    FOREIGN KEY (`id`)
+    FOREIGN KEY (`idPaciente`)
     REFERENCES `syspsi`.`paciente` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_recibo_psicologo`
+    FOREIGN KEY (`idPsicologo`)
+    REFERENCES `syspsi`.`psicologo` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB

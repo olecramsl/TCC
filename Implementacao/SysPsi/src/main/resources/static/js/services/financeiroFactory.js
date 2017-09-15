@@ -60,7 +60,7 @@ angular.module('syspsi').factory('financeiroFactory',['$http', 'consts', functio
 		}; 
 		
 		return $http.post(consts.BASE_URL + '/imprimirRelatorioDespesas', inRelatorioDTO, {responseType:'arraybuffer'});
-	};
+	};		
 	
 	return {		
 		getAgendamento: function() { return _agendamento; },
