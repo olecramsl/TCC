@@ -103,7 +103,7 @@ public class RelatorioController {
 					new JRBeanCollectionDataSource(lstAgendamentos);
 								
 			JasperReportsPdfView view = new JasperReportsPdfView();
-	        view.setUrl("classpath:br/com/syspsi/jasper/receitasRel.jrxml");	        
+	        view.setUrl("classpath:br/com/syspsi/jasper/receitasRel.jasper");	        
 	        view.setApplicationContext(appContext);
 	        view.setContentType("application/pdf");	        
 	        view.setReportDataKey("datasource");
@@ -162,7 +162,7 @@ public class RelatorioController {
 					new JRBeanCollectionDataSource(lstDespesas);
 								
 			JasperReportsPdfView view = new JasperReportsPdfView();
-	        view.setUrl("classpath:br/com/syspsi/jasper/despesasRel.jrxml");
+	        view.setUrl("classpath:br/com/syspsi/jasper/despesasRel.jasper");
 	        view.setApplicationContext(appContext);
 	        view.setContentType("application/pdf");	        
 	        view.setReportDataKey("datasource");
@@ -226,7 +226,7 @@ public class RelatorioController {
 					new JRBeanCollectionDataSource(lstAgendamentos);
 								
 			JasperReportsPdfView view = new JasperReportsPdfView();
-	        view.setUrl("classpath:br/com/syspsi/jasper/prontuariosRel.jrxml");
+	        view.setUrl("classpath:br/com/syspsi/jasper/prontuariosRel.jasper");
 	        view.setApplicationContext(appContext);
 	        view.setContentType("application/pdf");	        	        
 	        view.setReportDataKey("datasource");
@@ -272,7 +272,7 @@ public class RelatorioController {
 			}	
 														
 			JasperReportsPdfView view = new JasperReportsPdfView();
-	        view.setUrl("classpath:br/com/syspsi/jasper/prontuarioRel.jrxml");
+	        view.setUrl("classpath:br/com/syspsi/jasper/prontuarioRel.jasper");
 	        view.setApplicationContext(appContext);
 	        view.setContentType("application/pdf");	    
 	        view.setReportDataKey("datasource");
@@ -317,7 +317,7 @@ public class RelatorioController {
 			}			
 						
 			JasperReportsPdfView view = new JasperReportsPdfView();
-	        view.setUrl("classpath:br/com/syspsi/jasper/recibo.jrxml");
+	        view.setUrl("classpath:br/com/syspsi/jasper/recibo.jasper");
 	        view.setApplicationContext(appContext);
 	        view.setContentType("application/pdf");	    
 	        view.setReportDataKey("datasource");
@@ -377,7 +377,8 @@ public class RelatorioController {
 	public ModelAndView reimprimirRecibo(@RequestBody Recibo recibo) throws Exception {			
 		try {					
 			JasperReportsPdfView view = new JasperReportsPdfView();
-	        view.setUrl("classpath:br/com/syspsi/jasper/recibo.jrxml");
+	        //view.setUrl("classpath:br/com/syspsi/jasper/recibo.jrxml");
+			view.setUrl("classpath:br/com/syspsi/jasper/recibo.jasper");
 	        view.setApplicationContext(appContext);
 	        view.setContentType("application/pdf");	    
 	        view.setReportDataKey("datasource");

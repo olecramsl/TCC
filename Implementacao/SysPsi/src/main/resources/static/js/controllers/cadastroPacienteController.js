@@ -364,18 +364,12 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 								utilService.tratarExcecao("Não foi psossível gerar o recibo.");
 							}
 					);
-		    	} else {
-		    		$mdDialog.show(
-						$mdDialog.alert()
-							.clickOutsideToClose(true)
-							.title('Emissão de Recibo')
-							.textContent('Erro na emissão!')
-							.ariaLabel('Alerta')
-							.ok('Ok')						
-						);
 		    	}
 		    }, function() {		    	
+		    	$scope.paciente = null;
 	    		$scope.referenteA = "";
+	    		$scope.dtEmissao = null;
+	    		$scope.valor = null;
 		    });				
 	};	
 	
@@ -424,15 +418,6 @@ angular.module('syspsi').controller('CadastroPacienteCtrl', ['$mdDialog', '$uibM
 												utilService.tratarExcecao("Não foi psossível gerar o recibo.");
 											}
 									);
-						    	} else {
-						    		$mdDialog.show(
-										$mdDialog.alert()
-											.clickOutsideToClose(true)
-											.title('Emissão de Recibo')
-											.textContent('Erro na emissão!')
-											.ariaLabel('Alerta')
-											.ok('Ok')						
-										);
 						    	}
 						    }, function() {		    	
 					    		$scope.recibo = null;
